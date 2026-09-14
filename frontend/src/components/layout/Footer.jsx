@@ -1,92 +1,98 @@
 import React from 'react';
-import { MapPin, Phone, Mail, Truck, Crown, Sparkles, Globe, ShieldCheck, Heart } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
-  const location = useLocation();
-
-  if (location.pathname.startsWith('/admin')) {
-    return null;
-  }
-
   return (
-    <footer className="bg-[#f8fafc] text-slate-700 pt-16 pb-12 border-t border-slate-200/80 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+    <footer className="bg-[#0a0a0a] text-white pt-14 sm:pt-20 pb-12 border-t border-neutral-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         
-        {/* Brand Column */}
-        <div>
-          <Link to="/" className="font-serif text-3xl tracking-tight mb-3 inline-block font-bold text-slate-950">
-            GetChasma<span className="text-blue-600">.</span>
-          </Link>
-          <p className="text-slate-600 text-xs leading-relaxed mb-5 font-normal">
-            Designer eyewear maison engineered with aerospace titanium, Zeiss crystalline optics, and contemporary ergonomics.
-          </p>
-          <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm text-xs">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-blue-600 font-bold block mb-1 flex items-center gap-1">
-              <Globe size={12} /> Global Lab Network
-            </span>
-            <p className="text-slate-500 text-[11px] leading-relaxed">
-              Bengaluru Optical Lab &bull; Kalaburagi Flagship Studio &bull; 150+ Partner Clinics
+        {/* Top 4-Column Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-12 mb-12 sm:mb-16">
+          
+          {/* Brand Bio (2 cols) */}
+          <div className="lg:col-span-2">
+            <Link to="/" className="inline-block mb-4">
+              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                GetChasma.
+              </span>
+            </Link>
+            <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed max-w-sm">
+              Get the perfect vision you deserve with our extensive range of eyeglasses. From stylish aviators to classic wayfarers, express your unique personality.
             </p>
           </div>
-        </div>
 
-        {/* Quick Links */}
-        <div>
-          <h4 className="font-bold text-xs uppercase tracking-wider text-slate-950 mb-4">
-            Collections
-          </h4>
-          <ul className="space-y-2.5 text-xs text-slate-600">
-            <li><Link to="/shop" className="hover:text-blue-600 transition-colors">All Eyewear</Link></li>
-            <li><Link to="/shop?category=eye-glasses" className="hover:text-blue-600 transition-colors">Classic Eyeglasses</Link></li>
-            <li><Link to="/shop?category=sun-glass" className="hover:text-blue-600 transition-colors">Polarized Sunglasses</Link></li>
-            <li><Link to="/shop?category=blue-light" className="hover:text-blue-600 transition-colors">Computer Screen BluCut</Link></li>
-            <li><Link to="/membership" className="hover:text-blue-600 transition-colors text-amber-600 font-bold flex items-center gap-1"><Crown size={12} /> Gold VIP Club</Link></li>
-          </ul>
-        </div>
-
-        {/* Customer Care */}
-        <div>
-          <h4 className="font-bold text-xs uppercase tracking-wider text-slate-950 mb-4">
-            Customer Care
-          </h4>
-          <ul className="space-y-2.5 text-xs text-slate-600">
-            <li><Link to="/track-order" className="hover:text-blue-600 transition-colors">Track Consignment</Link></li>
-            <li><Link to="/account" className="hover:text-blue-600 transition-colors">My Orders & Prescriptions</Link></li>
-            <li><a href="https://wa.me/919740310101" target="_blank" rel="noreferrer" className="text-emerald-600 hover:text-emerald-700 font-bold transition-colors">WhatsApp Optometrist</a></li>
-            <li><span className="text-slate-500">Toll-Free: 1800-CHASMA</span></li>
-            <li><span className="text-slate-500">Email: care@getchasma.com</span></li>
-          </ul>
-        </div>
-
-        {/* Newsletter & Guarantee */}
-        <div>
-          <h4 className="font-bold text-xs uppercase tracking-wider text-slate-950 mb-4">
-            Join VIP Privilege Club
-          </h4>
-          <p className="text-slate-600 text-xs leading-relaxed mb-3">
-            Subscribe for secret vault drops, complimentary eye test vouchers, and seasonal releases.
-          </p>
-          <div className="flex gap-2">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="bg-white border border-slate-200 rounded-full px-4 py-2.5 text-xs outline-none focus:border-blue-600 flex-1 text-slate-900"
-            />
-            <button className="px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-xs uppercase tracking-wider shadow-md hover:opacity-95 active:scale-95 transition-all">
-              Join
-            </button>
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-xs font-mono font-bold tracking-widest uppercase text-white mb-4">
+              Quick Links
+            </h4>
+            <ul className="space-y-2.5 text-xs text-neutral-400">
+              <li>
+                <Link to="/" className="hover:text-white transition-colors">Home</Link>
+              </li>
+              <li>
+                <Link to="/shop" className="hover:text-white transition-colors">Products</Link>
+              </li>
+              <li>
+                <Link to="/membership" className="hover:text-white transition-colors">VIP Club</Link>
+              </li>
+              <li>
+                <Link to="/track-order" className="hover:text-white transition-colors">Updates &amp; Tracking</Link>
+              </li>
+            </ul>
           </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="text-xs font-mono font-bold tracking-widest uppercase text-white mb-4">
+              Support
+            </h4>
+            <ul className="space-y-2.5 text-xs text-neutral-400">
+              <li>
+                <Link to="/faq" className="hover:text-white transition-colors">FAQ</Link>
+              </li>
+              <li>
+                <Link to="/track-order" className="hover:text-white transition-colors">Shipping &amp; Returns</Link>
+              </li>
+              <li>
+                <span className="hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
+              </li>
+              <li>
+                <span className="hover:text-white transition-colors cursor-pointer">Terms of Service</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Us */}
+          <div>
+            <h4 className="text-xs font-mono font-bold tracking-widest uppercase text-white mb-4">
+              Contact Us
+            </h4>
+            <ul className="space-y-3 text-xs text-neutral-400">
+              <li className="flex items-start gap-2">
+                <MapPin size={14} className="text-neutral-400 flex-shrink-0 mt-0.5" />
+                <span>Kalaburagi, Karnataka India</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Phone size={14} className="text-neutral-400 flex-shrink-0" />
+                <a href="tel:+919740310101" className="hover:text-white transition-colors">+91 97403 10101</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail size={14} className="text-neutral-400 flex-shrink-0" />
+                <a href="mailto:info@getchasma.com" className="hover:text-white transition-colors">info@getchasma.com</a>
+              </li>
+            </ul>
+          </div>
+
         </div>
 
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 pt-8 border-t border-slate-200/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-        <p>&copy; 2026 GetChasma Optique Ltd. All rights reserved. 100% genuine optics certified.</p>
-        <div className="flex items-center gap-6">
-          <span className="flex items-center gap-1">Made with <Heart size={12} className="text-rose-500 fill-rose-500" /> for India</span>
-          <Link to="/admin/login" className="hover:text-slate-900 transition-colors">Admin Portal</Link>
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-neutral-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
+          <p>© 2026 GetChasma.com. All rights reserved.</p>
+          <p className="text-neutral-600">Website Developed by Antmark.in</p>
         </div>
+
       </div>
     </footer>
   );

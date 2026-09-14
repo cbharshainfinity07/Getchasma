@@ -57,9 +57,9 @@ export default function Hero() {
       className="relative w-full min-h-[85vh] sm:min-h-[90vh] md:h-screen bg-black overflow-hidden flex flex-col justify-center items-center py-12 md:py-0 select-none"
       style={{ perspective: "1000px" }}
     >
-      {/* Background ambient glow matching the glasses */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0">
-        <div className="w-[85vw] h-[85vw] max-w-[800px] max-h-[800px] bg-indigo-900 rounded-full blur-[130px] md:blur-[150px] mix-blend-screen" />
+      {/* Clean neutral ambient lighting */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 z-0">
+        <div className="w-[75vw] h-[75vw] max-w-[700px] max-h-[700px] bg-neutral-700 rounded-full blur-[140px]" />
       </div>
 
       {/* 3D Floating Glasses Image with Ambient Levitation + Interactive Tilt */}
@@ -98,7 +98,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-white font-serif text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.2] sm:leading-[1.15] max-w-3xl mx-auto mb-5 sm:mb-8 md:mb-10 px-2"
+          className="text-white font-sans text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] max-w-3xl mx-auto mb-5 sm:mb-8 px-2"
           style={{ textShadow: "0 10px 30px rgba(0,0,0,0.85)" }}
         >
           Perfect Glasses For Your<br className="hidden sm:inline" /> Unique Style
@@ -111,12 +111,11 @@ export default function Hero() {
           className="pointer-events-auto"
         >
           <Link to="/shop">
-            <Button
-              radius="none"
-              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-6 sm:px-8 py-4 sm:py-6 rounded-sm hover:bg-gray-200 active:scale-95 transition-all cursor-pointer shadow-xl"
+            <button
+              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-8 py-3.5 rounded-full hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-xl"
             >
               See More
-            </Button>
+            </button>
           </Link>
         </motion.div>
       </div>
