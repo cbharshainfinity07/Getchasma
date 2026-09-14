@@ -10,11 +10,19 @@
   --color-background: #ffffff;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-background);
   color: #111111;
   letter-spacing: -0.04em;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* Custom Utilities based on design */

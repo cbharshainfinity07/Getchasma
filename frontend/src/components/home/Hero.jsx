@@ -32,22 +32,39 @@ export default function Hero() {
     y.set(0);
   };
 
+  const handleTouchMove = (e) => {
+    if (!ref.current || !e.touches[0]) return;
+    const rect = ref.current.getBoundingClientRect();
+    const touch = e.touches[0];
+    const touchX = (touch.clientX - rect.left) / rect.width - 0.5;
+    const touchY = (touch.clientY - rect.top) / rect.height - 0.5;
+    x.set(touchX);
+    y.set(touchY);
+  };
+
+  const handleTouchEnd = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   return (
     <div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative w-full h-screen bg-black overflow-hidden flex flex-col justify-center items-center"
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative w-full min-h-[85vh] sm:min-h-[90vh] md:h-screen bg-black overflow-hidden flex flex-col justify-center items-center py-12 md:py-0 select-none"
       style={{ perspective: "1000px" }}
     >
       {/* Background ambient glow matching the glasses */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 z-0">
-        <div className="w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-indigo-900 rounded-full blur-[150px] mix-blend-screen" />
+        <div className="w-[85vw] h-[85vw] max-w-[800px] max-h-[800px] bg-indigo-900 rounded-full blur-[130px] md:blur-[150px] mix-blend-screen" />
       </div>
 
-      {/* 3D Floating Glasses Image */}
+      {/* 3D Floating Glasses Image with Ambient Levitation + Interactive Tilt */}
       <motion.div
-        className="absolute z-10 w-full max-w-5xl pointer-events-none flex justify-center items-center"
+        className="absolute z-10 w-full max-w-5xl pointer-events-none flex justify-center items-center px-4"
         style={{
           rotateX,
           rotateY,
@@ -56,21 +73,23 @@ export default function Hero() {
           transformStyle: "preserve-3d"
         }}
       >
-        <img
+        <motion.img
+          animate={{ y: [0, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
           src="/3d-glasses.png"
           alt="Floating 3D Glasses"
-          className="w-full h-auto object-contain drop-shadow-2xl"
-          style={{ transform: "translateZ(100px)" }}
+          className="w-full max-w-[340px] sm:max-w-md md:max-w-3xl lg:max-w-5xl h-auto object-contain drop-shadow-2xl"
+          style={{ transform: "translateZ(80px)" }}
         />
       </motion.div>
 
       {/* Main Content */}
-      <div className="relative z-20 text-center px-4 mt-16 flex flex-col items-center pointer-events-none">
+      <div className="relative z-20 text-center px-4 mt-8 md:mt-16 flex flex-col items-center pointer-events-none">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
-          className="text-gray-400 text-xs font-bold tracking-[0.3em] uppercase mb-6"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-gray-400 text-[11px] sm:text-xs font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-4 sm:mb-6"
         >
           Up To 15% Off
         </motion.p>
@@ -78,9 +97,9 @@ export default function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="text-white font-serif text-5xl md:text-7xl font-bold tracking-[-0.05em] leading-tight max-w-4xl mx-auto mb-10"
-          style={{ textShadow: "0 10px 30px rgba(0,0,0,0.8)" }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-white font-serif text-3xl sm:text-5xl md:text-7xl font-bold tracking-[-0.03em] md:tracking-[-0.05em] leading-[1.15] max-w-4xl mx-auto mb-6 md:mb-10 px-2"
+          style={{ textShadow: "0 10px 30px rgba(0,0,0,0.85)" }}
         >
           Perfect Glasses For Your<br />Unique Style
         </motion.h1>
@@ -88,13 +107,13 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
           className="pointer-events-auto"
         >
           <Link to="/shop">
             <Button
               radius="none"
-              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-8 py-6 rounded-sm hover:bg-gray-200 transition-colors cursor-pointer"
+              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-8 py-5 sm:py-6 rounded-sm hover:bg-gray-200 active:scale-95 transition-all cursor-pointer shadow-xl"
             >
               See More
             </Button>
@@ -103,12 +122,12 @@ export default function Hero() {
       </div>
 
       {/* Slider Controls */}
-      <div className="absolute bottom-12 z-30 flex items-center gap-6 text-white text-sm font-semibold tracking-widest">
-        <button className="hover:text-gray-400 transition-colors pointer-events-auto cursor-pointer" aria-label="Previous slide">
+      <div className="absolute bottom-6 md:bottom-12 z-30 flex items-center gap-6 text-white text-xs md:text-sm font-semibold tracking-widest">
+        <button className="hover:text-gray-400 transition-colors pointer-events-auto cursor-pointer p-2" aria-label="Previous slide">
           <ChevronLeft size={20} strokeWidth={1.5} />
         </button>
         <span>01/02</span>
-        <button className="hover:text-gray-400 transition-colors pointer-events-auto cursor-pointer" aria-label="Next slide">
+        <button className="hover:text-gray-400 transition-colors pointer-events-auto cursor-pointer p-2" aria-label="Next slide">
           <ChevronRight size={20} strokeWidth={1.5} />
         </button>
       </div>
