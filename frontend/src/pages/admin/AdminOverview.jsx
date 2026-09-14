@@ -10,7 +10,8 @@ import {
   ArrowUpRight, 
   CheckCircle2, 
   Truck, 
-  ArrowRight 
+  ArrowRight,
+  Ban
 } from 'lucide-react';
 
 const DEFAULT_PRODUCT_IMG = "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop";
@@ -307,6 +308,10 @@ export default function AdminOverview() {
                         ? 'bg-blue-100 text-blue-800'
                         : order.status === 'processing'
                         ? 'bg-indigo-100 text-indigo-800'
+                        : order.status === 'cancelled' || order.cancellationRequest?.status === 'approved'
+                        ? 'bg-rose-100 text-rose-800'
+                        : order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded'
+                        ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
                         : 'bg-amber-100 text-amber-800'
                     }`}>
                       {order.status}
@@ -317,9 +322,13 @@ export default function AdminOverview() {
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200">
                         <CheckCircle2 size={11} className="text-emerald-600" /> Delivered &amp; Locked
                       </span>
-                    ) : order.status === 'cancelled' ? (
+                    ) : order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
                       <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-800 bg-rose-50 px-2 py-1 rounded-lg border border-rose-200">
-                        Cancelled
+                        <Ban size={11} /> Cancelled &amp; Locked
+                      </span>
+                    ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-900 bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-300">
+                        <CheckCircle2 size={11} className="text-emerald-700" /> Refunded &amp; Closed
                       </span>
                     ) : (
                       <select

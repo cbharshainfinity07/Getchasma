@@ -596,8 +596,12 @@ function updateOrderStatus(id, status, cancellationReason = null) {
   const order = db.orders.find(o => o.id.toUpperCase() === id.toUpperCase());
   if (!order) return null;
 
-  if (order.status === 'cancelled') {
+  if (order.status === 'cancelled' || order.cancellationRequest?.status === 'approved') {
     throw new Error(`Order ${id} is permanently cancelled and its lifecycle cannot be reactivated or altered.`);
+  }
+
+  if (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') {
+    throw new Error(`Order ${id} has been refunded and its lifecycle is permanently closed.`);
   }
 
   if (order.status === 'delivered' && status !== 'delivered' && !status.startsWith('return_') && status !== 'refunded') {
@@ -870,9 +874,8 @@ function processOrderRefund(id, { refundAmount, gatewayProvider = 'Razorpay Inst
     order.returnRequest.gatewayRefundId = refundId;
   }
 
-  if (order.status === 'return_approved' || order.status === 'delivered') {
-    order.status = 'refunded';
-  }
+  // Always mark order status as refunded
+  order.status = 'refunded';
 
   writeDB(db);
   return order;

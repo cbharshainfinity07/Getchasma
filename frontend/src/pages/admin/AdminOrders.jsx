@@ -561,13 +561,13 @@ export default function AdminOrders() {
                   </span>
                 </div>
                 <div>
-                  {order.status === 'cancelled' ? (
+                  {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 text-[10px] font-bold uppercase border border-rose-200">
-                      <Ban size={11} /> Cancelled
+                      <Ban size={11} /> Cancelled &amp; Locked
                     </span>
-                  ) : order.status === 'refunded' ? (
+                  ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-bold uppercase border border-emerald-300">
-                      <CheckCircle2 size={11} /> Refunded
+                      <CheckCircle2 size={11} /> Refunded &amp; Closed
                     </span>
                   ) : order.status === 'return_requested' ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold uppercase border border-amber-300">
@@ -872,15 +872,15 @@ export default function AdminOrders() {
 
                     {/* Status Dropdown & Action Badges */}
                     <td className="py-3.5 px-4">
-                      {order.status === 'cancelled' ? (
+                      {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold uppercase tracking-wider">
                           <Ban size={13} className="text-rose-600" />
                           <span>Cancelled &amp; Locked</span>
                         </div>
-                      ) : order.status === 'refunded' ? (
+                      ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-[11px] font-bold uppercase tracking-wider">
                           <CheckCircle2 size={13} className="text-emerald-700" />
-                          <span>Refunded &amp; Settled</span>
+                          <span>Refunded &amp; Closed</span>
                         </div>
                       ) : order.status === 'return_requested' ? (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 border border-amber-300 text-amber-900 text-[11px] font-bold uppercase tracking-wider">
@@ -1303,8 +1303,8 @@ export default function AdminOrders() {
                   </div>
                 )}
 
-                {/* Status Updater or Cancelled/Delivered Lock Banner */}
-                {selectedOrder.status === 'cancelled' ? (
+                {/* Status Updater or Cancelled/Delivered/Refunded Lock Banner */}
+                {selectedOrder.status === 'cancelled' || selectedOrder.cancellationRequest?.status === 'approved' ? (
                   <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-bold flex-shrink-0 shadow-sm">
@@ -1317,6 +1317,23 @@ export default function AdminOrders() {
                     </div>
                     <span className="px-3 py-1 bg-rose-200/80 text-rose-900 border border-rose-300 rounded-full text-[10px] font-extrabold uppercase tracking-widest self-start sm:self-auto">
                       Locked
+                    </span>
+                  </div>
+                ) : (selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded' || selectedOrder.refundDetails?.status === 'refunded') ? (
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold flex-shrink-0 shadow-sm">
+                        <IndianRupee size={20} />
+                      </div>
+                      <div>
+                        <span className="font-bold text-xs uppercase tracking-wider block text-emerald-950">Refund Issued &amp; Commission Permanently Closed</span>
+                        <span className="text-[11px] text-emerald-800">
+                          Payment gateway refund of ₹{Number(selectedOrder.refundDetails?.amount || selectedOrder.total).toLocaleString('en-IN')} has been settled. All order fulfillment processes are permanently closed and locked.
+                        </span>
+                      </div>
+                    </div>
+                    <span className="px-3 py-1 bg-emerald-200 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase tracking-widest self-start sm:self-auto">
+                      Closed &bull; Locked
                     </span>
                   </div>
                 ) : selectedOrder.status === 'delivered' ? (
@@ -1332,6 +1349,21 @@ export default function AdminOrders() {
                     </div>
                     <span className="px-3 py-1 bg-emerald-200 text-emerald-900 border border-emerald-300 rounded-full text-[10px] font-extrabold uppercase tracking-widest self-start sm:self-auto">
                       Finalized
+                    </span>
+                  </div>
+                ) : selectedOrder.status === 'return_denied' ? (
+                  <div className="p-4 rounded-2xl bg-neutral-100 border border-neutral-300 text-neutral-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-600 text-white flex items-center justify-center font-bold flex-shrink-0 shadow-sm">
+                        <XCircle size={20} />
+                      </div>
+                      <div>
+                        <span className="font-bold text-xs uppercase tracking-wider block text-neutral-950">Return Denied &amp; Closed</span>
+                        <span className="text-[11px] text-neutral-700">Return inspection claim was denied. Order remains finalized.</span>
+                      </div>
+                    </div>
+                    <span className="px-3 py-1 bg-neutral-200 text-neutral-900 border border-neutral-300 rounded-full text-[10px] font-extrabold uppercase tracking-widest self-start sm:self-auto">
+                      Closed
                     </span>
                   </div>
                 ) : (
