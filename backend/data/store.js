@@ -4,11 +4,11 @@ const path = require('path');
 const DB_FILE = path.join(__dirname, 'db.json');
 
 const INITIAL_CATEGORIES = [
-  { id: "sun-glass", name: "Sun Glass", description: "UV400 protection eyewear for bright outdoor aesthetics", image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop" },
-  { id: "eye-glasses", name: "Eye Glasses", description: "Crystal-clear optical frames for daily work and reading", image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=600&auto=format&fit=crop" },
-  { id: "women", name: "Women", description: "Elegant, lightweight designer frames tailored for women", image: "https://images.unsplash.com/photo-1509695507497-903c140c43b0?q=80&w=600&auto=format&fit=crop" },
-  { id: "men", name: "Men", description: "Bold, masculine silhouettes built from durable materials", image: "https://images.unsplash.com/photo-1582142407894-ec85a1260a46?q=80&w=600&auto=format&fit=crop" },
-  { id: "blue-light", name: "Blue Light Screen", description: "Protect your eyes from digital screen fatigue", image: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?q=80&w=600&auto=format&fit=crop" }
+  { id: "sun-glass", name: "Sun Glass", description: "UV400 protection eyewear for bright outdoor aesthetics", image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop" },
+  { id: "eye-glasses", name: "Eye Glasses", description: "Crystal-clear optical frames for daily work and reading", image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=800&auto=format&fit=crop" },
+  { id: "women", name: "Women", description: "Elegant, lightweight designer frames tailored for women", image: "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=800&auto=format&fit=crop" },
+  { id: "men", name: "Men", description: "Bold, masculine silhouettes built from durable materials", image: "https://images.unsplash.com/photo-1508296695146-257a814070b4?q=80&w=800&auto=format&fit=crop" },
+  { id: "blue-light", name: "Blue Light Screen", description: "Protect your eyes from digital screen fatigue", image: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=800&auto=format&fit=crop" }
 ];
 
 const INITIAL_PRODUCTS = [
@@ -101,9 +101,9 @@ const INITIAL_PRODUCTS = [
     reviewsCount: 112,
     isDealOfDay: false,
     isFeatured: true,
-    image: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?q=80&w=600&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1508296695146-257a814070b4?q=80&w=800&auto=format&fit=crop",
     images: [
-      "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?q=80&w=600&auto=format&fit=crop"
+      "https://images.unsplash.com/photo-1508296695146-257a814070b4?q=80&w=800&auto=format&fit=crop"
     ],
     description: "Near-weightless rimless construction with flexible beta-titanium temples. Designed for effortless all-day focus.",
     specs: {

@@ -141,15 +141,15 @@ export default function DealsOfTheDay() {
                 {/* Product Imagery Showcase */}
                 <Link 
                   to={`/product/${deal.id || idx}`}
-                  className="w-full aspect-[16/10] sm:aspect-[4/3] bg-[#11141c] flex items-center justify-center relative overflow-hidden p-5 sm:p-8 block group-hover:bg-[#161a24] transition-colors"
+                  className="w-full aspect-[16/10] sm:aspect-[4/3] bg-gradient-to-b from-neutral-50 to-neutral-100/80 flex items-center justify-center relative overflow-hidden p-5 sm:p-7 block group-hover:from-white group-hover:to-neutral-100 transition-all"
                 >
                   <img 
                     src={deal.image} 
                     alt={deal.name}
-                    className="w-full h-full object-contain filter drop-shadow-[0_12px_20px_rgba(0,0,0,0.8)] transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="w-full h-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.08)] transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                   {/* Subtle glass reflection overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/30 pointer-events-none" />
                 </Link>
 
                 {/* Card Body */}
