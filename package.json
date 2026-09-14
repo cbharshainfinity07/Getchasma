@@ -1,0 +1,11 @@
+{
+  "name": "getchasma",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GetChasma Luxury Eyewear E-commerce Platform",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "build": "npm --prefix backend install && npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "node backend/server.js"
+  }
+}
