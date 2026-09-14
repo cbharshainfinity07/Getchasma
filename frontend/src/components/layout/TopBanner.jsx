@@ -62,10 +62,7 @@ export default function TopBanner() {
   const repeatedItems = [...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems];
 
   return (
-    <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 border-b border-indigo-500/30 text-white overflow-hidden z-50 select-none py-2 md:py-2.5 shadow-sm">
-      {/* Ambient gradient line */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-
+    <div className="relative bg-[#0a0a0a] border-b border-neutral-800/80 text-white overflow-hidden z-50 select-none py-2 shadow-xs">
       {/* Marquee Track with Pause on Hover */}
       <div className="w-full flex items-center overflow-hidden">
         <div className="flex items-center gap-8 whitespace-nowrap animate-marquee hover:[animation-play-state:paused] cursor-pointer">
@@ -76,30 +73,29 @@ export default function TopBanner() {
               <div
                 key={`${item.id}-${idx}`}
                 onClick={(e) => handleCopy(item.code, e)}
-                className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-white/15 hover:bg-white/25 border border-white/25 backdrop-blur-sm transition-all text-xs group"
+                className="inline-flex items-center gap-2.5 px-3 py-0.5 rounded-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-700/80 transition-all text-xs group"
                 title="Click to copy coupon code"
               >
-                <span className="flex items-center gap-1 text-yellow-300 font-bold uppercase tracking-wider text-[10px]">
-                  <Sparkles size={11} className="animate-spin-slow" />
+                <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">
                   PROMO
                 </span>
 
-                <span className="text-white font-semibold">
+                <span className="text-neutral-200 font-medium text-xs">
                   {item.description}
                 </span>
 
                 {/* Coupon Code Pill */}
                 <span className={`inline-flex items-center gap-1 font-mono font-bold px-2 py-0.5 rounded text-[11px] uppercase tracking-wider transition-all ${
                   isCopied
-                    ? 'bg-emerald-500 text-black shadow-[0_0_12px_rgba(16,185,129,0.6)]'
-                    : 'bg-white text-indigo-900 font-black shadow-sm'
+                    ? 'bg-emerald-500 text-black shadow-xs'
+                    : 'bg-white text-black font-black shadow-xs'
                 }`}>
                   <Tag size={10} />
                   <span>{item.code}</span>
                   {isCopied ? (
                     <Check size={11} className="text-black stroke-[3]" />
                   ) : (
-                    <Copy size={10} className="text-indigo-900 opacity-80 group-hover:opacity-100" />
+                    <Copy size={10} className="text-neutral-700 opacity-80 group-hover:opacity-100" />
                   )}
                 </span>
 
@@ -109,7 +105,7 @@ export default function TopBanner() {
                   </span>
                 )}
 
-                <span className="text-white/20 ml-2">&bull;</span>
+                <span className="text-neutral-600 ml-2">&bull;</span>
               </div>
             );
           })}
