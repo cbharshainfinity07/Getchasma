@@ -207,6 +207,16 @@ export default function AdminOrders() {
 
   // Toggle COD Payment Collection
   const handleToggleCod = async (orderId, currentCollected) => {
+    const targetOrder = orders.find(o => o.id === orderId);
+    if (targetOrder && (targetOrder.status === 'cancelled' || targetOrder.cancellationRequest?.status === 'approved')) {
+      showToast('Cannot modify cash collection on a cancelled order.');
+      return;
+    }
+    if (targetOrder && (targetOrder.status === 'refunded' || targetOrder.refundStatus === 'refunded' || targetOrder.refundDetails?.status === 'refunded')) {
+      showToast('Cannot modify cash collection on a refunded order.');
+      return;
+    }
+
     const targetState = !currentCollected;
     try {
       const res = await fetch(`http://localhost:5001/api/orders/${orderId}/cod-payment`, {
@@ -630,8 +640,16 @@ export default function AdminOrders() {
                 </div>
                 <div className="text-right">
                   <span className="font-serif font-bold text-base text-gray-900 block">₹{Number(order.total || 0).toLocaleString('en-IN')}</span>
-                  <span className={`text-[10px] font-bold ${order.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'}`}>
-                    {order.paymentMethod} &bull; {order.paymentStatus}
+                  <span className={`text-[10px] font-bold ${
+                    order.status === 'cancelled' || order.cancellationRequest?.status === 'approved'
+                      ? 'text-rose-600'
+                      : order.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'
+                  }`}>
+                    {order.paymentMethod} &bull; {
+                      order.status === 'cancelled' || order.cancellationRequest?.status === 'approved'
+                        ? 'Voided'
+                        : order.paymentStatus
+                    }
                   </span>
                 </div>
               </div>
@@ -639,20 +657,30 @@ export default function AdminOrders() {
               {/* COD Quick Toggle on Mobile */}
               {order.paymentMethod === 'Cash on Delivery' && (
                 <div className="pt-0.5">
-                  <button
-                    onClick={() => handleToggleCod(order.id, order.codPaymentCollected)}
-                    className={`w-full py-1.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-colors ${
-                      order.codPaymentCollected
-                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                        : 'bg-amber-100 text-amber-900 border-amber-300 animate-pulse'
-                    }`}
-                  >
-                    {order.codPaymentCollected ? (
-                      <><Check size={13} className="text-emerald-600" /> ₹ Cash Payment Received &amp; Verified</>
-                    ) : (
-                      <><Clock size={13} className="text-amber-700" /> Confirm Doorstep Cash Collected</>
-                    )}
-                  </button>
+                  {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
+                    <div className="w-full py-1.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 bg-gray-100 text-gray-500 border border-gray-200">
+                      <Ban size={12} className="text-gray-400" /> COD Voided &bull; Order Cancelled
+                    </div>
+                  ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
+                    <div className="w-full py-1.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      <CheckCircle2 size={12} className="text-emerald-600" /> COD Settled &bull; Refund Closed
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleToggleCod(order.id, order.codPaymentCollected)}
+                      className={`w-full py-1.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-colors ${
+                        order.codPaymentCollected
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : 'bg-amber-100 text-amber-900 border-amber-300 animate-pulse'
+                      }`}
+                    >
+                      {order.codPaymentCollected ? (
+                        <><Check size={13} className="text-emerald-600" /> ₹ Cash Payment Received &amp; Verified</>
+                      ) : (
+                        <><Clock size={13} className="text-amber-700" /> Confirm Doorstep Cash Collected</>
+                      )}
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -823,9 +851,11 @@ export default function AdminOrders() {
                         <div className="flex items-center gap-1.5">
                           <span className="font-semibold text-gray-800 text-[11px]">{order.paymentMethod}</span>
                           <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
-                            order.paymentStatus === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                            order.status === 'cancelled' || order.cancellationRequest?.status === 'approved'
+                              ? 'bg-rose-50 text-rose-700 border border-rose-200'
+                              : order.paymentStatus === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
                           }`}>
-                            {order.paymentStatus}
+                            {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? 'Voided' : order.paymentStatus}
                           </span>
                         </div>
 
@@ -846,7 +876,17 @@ export default function AdminOrders() {
                         {/* COD Collection Quick Toggle */}
                         {order.paymentMethod === 'Cash on Delivery' && (
                           <div className="pt-0.5">
-                            {order.codPaymentCollected ? (
+                            {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-gray-100 text-gray-500 text-[10px] font-semibold border border-gray-200">
+                                <Ban size={10} className="text-gray-400" />
+                                <span>COD Voided</span>
+                              </span>
+                            ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 text-[10px] font-semibold border border-emerald-200">
+                                <CheckCircle2 size={10} className="text-emerald-600" />
+                                <span>COD Settled</span>
+                              </span>
+                            ) : order.codPaymentCollected ? (
                               <button
                                 onClick={() => handleToggleCod(order.id, true)}
                                 title="Click to change back to Pending Collection"
@@ -1398,42 +1438,88 @@ export default function AdminOrders() {
 
                 {/* CASH ON DELIVERY VERIFICATION & AUDIT CARD */}
                 {selectedOrder.paymentMethod === 'Cash on Delivery' && (
-                  <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
-                        selectedOrder.codPaymentCollected ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'
-                      }`}>
-                        <IndianRupee size={20} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-gray-900 text-xs">Cash on Delivery Reconciliation</h4>
-                          <span className={`px-2 py-0.2 rounded-full text-[10px] font-extrabold uppercase ${
-                            selectedOrder.codPaymentCollected ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'
-                          }`}>
-                            {selectedOrder.codPaymentCollected ? 'Payment Received' : 'Awaiting Cash at Doorstep'}
-                          </span>
+                  (selectedOrder.status === 'cancelled' || selectedOrder.cancellationRequest?.status === 'approved') ? (
+                    <div className="p-4 rounded-2xl border border-gray-200 bg-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gray-200 text-gray-500 flex items-center justify-center font-bold flex-shrink-0">
+                          <Ban size={20} />
                         </div>
-                        <p className="text-[11px] text-gray-600 mt-0.5">
-                          {selectedOrder.codPaymentCollected
-                            ? 'The delivery partner has deposited and verified customer cash payment.'
-                            : `Courier must collect ₹${Number(selectedOrder.total || 0).toLocaleString('en-IN')} upon delivery handover.`}
-                        </p>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-gray-800 text-xs">Cash on Delivery Reconciliation</h4>
+                            <span className="px-2 py-0.2 rounded-full text-[10px] font-extrabold uppercase bg-rose-100 text-rose-800 border border-rose-200">
+                              Cancelled &bull; No Cash Due
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-500 mt-0.5">
+                            This order was cancelled. Doorstep cash collection is voided and permanently locked.
+                          </p>
+                        </div>
                       </div>
+                      <span className="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-[10px] font-extrabold uppercase tracking-wider self-start sm:self-auto">
+                        Voided
+                      </span>
                     </div>
+                  ) : (selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded' || selectedOrder.refundDetails?.status === 'refunded') ? (
+                    <div className="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                          <CheckCircle2 size={20} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-emerald-950 text-xs">Cash on Delivery Reconciliation</h4>
+                            <span className="px-2 py-0.2 rounded-full text-[10px] font-extrabold uppercase bg-emerald-200 text-emerald-900 border border-emerald-300">
+                              Refund Settled &bull; Closed
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-emerald-800 mt-0.5">
+                            Customer refund has been processed. Cash collection audit is finalized and closed.
+                          </p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 bg-emerald-200 text-emerald-900 rounded-full text-[10px] font-extrabold uppercase tracking-wider self-start sm:self-auto">
+                        Settled
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
+                          selectedOrder.codPaymentCollected ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'
+                        }`}>
+                          <IndianRupee size={20} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-gray-900 text-xs">Cash on Delivery Reconciliation</h4>
+                            <span className={`px-2 py-0.2 rounded-full text-[10px] font-extrabold uppercase ${
+                              selectedOrder.codPaymentCollected ? 'bg-emerald-200 text-emerald-900' : 'bg-amber-200 text-amber-900'
+                            }`}>
+                              {selectedOrder.codPaymentCollected ? 'Payment Received' : 'Awaiting Cash at Doorstep'}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-600 mt-0.5">
+                            {selectedOrder.codPaymentCollected
+                              ? 'The delivery partner has deposited and verified customer cash payment.'
+                              : `Courier must collect ₹${Number(selectedOrder.total || 0).toLocaleString('en-IN')} upon delivery handover.`}
+                          </p>
+                        </div>
+                      </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleToggleCod(selectedOrder.id, selectedOrder.codPaymentCollected)}
-                      className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-sm ${
-                        selectedOrder.codPaymentCollected
-                          ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100'
-                          : 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      }`}
-                    >
-                      {selectedOrder.codPaymentCollected ? 'Mark as Uncollected' : '✓ Confirm Cash Collected'}
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleCod(selectedOrder.id, selectedOrder.codPaymentCollected)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-sm ${
+                          selectedOrder.codPaymentCollected
+                            ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100'
+                            : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                        }`}
+                      >
+                        {selectedOrder.codPaymentCollected ? 'Mark as Uncollected' : '✓ Confirm Cash Collected'}
+                      </button>
+                    </div>
+                  )
                 )}
 
                 {/* PAYMENT GATEWAY REFUND STATION */}

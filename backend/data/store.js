@@ -615,6 +615,14 @@ function updateOrderStatus(id, status, cancellationReason = null) {
   } else if (status === 'cancelled') {
     order.cancelledAt = new Date().toISOString();
     order.cancellationReason = cancellationReason || order.cancellationReason || 'Cancelled by customer or store administrator';
+    if (order.paymentMethod === 'Cash on Delivery') {
+      order.codPaymentCollected = false;
+      if (order.paymentDetails) {
+        order.paymentDetails.codCollected = false;
+        order.paymentDetails.codPaymentCollected = false;
+      }
+      order.paymentStatus = 'Cancelled';
+    }
   }
   writeDB(db);
   return order;
@@ -660,6 +668,15 @@ function reviewOrderCancellation(id, { action, denialReason = '' }) {
       resolvedAt: new Date().toISOString()
     };
 
+    if (order.paymentMethod === 'Cash on Delivery') {
+      order.codPaymentCollected = false;
+      if (order.paymentDetails) {
+        order.paymentDetails.codCollected = false;
+        order.paymentDetails.codPaymentCollected = false;
+      }
+      order.paymentStatus = 'Cancelled';
+    }
+
     // Restore inventory
     if (Array.isArray(order.items)) {
       order.items.forEach(cartItem => {
@@ -692,6 +709,14 @@ function toggleCodPayment(id, collected) {
   const db = readDB();
   const order = db.orders.find(o => o.id.toUpperCase() === id.toUpperCase());
   if (!order) return null;
+
+  if (order.status === 'cancelled' || order.cancellationRequest?.status === 'approved') {
+    throw new Error(`Order ${id} is cancelled. Cash collection cannot be altered for cancelled orders.`);
+  }
+
+  if (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') {
+    throw new Error(`Order ${id} has been refunded. Cash collection status cannot be altered.`);
+  }
 
   const isCollected = Boolean(collected);
   if (!order.paymentDetails) {

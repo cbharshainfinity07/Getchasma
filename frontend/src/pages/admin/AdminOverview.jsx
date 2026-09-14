@@ -295,9 +295,11 @@ export default function AdminOverview() {
                   <td className="py-3.5 px-3">
                     <span className="font-medium text-gray-800 block">{order.paymentMethod}</span>
                     <span className={`text-[10px] font-bold ${
-                      order.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'
+                      order.status === 'cancelled' || order.cancellationRequest?.status === 'approved'
+                        ? 'text-rose-600'
+                        : order.paymentStatus === 'Paid' ? 'text-emerald-600' : 'text-amber-600'
                     }`}>
-                      {order.paymentStatus}
+                      {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? 'Voided' : order.paymentStatus}
                     </span>
                   </td>
                   <td className="py-3.5 px-3">
