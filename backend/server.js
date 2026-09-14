@@ -254,6 +254,20 @@ app.post('/api/orders/:id/return-review', (req, res) => {
   }
 });
 
+// Admin Confirm Inbound Return / RTO Received at Warehouse
+app.post('/api/orders/:id/return-receive', (req, res) => {
+  try {
+    const { notes, condition } = req.body;
+    const updated = store.confirmReturnReceivedAtWarehouse(req.params.id, { notes, condition });
+    if (!updated) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+    res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message || "Failed to confirm warehouse return receipt" });
+  }
+});
+
 // Admin Process Payment Gateway Refund
 app.post('/api/orders/:id/refund', (req, res) => {
   try {

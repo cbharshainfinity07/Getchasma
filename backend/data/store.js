@@ -658,14 +658,61 @@ function reviewOrderCancellation(id, { action, denialReason = '' }) {
   if (!order) return null;
 
   if (action === 'approve') {
+    const wasDispatched = order.previousStatus === 'shipped' || order.status === 'shipped' || order.deliveryPartner?.status === 'Shipped';
     order.status = 'cancelled';
     order.cancelledAt = new Date().toISOString();
     order.cancellationReason = order.cancellationRequest?.reason || 'Approved customer cancellation request';
     order.cancellationRequested = false;
+
+    // Configure refund details for prepaid orders (UPI / Card)
+    const isPrepaid = order.paymentMethod === 'UPI' || order.paymentMethod === 'Card' || order.paymentMethod === 'Credit Card' || order.paymentMethod === 'Debit Card';
+    if (isPrepaid) {
+      order.refundStatus = 'pending_gateway_refund';
+      if (!order.refundDetails) {
+        order.refundDetails = {
+          status: wasDispatched ? 'awaiting_return_arrival' : 'ready_for_gateway_refund',
+          amount: Number(order.total || 0),
+          destination: order.paymentMethod === 'UPI'
+            ? `Original UPI (UTR: ${order.paymentDetails?.upiUtr || 'Linked'})`
+            : `Original Card (•••• ${order.paymentDetails?.cardLast4 || '****'})`
+        };
+      } else {
+        order.refundDetails.status = wasDispatched ? 'awaiting_return_arrival' : 'ready_for_gateway_refund';
+      }
+    }
+
+    const rtoAwb = wasDispatched ? `RTO-BD-${Math.floor(1000000 + Math.random() * 9000000)}` : null;
     order.cancellationRequest = {
       ...order.cancellationRequest,
       status: 'approved',
-      resolvedAt: new Date().toISOString()
+      resolvedAt: new Date().toISOString(),
+      wasDispatched: Boolean(wasDispatched),
+      returnAwb: rtoAwb,
+      carrier: wasDispatched ? 'BlueDart Reverse Express (RTO)' : null,
+      returnShipmentStatus: wasDispatched ? 'in_transit' : 'received_at_warehouse',
+      receivedAtWarehouse: wasDispatched ? false : true,
+      receivedAtWarehouseTime: wasDispatched ? null : new Date().toISOString(),
+      history: wasDispatched ? [
+        {
+          status: 'RTO Initiated / In-Transit Consignment Recalled',
+          timestamp: new Date().toISOString(),
+          location: 'Courier Network Hub',
+          description: `Consignment ${rtoAwb} recalled for Return-To-Origin back to central warehouse.`
+        },
+        {
+          status: 'In Transit to Warehouse',
+          timestamp: new Date().toISOString(),
+          location: 'Regional Transit Facility',
+          description: 'Package in reverse transit to Central Optics Facility.'
+        }
+      ] : [
+        {
+          status: 'Order Cancelled & Restocked in Warehouse',
+          timestamp: new Date().toISOString(),
+          location: 'Central Optics Facility',
+          description: 'Package was not dispatched. Restocked directly in warehouse.'
+        }
+      ]
     };
 
     if (order.paymentMethod === 'Cash on Delivery') {
@@ -830,15 +877,44 @@ function reviewOrderReturn(id, { action, denialReason = '' }) {
     const awb = `RET-BD-${Math.floor(1000000 + Math.random() * 9000000)}`;
     order.status = 'return_approved';
     order.refundStatus = 'pending_gateway_refund';
-    if (order.refundDetails) {
-      order.refundDetails.status = 'awaiting_payment_gateway';
+    if (!order.refundDetails) {
+      order.refundDetails = {
+        status: 'awaiting_return_arrival',
+        amount: Number(order.total || 0),
+        destination: order.paymentMethod === 'UPI'
+          ? `Original UPI (UTR: ${order.paymentDetails?.upiUtr || 'Linked'})`
+          : order.paymentMethod === 'Card'
+          ? `Original Card (•••• ${order.paymentDetails?.cardLast4 || '****'})`
+          : 'Customer Designated Payout Destination'
+      };
+    } else {
+      order.refundDetails.status = 'awaiting_return_arrival';
     }
+
     order.returnRequest = {
       ...order.returnRequest,
       status: 'approved',
       resolvedAt: new Date().toISOString(),
       returnAwb: awb,
-      returnTrackingNumber: awb
+      returnTrackingNumber: awb,
+      carrier: 'BlueDart Reverse Express',
+      returnShipmentStatus: 'in_transit',
+      receivedAtWarehouse: false,
+      receivedAtWarehouseTime: null,
+      history: [
+        {
+          status: 'Return Approved & Reverse Consignment Generated',
+          timestamp: new Date().toISOString(),
+          location: 'Central Optics Facility',
+          description: `Consignment AWB ${awb} assigned for reverse logistics pickup.`
+        },
+        {
+          status: 'In Transit to Warehouse',
+          timestamp: new Date().toISOString(),
+          location: `${order.customer?.city || 'Local Delivery'} Hub`,
+          description: 'Package in reverse transit to Central Optics Warehouse facility.'
+        }
+      ]
     };
 
     // Restore inventory
@@ -864,10 +940,68 @@ function reviewOrderReturn(id, { action, denialReason = '' }) {
   return order;
 }
 
+function confirmReturnReceivedAtWarehouse(id, { notes = '', condition = 'Pristine / Verified' } = {}) {
+  const db = readDB();
+  const order = db.orders.find(o => o.id.toUpperCase() === id.toUpperCase());
+  if (!order) return null;
+
+  const now = new Date().toISOString();
+
+  // If returnRequest exists
+  if (order.returnRequest) {
+    order.returnRequest.returnShipmentStatus = 'received_at_warehouse';
+    order.returnRequest.receivedAtWarehouse = true;
+    order.returnRequest.receivedAtWarehouseTime = now;
+    order.returnRequest.warehouseNotes = notes || 'Eyewear package received back at central warehouse and verified by optical inspection team.';
+    order.returnRequest.itemCondition = condition;
+    if (!order.returnRequest.history) order.returnRequest.history = [];
+    order.returnRequest.history.push({
+      status: 'Delivered to Warehouse & Quality Verified',
+      timestamp: now,
+      location: 'Central Optics Facility (Bengaluru)',
+      description: `Inbound return package confirmed received. Condition: ${condition}. Optical frame verified. Refund station unlocked.`
+    });
+  }
+
+  // If cancellationRequest exists
+  if (order.cancellationRequest) {
+    order.cancellationRequest.returnShipmentStatus = 'received_at_warehouse';
+    order.cancellationRequest.receivedAtWarehouse = true;
+    order.cancellationRequest.receivedAtWarehouseTime = now;
+    order.cancellationRequest.warehouseNotes = notes || 'Inbound RTO consignment confirmed received at warehouse.';
+    if (!order.cancellationRequest.history) order.cancellationRequest.history = [];
+    order.cancellationRequest.history.push({
+      status: 'RTO Package Received at Warehouse',
+      timestamp: now,
+      location: 'Central Optics Facility (Bengaluru)',
+      description: 'Dispatched package safely returned to origin warehouse. Refund station unlocked.'
+    });
+  }
+
+  if (order.refundDetails) {
+    order.refundDetails.status = 'ready_for_gateway_refund';
+  }
+
+  writeDB(db);
+  return order;
+}
+
 function processOrderRefund(id, { refundAmount, gatewayProvider = 'Razorpay Instant Payouts', notes = '' }) {
   const db = readDB();
   const order = db.orders.find(o => o.id.toUpperCase() === id.toUpperCase());
   if (!order) return null;
+
+  // Safeguard: For online prepaid orders (UPI / Card), physical product must be received at warehouse
+  const isPrepaid = order.paymentMethod === 'UPI' || order.paymentMethod === 'Card' || order.paymentMethod === 'Credit Card' || order.paymentMethod === 'Debit Card';
+  
+  if (isPrepaid) {
+    if (order.returnRequest && order.returnRequest.status === 'approved' && !order.returnRequest.receivedAtWarehouse) {
+      throw new Error(`Cannot process refund for order ${id}. Return shipment is in transit and must be verified as received at the warehouse before refund can be initiated.`);
+    }
+    if (order.cancellationRequest && order.cancellationRequest.status === 'approved' && order.cancellationRequest.wasDispatched && !order.cancellationRequest.receivedAtWarehouse) {
+      throw new Error(`Cannot process refund for order ${id}. Inbound RTO consignment is in transit and must be received at the warehouse before refund can be initiated.`);
+    }
+  }
 
   const amt = Number(refundAmount || order.total || 0);
   const refundId = `rfnd_rzp_${Date.now().toString(36)}${Math.random().toString(36).substring(2, 6)}`;
@@ -1304,6 +1438,7 @@ module.exports = {
   toggleCodPayment,
   requestOrderReturn,
   reviewOrderReturn,
+  confirmReturnReceivedAtWarehouse,
   processOrderRefund,
   getReturnStats,
   updateDeliveryPartnerStatus,

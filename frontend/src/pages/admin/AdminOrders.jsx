@@ -379,6 +379,51 @@ export default function AdminOrders() {
     }
   };
 
+  // Helper: check if prepaid return/cancellation is awaiting physical warehouse delivery
+  const isAwaitingWarehouseArrival = (order) => {
+    if (!order) return false;
+    if (order.returnRequest && order.returnRequest.status === 'approved' && !order.returnRequest.receivedAtWarehouse) {
+      return true;
+    }
+    if (order.cancellationRequest && order.cancellationRequest.status === 'approved' && order.cancellationRequest.wasDispatched && !order.cancellationRequest.receivedAtWarehouse) {
+      return true;
+    }
+    return false;
+  };
+
+  const isPrepaidOrder = (order) => {
+    return order?.paymentMethod === 'UPI' || order?.paymentMethod === 'Card' || order?.paymentMethod === 'Credit Card' || order?.paymentMethod === 'Debit Card';
+  };
+
+  // Admin confirms inbound return/RTO package delivered & inspected at warehouse
+  const handleConfirmReturnReceived = async (orderId) => {
+    setReviewLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/return-receive`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ condition: 'Pristine & Quality Verified', notes: 'Package verified at Bengaluru Optical Warehouse.' })
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setOrders(prev => prev.map(o => o.id === orderId ? updated : o));
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(updated);
+        }
+        fetchCountsAndStats();
+        showToast(`📦 Inbound return received & verified at warehouse for ${orderId}! Refund option unlocked.`);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'Failed to confirm return receipt.');
+      }
+    } catch (err) {
+      showToast('Error confirming return receipt at warehouse.');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
   // Admin executes Payment Gateway Refund
   const handleProcessRefund = async () => {
     if (!refundingOrder) return;
@@ -572,9 +617,15 @@ export default function AdminOrders() {
                 </div>
                 <div>
                   {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 text-[10px] font-bold uppercase border border-rose-200">
-                      <Ban size={11} /> Cancelled &amp; Locked
-                    </span>
+                    isAwaitingWarehouseArrival(order) ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-900 text-[10px] font-bold uppercase border border-amber-300">
+                        <Truck size={11} className="text-amber-700 animate-pulse" /> RTO In Transit
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 text-[10px] font-bold uppercase border border-rose-200">
+                        <Ban size={11} /> Cancelled &amp; Locked
+                      </span>
+                    )
                   ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-bold uppercase border border-emerald-300">
                       <CheckCircle2 size={11} /> Refunded &amp; Closed
@@ -584,9 +635,15 @@ export default function AdminOrders() {
                       <RotateCcw size={11} className="animate-spin" /> Return Claim
                     </span>
                   ) : order.status === 'return_approved' ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-purple-100 text-purple-900 text-[10px] font-bold uppercase border border-purple-300">
-                      <CheckCircle2 size={11} /> Return Approved
-                    </span>
+                    isAwaitingWarehouseArrival(order) ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-blue-900 text-[10px] font-bold uppercase border border-blue-300">
+                        <Truck size={11} className="text-blue-700 animate-pulse" /> Return In Transit
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] font-bold uppercase border border-indigo-300">
+                        <CheckCircle2 size={11} className="text-indigo-700" /> Return Received &bull; Refund Ready
+                      </span>
+                    )
                   ) : order.status === 'return_denied' ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-800 text-[10px] font-bold uppercase border border-neutral-300">
                       <XCircle size={11} /> Return Denied
@@ -913,10 +970,17 @@ export default function AdminOrders() {
                     {/* Status Dropdown & Action Badges */}
                     <td className="py-3.5 px-4">
                       {order.status === 'cancelled' || order.cancellationRequest?.status === 'approved' ? (
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold uppercase tracking-wider">
-                          <Ban size={13} className="text-rose-600" />
-                          <span>Cancelled &amp; Locked</span>
-                        </div>
+                        isAwaitingWarehouseArrival(order) ? (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold uppercase tracking-wider">
+                            <Truck size={13} className="text-amber-700 animate-pulse" />
+                            <span>RTO In Transit</span>
+                          </div>
+                        ) : (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold uppercase tracking-wider">
+                            <Ban size={13} className="text-rose-600" />
+                            <span>Cancelled &amp; Locked</span>
+                          </div>
+                        )
                       ) : (order.status === 'refunded' || order.refundStatus === 'refunded' || order.refundDetails?.status === 'refunded') ? (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-900 text-[11px] font-bold uppercase tracking-wider">
                           <CheckCircle2 size={13} className="text-emerald-700" />
@@ -928,10 +992,17 @@ export default function AdminOrders() {
                           <span>Return Requested</span>
                         </div>
                       ) : order.status === 'return_approved' ? (
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-100 border border-purple-300 text-purple-900 text-[11px] font-bold uppercase tracking-wider">
-                          <CheckCircle2 size={13} className="text-purple-700" />
-                          <span>Return Approved</span>
-                        </div>
+                        isAwaitingWarehouseArrival(order) ? (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-100 border border-blue-300 text-blue-900 text-[11px] font-bold uppercase tracking-wider">
+                            <Truck size={13} className="text-blue-700 animate-pulse" />
+                            <span>Return In Transit</span>
+                          </div>
+                        ) : (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-100 border border-indigo-300 text-indigo-900 text-[11px] font-bold uppercase tracking-wider">
+                            <CheckCircle2 size={13} className="text-indigo-700" />
+                            <span>Return Received &bull; Refund Ready</span>
+                          </div>
+                        )
                       ) : order.status === 'return_denied' ? (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-100 border border-neutral-300 text-neutral-800 text-[11px] font-bold uppercase tracking-wider">
                           <XCircle size={13} className="text-neutral-600" />
@@ -1263,7 +1334,7 @@ export default function AdminOrders() {
                     {/* If Return Approved or Denied Banner */}
                     {selectedOrder.returnRequest.status === 'approved' && (
                       <div className="text-xs text-emerald-800 font-medium pt-1">
-                        ✓ Return approved on {new Date(selectedOrder.returnRequest.reviewedAt).toLocaleString()}. Reverse courier consignment: <strong className="font-mono">{selectedOrder.returnRequest.returnTrackingNumber || 'RET-EXP-8891'}</strong>
+                        ✓ Return approved on {new Date(selectedOrder.returnRequest.resolvedAt || selectedOrder.returnRequest.reviewedAt || Date.now()).toLocaleString()}. Reverse courier consignment: <strong className="font-mono">{selectedOrder.returnRequest.returnTrackingNumber || 'RET-EXP-8891'}</strong>
                       </div>
                     )}
                     {selectedOrder.returnRequest.status === 'denied' && (
@@ -1271,6 +1342,102 @@ export default function AdminOrders() {
                         ✕ Return claim denied: "{selectedOrder.returnRequest.denialReason}"
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* INBOUND RETURN SHIPMENT MONITOR ("KEEP AN EYE ON TRANSIT BACK TO WAREHOUSE") */}
+                {((selectedOrder.returnRequest && selectedOrder.returnRequest.status === 'approved') || 
+                  (selectedOrder.cancellationRequest && selectedOrder.cancellationRequest.status === 'approved' && selectedOrder.cancellationRequest.wasDispatched)) && (
+                  <div className={`p-5 rounded-2xl border-2 space-y-4 shadow-sm ${
+                    (selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
+                      ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                      : 'bg-blue-50/80 border-blue-300 text-blue-950'
+                  }`}>
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold flex-shrink-0 shadow ${
+                          (selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-blue-600 text-white'
+                        }`}>
+                          <Truck size={22} className={!(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse) ? 'animate-pulse' : ''} />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="font-bold text-sm">
+                              {(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
+                                ? 'Inbound Return Delivered & Verified at Warehouse'
+                                : 'Inbound Return Transit Monitor • BlueDart Reverse Logistics'}
+                            </h4>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                              (selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
+                                ? 'bg-emerald-200 text-emerald-900 border border-emerald-300'
+                                : 'bg-blue-200 text-blue-900 border border-blue-300 animate-pulse'
+                            }`}>
+                              {(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
+                                ? 'Received & Inspected'
+                                : 'En Route to Warehouse'}
+                            </span>
+                          </div>
+                          <p className="text-xs opacity-80 mt-0.5">
+                            {(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
+                              ? `Merchandise arrived at Central Optics Facility on ${new Date(selectedOrder.returnRequest?.receivedAtWarehouseTime || selectedOrder.cancellationRequest?.receivedAtWarehouseTime || Date.now()).toLocaleString()}. Optical condition verified.`
+                              : 'Keep an eye on return consignment. Payment gateway refund is held until the package arrives at the warehouse.'}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Confirm Receipt Action Button */}
+                      {!(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse) && (
+                        <button
+                          type="button"
+                          disabled={reviewLoading}
+                          onClick={() => handleConfirmReturnReceived(selectedOrder.id)}
+                          className="px-4 py-2.5 bg-blue-700 hover:bg-blue-800 active:scale-95 text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-md transition-all self-start sm:self-auto disabled:opacity-50"
+                        >
+                          <Package size={15} />
+                          <span>📦 Confirm Received at Warehouse</span>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Consignment Metrics Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                      <div className="p-3 bg-white/95 rounded-xl border border-blue-200/80 space-y-0.5">
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block">Reverse Consignment AWB</span>
+                        <span className="font-mono font-bold text-blue-900 text-xs">
+                          {selectedOrder.returnRequest?.returnAwb || selectedOrder.returnRequest?.returnTrackingNumber || selectedOrder.cancellationRequest?.returnAwb || 'RET-BD-982341'}
+                        </span>
+                        <span className="text-[10px] text-gray-500 block">BlueDart Reverse Air Express</span>
+                      </div>
+
+                      <div className="p-3 bg-white/95 rounded-xl border border-blue-200/80 space-y-0.5">
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block">Transit Route</span>
+                        <span className="font-bold text-gray-900 text-xs block truncate">
+                          {selectedOrder.customer?.city || 'Origin'} ➔ Bengaluru Central Hub
+                        </span>
+                        <span className="text-[10px] text-gray-500 block">Optical Inspection Facility</span>
+                      </div>
+
+                      <div className="p-3 bg-white/95 rounded-xl border border-blue-200/80 space-y-0.5">
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block">Refund Safeguard</span>
+                        <div className="flex items-center gap-1.5">
+                          {(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse) ? (
+                            <span className="text-emerald-700 font-bold text-xs flex items-center gap-1">
+                              <CheckCircle2 size={13} /> Refund Authorized
+                            </span>
+                          ) : (
+                            <span className="text-amber-800 font-bold text-xs flex items-center gap-1">
+                              <Lock size={12} /> Held (Awaiting Arrival)
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-gray-500 block">
+                          {(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse) ? 'Gateway refund button unlocked' : 'Unlocks upon warehouse scan'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -1548,28 +1715,43 @@ export default function AdminOrders() {
                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
                               selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded'
                                 ? 'bg-emerald-200 text-emerald-900'
+                                : isAwaitingWarehouseArrival(selectedOrder) && isPrepaidOrder(selectedOrder)
+                                ? 'bg-amber-200 text-amber-900 border border-amber-300'
                                 : 'bg-indigo-200 text-indigo-900'
                             }`}>
-                              {selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded' ? 'Settled' : 'Awaiting Reversal'}
+                              {selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded'
+                                ? 'Settled'
+                                : isAwaitingWarehouseArrival(selectedOrder) && isPrepaidOrder(selectedOrder)
+                                ? 'Held (Awaiting Arrival)'
+                                : 'Awaiting Reversal'}
                             </span>
                           </div>
                           <p className="text-xs opacity-75 mt-0.5">
                             {selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded'
                               ? `Funds remitted via ${selectedOrder.refundDetails?.gatewayProvider || 'Payment Gateway'} on ${selectedOrder.refundDetails?.refundedAt ? new Date(selectedOrder.refundDetails.refundedAt).toLocaleString() : 'recently'}`
+                              : isAwaitingWarehouseArrival(selectedOrder) && isPrepaidOrder(selectedOrder)
+                              ? 'Refund option is locked while item is in return transit. Confirm warehouse receipt above to authorize reversal.'
                               : 'Ready for automated reversal via payment gateway connection'}
                           </p>
                         </div>
                       </div>
 
                       {(selectedOrder.status !== 'refunded' && selectedOrder.refundStatus !== 'refunded') && (
-                        <button
-                          type="button"
-                          onClick={() => setRefundingOrder(selectedOrder)}
-                          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase rounded-xl tracking-wider flex items-center gap-1.5 shadow transition-colors self-start sm:self-auto"
-                        >
-                          <Zap size={14} className="text-amber-300" />
-                          <span>⚡ Process Gateway Refund (₹{Number(selectedOrder.total || 0).toLocaleString('en-IN')})</span>
-                        </button>
+                        isAwaitingWarehouseArrival(selectedOrder) && isPrepaidOrder(selectedOrder) ? (
+                          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold self-start sm:self-auto shadow-sm">
+                            <Lock size={14} className="text-amber-700 flex-shrink-0" />
+                            <span>Refund Locked (Awaiting Warehouse Receipt)</span>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setRefundingOrder(selectedOrder)}
+                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase rounded-xl tracking-wider flex items-center gap-1.5 shadow transition-colors self-start sm:self-auto animate-pulse"
+                          >
+                            <Zap size={14} className="text-amber-300" />
+                            <span>⚡ Process Gateway Refund (₹{Number(selectedOrder.total || 0).toLocaleString('en-IN')})</span>
+                          </button>
+                        )
                       )}
                     </div>
 

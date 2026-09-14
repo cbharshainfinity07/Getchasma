@@ -490,21 +490,35 @@ export default function TrackOrder() {
                     <CheckCircle2 size={24} strokeWidth={2.5} />
                   </div>
                   <div>
-                    <h4 className="font-serif text-lg font-bold text-emerald-800">Return Request Approved</h4>
+                    <h4 className="font-serif text-lg font-bold text-emerald-800">
+                      {order.returnRequest?.receivedAtWarehouse ? 'Return Package Received at Warehouse' : 'Return Request Approved & Inbound Pickup'}
+                    </h4>
                     <p className="text-xs text-slate-600">
-                      Our atelier optics lab has reviewed and approved your return. Return consignment is assigned.
+                      {order.returnRequest?.receivedAtWarehouse
+                        ? 'Your returned eyewear has arrived safely at our central optics facility. Quality inspection verified. Payment gateway refund settlement is underway.'
+                        : 'Our atelier optics lab has reviewed and approved your return. BlueDart reverse consignment is assigned to ship the frame back to our facility.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-emerald-200 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="pt-3 border-t border-emerald-200 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-slate-500 block">Return Pickup Consignment AWB</span>
                     <span className="font-mono font-bold text-emerald-800 text-sm">{order.returnRequest?.returnAwb || 'RET-BD-782101'}</span>
                   </div>
                   <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-500 block">Return Shipment Status</span>
+                    <span className="font-semibold text-emerald-900 flex items-center gap-1">
+                      {order.returnRequest?.receivedAtWarehouse ? (
+                        <><CheckCircle2 size={13} className="text-emerald-600" /> Received at Warehouse</>
+                      ) : (
+                        <><Truck size={13} className="text-blue-600" /> In Transit to Warehouse</>
+                      )}
+                    </span>
+                  </div>
+                  <div>
                     <span className="text-[10px] uppercase font-bold text-slate-500 block">Packaging Instructions</span>
-                    <span className="text-slate-600">Keep frame in leather presentation case with all accessories for BlueDart agent.</span>
+                    <span className="text-slate-600">Keep frame in presentation case with all accessories.</span>
                   </div>
                 </div>
               </div>
