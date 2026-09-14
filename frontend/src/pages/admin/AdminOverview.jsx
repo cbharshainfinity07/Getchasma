@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../config/api';
 import { 
   IndianRupee, 
   ShoppingBag, 
@@ -22,7 +23,7 @@ export default function AdminOverview() {
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   const fetchStats = () => {
-    fetch('http://localhost:5001/api/stats')
+    fetch(`${API_BASE_URL}/api/stats`)
       .then(res => res.json())
       .then(data => {
         setStats(data);
@@ -41,7 +42,7 @@ export default function AdminOverview() {
   const handleQuickStatusUpdate = async (orderId, newStatus) => {
     setUpdatingOrderId(orderId);
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

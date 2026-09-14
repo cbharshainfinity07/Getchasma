@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useUserAuth } from '../context/UserAuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, Truck, ArrowLeft, CreditCard, Banknote, QrCode, Tag, Crown, Check, Copy } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export default function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -57,7 +58,7 @@ export default function Checkout() {
   }, [user]);
 
   useEffect(() => {
-    fetch('http://localhost:5001/api/coupons')
+    fetch(`${API_BASE_URL}/api/coupons`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -88,7 +89,7 @@ export default function Checkout() {
     setIsApplyingCoupon(true);
 
     try {
-      const res = await fetch('http://localhost:5001/api/coupons/validate', {
+      const res = await fetch(`${API_BASE_URL}/api/coupons/validate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, orderTotal: cartTotal })
@@ -193,7 +194,7 @@ export default function Checkout() {
     };
 
     try {
-      const response = await fetch('http://localhost:5001/api/orders', {
+      const response = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)

@@ -1,29 +1,26 @@
 import React, { useState } from 'react';
 import { 
   Sun, 
-  Eye, 
   ShieldCheck, 
-  Layers, 
-  Sparkles, 
-  Sliders, 
-  CheckCircle2 
+  SlidersHorizontal,
+  Check
 } from 'lucide-react';
 
 const SIMULATION_MODES = [
   {
     id: 'polarized',
-    name: 'Zeiss Polarized Mineral',
+    name: 'Polarized Crystal',
     subtitle: 'Glare Reduction & High-Contrast Vision',
     badge: 'Category 3 Polarized',
     sceneImageStandard: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200',
     sceneImageEnhanced: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200',
     specs: [
       { label: 'Glare Elimination', val: '99.4%' },
-      { label: 'Optical Abbe Value', val: '58 (Ultra-Crisp)' },
-      { label: 'UV Protection', val: '100% UV400 Shield' },
-      { label: 'Lens Material', val: 'Precision Mineral Glass' }
+      { label: 'Optical Clarity Index', val: 'Abbe 58' },
+      { label: 'UV Shielding', val: '100% UV400' },
+      { label: 'Core Material', val: 'High-Index Mineral' }
     ],
-    description: 'Eliminates blinding reflective glare from water, wet highways, and snow without distorting natural chromatic balance.'
+    description: 'Cuts harsh horizontal reflections from wet roads, water surfaces, and direct sunlight while maintaining crisp chromatic fidelity.'
   },
   {
     id: 'blucut',
@@ -33,27 +30,27 @@ const SIMULATION_MODES = [
     sceneImageStandard: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1200',
     sceneImageEnhanced: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1200',
     specs: [
-      { label: 'High-Energy Blue Light Cut', val: '420nm Protection' },
-      { label: 'Anti-Fatigue Index', val: '+45% Contrast' },
-      { label: 'Residual Yellow Tint', val: 'Zero (Color Neutral)' },
-      { label: 'Coating Hardness', val: '2H Diamond AR' }
+      { label: 'Blue Light Cut', val: '420nm Filter' },
+      { label: 'Screen Contrast', val: '+45% Boost' },
+      { label: 'Color Cast', val: 'Neutral (No Yellow)' },
+      { label: 'Hard-Coat Layer', val: 'Diamond AR' }
     ],
-    description: 'Filters destructive high-energy digital wavelength peaks from OLED screens and studio LEDs while preserving true color fidelity.'
+    description: 'Filters high-energy visible light from monitors and mobile screens, reducing eye strain during extended digital sessions.'
   },
   {
     id: 'photochromic',
-    name: 'Atelier Gen-8 Photochromic',
-    subtitle: 'Adaptive Sunlight Reactive Technology',
-    badge: 'Indoors 10% → Outdoors 85%',
+    name: 'Adaptive Photochromic',
+    subtitle: 'Smart Sunlight Reactive Technology',
+    badge: 'Indoor Clear → Outdoor Tint',
     sceneImageStandard: 'https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&q=80&w=1200',
     sceneImageEnhanced: 'https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&q=80&w=1200',
     specs: [
-      { label: 'Activation Speed', val: '< 25 Seconds' },
-      { label: 'Indoor Clear State', val: '98.5% Transmittance' },
-      { label: 'Outdoor Full Tint', val: '85% Deep Charcoal' },
-      { label: 'UV Sensor Reactivity', val: 'Smart Dynamic Lux' }
+      { label: 'Response Time', val: '< 30 Seconds' },
+      { label: 'Indoor Clarity', val: '98% Transmittance' },
+      { label: 'Full Sunlight Tint', val: '85% Charcoal' },
+      { label: 'Reactivity', val: 'Dynamic UV Sensor' }
     ],
-    description: 'Instantly responds to solar lux levels, converting from clear prescription optical frames indoors to deep Category-3 polarized sunglasses outdoors.'
+    description: 'Seamlessly transitions from crystal-clear optical lenses indoors to deep tinted protective sunglasses when stepping outside.'
   }
 ];
 
@@ -73,29 +70,25 @@ export default function OpticalLabSimulator() {
   };
 
   return (
-    <section className="bg-white py-20 md:py-28 border-t border-slate-200/70 text-slate-900 relative overflow-hidden">
-      <div className="absolute top-1/4 -left-48 w-96 h-96 bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+    <section className="bg-white py-12 sm:py-20 md:py-28 border-t border-slate-200/70 text-slate-900 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         
         {/* Editorial Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-14 gap-4 sm:gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-mono font-bold tracking-[0.25em] uppercase mb-4 shadow-sm">
-              <Sparkles size={12} className="text-blue-600" />
-              Sabae • Zeiss Certified Optical Lab
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-[10px] font-mono font-bold tracking-widest uppercase mb-2.5">
+              Precision Optical Engineering
             </div>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold tracking-tight text-slate-950 leading-tight">
-              Interactive Lens Engineering<span className="text-blue-600">.</span>
+            <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-slate-950 leading-tight">
+              Lens Technology &amp; Coatings<span className="text-neutral-400">.</span>
             </h2>
-            <p className="text-slate-600 text-xs md:text-sm max-w-lg mt-3 leading-relaxed">
-              Experience the visual physics of bespoke optical glass. Drag the calibration slider to witness glare elimination, blue-light blocking, and photochromic activation.
+            <p className="text-slate-600 text-xs sm:text-sm max-w-lg mt-2 leading-relaxed">
+              Compare our specialized lens coatings in real-world lighting. Drag the slider to inspect optical contrast, blue-light filtering, and photochromic activation.
             </p>
           </div>
 
           {/* Mode Selector Tabs */}
-          <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-100 border border-slate-200 overflow-x-auto self-start md:self-auto">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200 overflow-x-auto self-start md:self-auto scrollbar-hide">
             {SIMULATION_MODES.map((mode) => (
               <button
                 key={mode.id}
@@ -103,10 +96,10 @@ export default function OpticalLabSimulator() {
                   setActiveMode(mode);
                   setSliderPos(50);
                 }}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                   activeMode.id === mode.id
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-md shadow-blue-500/25'
-                    : 'text-slate-600 hover:text-blue-600 hover:bg-white/80'
+                    ? 'bg-slate-950 text-white font-bold shadow-sm'
+                    : 'text-slate-600 hover:text-slate-950 hover:bg-white/80'
                 }`}
               >
                 {mode.name}
@@ -116,7 +109,7 @@ export default function OpticalLabSimulator() {
         </div>
 
         {/* Viewfinder Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
           
           {/* Viewfinder (8 cols) */}
           <div className="lg:col-span-8 flex flex-col">
@@ -125,8 +118,9 @@ export default function OpticalLabSimulator() {
               onTouchMove={handleSliderMove}
               onTouchStart={handleSliderMove}
               onClick={handleSliderMove}
-              className="relative w-full aspect-[16/10] md:aspect-[16/9] rounded-3xl overflow-hidden border border-slate-200 shadow-2xl bg-black select-none cursor-ew-resize group touch-none"
+              className="relative w-full aspect-[4/3] sm:aspect-[16/10] md:aspect-[16/9] rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 shadow-lg bg-black select-none cursor-ew-resize group touch-none"
             >
+              {/* Standard scene background */}
               <div 
                 className="absolute inset-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${activeMode.sceneImageStandard})` }}
@@ -135,10 +129,11 @@ export default function OpticalLabSimulator() {
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/40 via-white/20 to-transparent mix-blend-screen pointer-events-none" />
                 )}
                 {activeMode.id === 'blucut' && (
-                  <div className="absolute inset-0 bg-blue-500/25 mix-blend-color pointer-events-none" />
+                  <div className="absolute inset-0 bg-blue-500/20 mix-blend-color pointer-events-none" />
                 )}
               </div>
 
+              {/* Enhanced coated scene */}
               <div
                 className="absolute inset-0 bg-cover bg-center overflow-hidden pointer-events-none"
                 style={{ 
@@ -159,83 +154,81 @@ export default function OpticalLabSimulator() {
                   />
                 )}
 
-                <div className="absolute top-6 left-6 px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold flex items-center gap-1.5">
-                  <CheckCircle2 size={12} className="text-blue-600" />
-                  Zeiss Haute Optique Active
+                <div className="absolute top-4 left-4 sm:top-5 sm:left-5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold flex items-center gap-1.5">
+                  <Check size={11} className="text-emerald-400" />
+                  Enhanced Coating
                 </div>
               </div>
 
-              <div className="absolute top-6 right-6 px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-[10px] font-mono uppercase tracking-widest text-slate-500 font-bold">
-                Uncoated Standard
+              <div className="absolute top-4 right-4 sm:top-5 sm:right-5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-slate-300 font-bold">
+                Standard
               </div>
 
+              {/* Slider Divider Line */}
               <div
-                className="absolute top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-white to-indigo-500 shadow-lg z-20 pointer-events-none"
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-xl z-20 pointer-events-none"
                 style={{ left: `${sliderPos}%` }}
               >
-                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-white border-2 border-blue-600 shadow-2xl flex items-center justify-center text-blue-600">
-                  <Sliders size={16} />
+                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white border border-slate-300 shadow-xl flex items-center justify-center text-slate-800">
+                  <SlidersHorizontal size={13} />
                 </div>
               </div>
 
-              <div className="absolute bottom-6 inset-x-6 flex items-center justify-between pointer-events-none z-20 text-[11px] font-mono uppercase tracking-wider text-white/80 bg-black/60 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-white/10">
-                <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                  Interactive Calibration: {sliderPos}%
-                </span>
-                <span>&larr; Drag Slider Across Frame &rarr;</span>
+              {/* Bottom Instruction Bar */}
+              <div className="absolute bottom-3 inset-x-3 sm:bottom-4 sm:inset-x-5 flex items-center justify-between pointer-events-none z-20 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/90 bg-black/70 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10">
+                <span>Lens View: {sliderPos}%</span>
+                <span>Drag to Compare</span>
               </div>
             </div>
 
+            {/* Photochromic UV Controller */}
             {activeMode.id === 'photochromic' && (
-              <div className="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-4 text-slate-900">
-                <div className="flex items-center gap-2.5 text-xs">
-                  <Sun size={18} className="text-amber-500 animate-spin" style={{ animationDuration: '10s' }} />
+              <div className="mt-3 p-3 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 text-slate-900">
+                <div className="flex items-center gap-2 text-xs">
+                  <Sun size={16} className="text-amber-500 flex-shrink-0" />
                   <div>
-                    <span className="font-bold text-slate-900 block">Simulate Ambient Solar UV Index</span>
-                    <span className="text-[10px] text-slate-500">Indoor Diffused (0%) &bull; Full Outdoor Solar (100%)</span>
+                    <span className="font-bold text-slate-900 block text-xs">Ambient Sunlight Level</span>
+                    <span className="text-[10px] text-slate-500">Indoor (0%) &bull; Full Sun (100%)</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 w-1/2 max-w-xs">
+                <div className="flex items-center gap-2.5 w-1/2 max-w-xs">
                   <input
                     type="range"
                     min="0"
                     max="100"
                     value={uvExposure}
                     onChange={(e) => setUvExposure(Number(e.target.value))}
-                    className="w-full accent-amber-400 cursor-pointer"
+                    className="w-full accent-slate-950 cursor-pointer"
                   />
-                  <span className="font-mono text-xs font-bold text-blue-600 min-w-[36px] text-right">{uvExposure}%</span>
+                  <span className="font-mono text-xs font-bold text-slate-900 min-w-[32px] text-right">{uvExposure}%</span>
                 </div>
               </div>
             )}
           </div>
 
           {/* Technical Specs Card (4 cols) */}
-          <div className="lg:col-span-4 flex flex-col justify-between p-8 rounded-3xl bg-slate-50 border border-slate-200 shadow-xl rounded-3xl relative overflow-hidden text-slate-900">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-400/5 rounded-full blur-2xl pointer-events-none" />
-
+          <div className="lg:col-span-4 flex flex-col justify-between p-5 sm:p-7 rounded-2xl sm:rounded-3xl bg-slate-50 border border-slate-200 shadow-sm relative overflow-hidden text-slate-900">
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] uppercase font-mono tracking-widest text-blue-600 font-bold">
-                  LAB CERTIFICATE N° 8492
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] uppercase font-mono tracking-widest text-slate-500 font-bold">
+                  OPTICAL PROFILE
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[9px] font-black uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full bg-white text-slate-800 border border-slate-200 font-bold text-[9px] font-mono uppercase tracking-wider">
                   {activeMode.badge}
                 </span>
               </div>
 
-              <h3 className="font-serif text-2xl font-bold text-slate-950 tracking-tight mb-1">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate-950 tracking-tight mb-1">
                 {activeMode.name}
               </h3>
-              <p className="text-xs text-blue-600 font-bold mb-3">
+              <p className="text-xs text-slate-700 font-semibold mb-2.5">
                 {activeMode.subtitle}
               </p>
-              <p className="text-xs text-slate-600 leading-relaxed mb-6">
+              <p className="text-xs text-slate-600 leading-relaxed mb-5">
                 {activeMode.description}
               </p>
 
-              <div className="space-y-3 pt-4 border-t border-slate-200">
+              <div className="space-y-2.5 pt-3 border-t border-slate-200">
                 {activeMode.specs.map((s, idx) => (
                   <div key={idx} className="flex items-center justify-between text-xs">
                     <span className="text-slate-500">{s.label}</span>
@@ -245,11 +238,11 @@ export default function OpticalLabSimulator() {
               </div>
             </div>
 
-            <div className="pt-6 mt-6 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
-              <span className="flex items-center gap-1.5 text-blue-600 font-bold">
-                <ShieldCheck size={14} /> Carl Zeiss Verified
+            <div className="pt-4 mt-5 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
+              <span className="flex items-center gap-1.5 text-slate-800 font-bold">
+                <ShieldCheck size={14} className="text-emerald-700" /> Optical Lab Verified
               </span>
-              <span className="font-mono text-gray-500">ISO 12312-1 COMPLIANT</span>
+              <span className="font-mono text-[10px] text-slate-400">100% UV400</span>
             </div>
 
           </div>

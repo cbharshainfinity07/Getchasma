@@ -20,6 +20,7 @@ import {
   Copy
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { API_BASE_URL } from '../config/api';
 import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
 
 const TABS = [
@@ -84,7 +85,7 @@ export default function Shop() {
 
   useEffect(() => {
     setLoading(true);
-    let url = 'http://localhost:5001/api/products?';
+    let url = `${API_BASE_URL}/api/products?`;
     if (activeTab && activeTab !== 'all' && activeTab !== 'classic' && activeTab !== 'premium') {
       url += `category=${encodeURIComponent(activeTab)}&`;
     }
@@ -597,7 +598,7 @@ export default function Shop() {
                 ))}
               </div>
             ) : filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-6">
                 {filteredProducts.map((product) => {
                   const isWishlisted = wishlist.includes(product.id);
                   const isDeal = product.isDealOfDay;
@@ -614,32 +615,31 @@ export default function Shop() {
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.35 }}
-                      className="group bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative"
+                      className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative"
                     >
                       {/* TOP BADGES ROW */}
-                      <div className="absolute top-3.5 left-3.5 right-3.5 z-20 flex items-center justify-between pointer-events-none">
-                        {/* Rating Pill (Lenskart signature ★ 4.9) */}
-                        <div className="pointer-events-auto inline-flex items-center gap-1 bg-emerald-50 px-2.5 py-1 rounded-full text-xs font-black text-emerald-800 shadow-sm border border-emerald-200">
-                          <Star size={12} className="fill-amber-400 text-amber-500" />
+                      <div className="absolute top-2 left-2 right-2 sm:top-3.5 sm:left-3.5 sm:right-3.5 z-20 flex items-center justify-between pointer-events-none">
+                        {/* Rating Pill */}
+                        <div className="pointer-events-auto inline-flex items-center gap-0.5 sm:gap-1 bg-white/95 backdrop-blur-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold text-slate-800 shadow-sm border border-slate-200/80">
+                          <Star size={11} className="fill-amber-400 text-amber-400" />
                           <span>{product.rating || 4.8}</span>
-                          <span className="text-[10px] text-gray-400 font-normal">({product.reviewsCount || 48})</span>
                         </div>
 
                         {/* Wishlist Heart Button */}
                         <button
                           onClick={(e) => toggleWishlist(product.id, e)}
-                          className="pointer-events-auto w-8 h-8 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-rose-500 shadow-sm border border-gray-200/60 hover:scale-110 active:scale-95 transition-all"
+                          className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white/95 backdrop-blur-md flex items-center justify-center text-gray-400 hover:text-rose-500 shadow-sm border border-gray-200/60 hover:scale-110 active:scale-95 transition-all"
                           title="Save to Wishlist"
                         >
                           <Heart
-                            size={16}
+                            size={13}
                             className={isWishlisted ? 'fill-rose-500 text-rose-500' : 'text-gray-600'}
                           />
                         </button>
                       </div>
 
                       {/* PRODUCT IMAGE CONTAINER */}
-                      <div className="relative aspect-[4/3] bg-[#fbfbfb] p-6 flex items-center justify-center overflow-hidden border-b border-gray-100">
+                      <div className="relative aspect-square bg-[#fbfbfb] p-3 sm:p-6 flex items-center justify-center overflow-hidden border-b border-gray-100">
                         <Link to={`/product/${product.id}`} className="w-full h-full flex items-center justify-center">
                           <img
                             src={product.image}
@@ -649,33 +649,33 @@ export default function Shop() {
                         </Link>
 
                         {/* Hover Quick Actions Pill (View Similar + Try in 3D) */}
-                        <div className="absolute bottom-3 inset-x-3 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
+                        <div className="hidden sm:flex absolute bottom-3 inset-x-3 items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
                           <button
                             onClick={() => setTryOnProduct(product)}
-                            className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-md shadow-blue-500/25 transition-transform hover:scale-105 active:scale-95"
+                            className="px-3 py-1 rounded-full bg-slate-950 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md transition-transform hover:scale-105 active:scale-95"
                           >
-                            <Camera size={12} />
-                            <span>Try in 3D</span>
+                            <Camera size={11} />
+                            <span>Try-On</span>
                           </button>
                           
                           <button
                             onClick={() => setQuickViewProduct(product)}
-                            className="px-3.5 py-1.5 rounded-full bg-white hover:bg-neutral-100 text-neutral-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md transition-transform hover:scale-105 active:scale-95 border border-neutral-200"
+                            className="px-3 py-1 rounded-full bg-white hover:bg-neutral-100 text-neutral-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md transition-transform hover:scale-105 active:scale-95 border border-neutral-200"
                           >
-                            <Eye size={12} />
+                            <Eye size={11} />
                             <span>Quick View</span>
                           </button>
                         </div>
                       </div>
 
                       {/* PRODUCT DETAILS BODY */}
-                      <div className="p-5 flex flex-col flex-1 space-y-3">
+                      <div className="p-2.5 sm:p-5 flex flex-col flex-1 space-y-1.5 sm:space-y-3">
                         
                         {/* Swatches & Size Tag Row */}
                         <div className="flex items-center justify-between">
                           {/* Color Swatches */}
-                          <div className="flex items-center gap-1.5">
-                            {COLOR_PALETTES.map((swatch, idx) => (
+                          <div className="flex items-center gap-1">
+                            {COLOR_PALETTES.slice(0, 3).map((swatch, idx) => (
                               <button
                                 key={swatch.name}
                                 onClick={(e) => {
@@ -683,9 +683,9 @@ export default function Shop() {
                                   e.stopPropagation();
                                   setSelectedColors(prev => ({ ...prev, [product.id]: idx }));
                                 }}
-                                className={`w-4 h-4 rounded-full border transition-all ${
+                                className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border transition-all ${
                                   activeColor === idx
-                                    ? 'ring-2 ring-black ring-offset-1 scale-110'
+                                    ? 'ring-1 sm:ring-2 ring-black ring-offset-1 scale-110'
                                     : 'border-gray-300 hover:scale-105'
                                 }`}
                                 style={{ backgroundColor: swatch.hex }}
@@ -694,72 +694,72 @@ export default function Shop() {
                             ))}
                           </div>
 
-                          {/* Size Pill (Lenskart [ M Size ]) */}
-                          <span className="px-2 py-0.5 rounded-md border border-gray-300 text-[10px] font-extrabold uppercase tracking-wider text-gray-700 bg-gray-50">
-                            [ {size.includes('M') ? 'M Size' : size.includes('L') ? 'L Size' : 'S Size'} ]
+                          {/* Size Pill */}
+                          <span className="px-1.5 py-0.5 rounded border border-gray-200 text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-600 bg-gray-50">
+                            {size.includes('M') ? 'M' : size.includes('L') ? 'L' : 'S'}
                           </span>
                         </div>
 
                         {/* Brand & Model Name */}
                         <div>
-                          <span className="text-[10px] uppercase font-extrabold tracking-[0.2em] text-gray-400 block mb-0.5">
-                            GetChasma Atelier &bull; {shape}
+                          <span className="text-[8px] sm:text-[10px] uppercase font-mono font-bold tracking-wider text-gray-400 block mb-0.5 truncate">
+                            {shape}
                           </span>
                           <Link to={`/product/${product.id}`}>
-                            <h3 className="font-bold text-sm text-gray-950 line-clamp-1 hover:text-neutral-700 transition-colors">
+                            <h3 className="font-bold text-xs sm:text-sm text-gray-950 line-clamp-1 sm:line-clamp-2 hover:text-blue-600 transition-colors">
                               {product.name}
                             </h3>
                           </Link>
                         </div>
 
-                        {/* Price Row (Titan Eyeplus / Lenskart Style) */}
-                        <div className="flex items-baseline gap-2 pt-1">
-                          <span className="text-lg font-black text-black font-mono">
+                        {/* Price Row */}
+                        <div className="flex flex-wrap items-baseline gap-1 sm:gap-2 pt-0.5">
+                          <span className="text-sm sm:text-lg font-black text-black font-mono">
                             ₹{product.price.toLocaleString('en-IN')}
                           </span>
                           {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-xs text-gray-400 line-through font-mono">
+                            <span className="text-[10px] sm:text-xs text-gray-400 line-through font-mono">
                               ₹{product.originalPrice.toLocaleString('en-IN')}
                             </span>
                           )}
-                          <span className="text-[11px] font-extrabold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">
-                            ({discountPct}% OFF)
+                          <span className="text-[8px] sm:text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.2 rounded-full">
+                            {discountPct}% OFF
                           </span>
                         </div>
 
-                        {/* LENSKART SIGNATURE COUPON CALLOUT CONTAINER */}
+                        {/* LENSKART COUPON CALLOUT CONTAINER (Visible on Desktop) */}
                         <div 
                           onClick={(e) => handleCopyCoupon('SINGLE', e)}
-                          className="p-2 rounded-xl bg-gray-50 hover:bg-neutral-100 border border-dashed border-neutral-300 hover:border-neutral-900 transition-colors flex items-center justify-between text-xs cursor-pointer group/coupon"
+                          className="hidden sm:flex p-2 rounded-xl bg-gray-50 hover:bg-neutral-100 border border-dashed border-neutral-300 hover:border-neutral-900 transition-colors items-center justify-between text-xs cursor-pointer group/coupon"
                           title="Click to copy promo code"
                         >
                           <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-700">
-                            <Tag size={12} className="text-blue-600 flex-shrink-0" />
-                            <span>Use code <strong className="text-blue-700 font-mono font-bold">SINGLE</strong> for this price</span>
+                            <Tag size={12} className="text-slate-700 flex-shrink-0" />
+                            <span>Code <strong className="text-slate-950 font-mono font-bold">SINGLE</strong></span>
                           </div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 group-hover/coupon:text-blue-600 flex-shrink-0">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 group-hover/coupon:text-slate-900 flex-shrink-0">
                             {copiedCoupon === 'SINGLE' ? 'Copied ✓' : 'Copy'}
                           </span>
                         </div>
 
                         {/* ADD TO BAG BUTTON */}
-                        <div className="pt-2 mt-auto">
+                        <div className="pt-1 sm:pt-2 mt-auto">
                           <button
                             onClick={(e) => handleAddToCart(product, e)}
-                            className={`w-full py-3 px-5 rounded-full text-xs font-bold uppercase tracking-[0.12em] flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all duration-200 ${
+                            className={`w-full py-2 sm:py-3 px-2 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all duration-200 cursor-pointer ${
                               addedProductId === product.id
-                                ? 'bg-emerald-600 text-white shadow-md'
-                                : 'bg-black text-white hover:bg-neutral-800 shadow-sm active:scale-98'
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-slate-950 text-white hover:bg-slate-800'
                             }`}
                           >
                             {addedProductId === product.id ? (
                               <>
-                                <Check size={14} className="text-white" />
-                                <span>Added to Bag</span>
+                                <Check size={12} className="text-white" />
+                                <span>Added</span>
                               </>
                             ) : (
                               <>
-                                <ShoppingBag size={14} />
+                                <ShoppingBag size={12} />
                                 <span>Add to Bag</span>
                               </>
                             )}

@@ -30,6 +30,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../../config/api';
 
 const STATUS_TABS = [
   { id: 'all', label: 'All Orders' },
@@ -108,7 +109,7 @@ export default function AdminOrders() {
 
   const fetchCountsAndStats = () => {
     // Fetch cancellation requests count
-    fetch('http://localhost:5001/api/orders?status=requests')
+    fetch(`${API_BASE_URL}/api/orders?status=requests`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -118,7 +119,7 @@ export default function AdminOrders() {
       .catch(() => {});
 
     // Fetch returns stats
-    fetch('http://localhost:5001/api/orders/returns/stats')
+    fetch(`${API_BASE_URL}/api/orders/returns/stats`)
       .then(res => res.json())
       .then(data => {
         if (data && typeof data.total === 'number') {
@@ -130,7 +131,7 @@ export default function AdminOrders() {
 
   const fetchOrders = () => {
     setLoading(true);
-    let url = 'http://localhost:5001/api/orders';
+    let url = `${API_BASE_URL}/api/orders`;
     const params = [];
     if (activeTab !== 'all') params.push(`status=${activeTab}`);
     if (searchTerm) params.push(`search=${encodeURIComponent(searchTerm)}`);
@@ -161,7 +162,7 @@ export default function AdminOrders() {
   const executeStatusUpdate = async (orderId, newStatus, cancellationReason = null) => {
     setUpdatingId(orderId);
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, cancellationReason })
@@ -219,7 +220,7 @@ export default function AdminOrders() {
 
     const targetState = !currentCollected;
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/cod-payment`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/cod-payment`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ collected: targetState })
@@ -246,7 +247,7 @@ export default function AdminOrders() {
   const handleApproveCancellation = async (orderId) => {
     setReviewLoading(true);
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/cancellation-review`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/cancellation-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'approve' })
@@ -283,7 +284,7 @@ export default function AdminOrders() {
       : denialReason;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${reviewingOrder.id}/cancellation-review`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${reviewingOrder.id}/cancellation-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'deny', denialReason: fullDenialReason })
@@ -315,7 +316,7 @@ export default function AdminOrders() {
   const handleApproveReturn = async (orderId) => {
     setReviewLoading(true);
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/return-review`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/return-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'approve' })
@@ -351,7 +352,7 @@ export default function AdminOrders() {
       : returnDenialReason;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${reviewingReturnOrder.id}/return-review`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${reviewingReturnOrder.id}/return-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'deny', denialReason: fullDenialReason })
@@ -399,7 +400,7 @@ export default function AdminOrders() {
   const handleConfirmReturnReceived = async (orderId) => {
     setReviewLoading(true);
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${orderId}/return-receive`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/return-receive`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ condition: 'Pristine & Quality Verified', notes: 'Package verified at Bengaluru Optical Warehouse.' })
@@ -430,7 +431,7 @@ export default function AdminOrders() {
     setRefundLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${refundingOrder.id}/refund`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${refundingOrder.id}/refund`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

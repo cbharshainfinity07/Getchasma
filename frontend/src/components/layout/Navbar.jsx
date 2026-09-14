@@ -19,6 +19,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useUserAuth } from '../../context/UserAuthContext';
+import { API_BASE_URL } from '../../config/api';
 
 export default function AppNavbar() {
   const { cartCount, toggleCart, lastAddedItem } = useCart();
@@ -49,7 +50,7 @@ export default function AppNavbar() {
     }
     const timer = setTimeout(() => {
       setIsSearching(true);
-      fetch(`http://localhost:5001/api/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      fetch(`${API_BASE_URL}/api/products?search=${encodeURIComponent(searchQuery.trim())}`)
         .then(res => res.json())
         .then(data => {
           setSearchResults(data.slice(0, 5));

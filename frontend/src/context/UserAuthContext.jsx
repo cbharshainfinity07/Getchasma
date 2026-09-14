@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 const UserAuthContext = createContext();
 
@@ -16,7 +17,7 @@ export function UserAuthProvider({ children }) {
   useEffect(() => {
     if (user?.id) {
       // Refresh profile and membership from server
-      fetch(`http://localhost:5001/api/users/profile/${user.id}`)
+      fetch(`${API_BASE_URL}/api/users/profile/${user.id}`)
         .then(res => res.ok ? res.json() : null)
         .then(freshUser => {
           if (freshUser) {
@@ -32,7 +33,7 @@ export function UserAuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const res = await fetch('http://localhost:5001/api/users/login', {
+    const res = await fetch(`${API_BASE_URL}/api/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -50,7 +51,7 @@ export function UserAuthProvider({ children }) {
   };
 
   const register = async (formData) => {
-    const res = await fetch('http://localhost:5001/api/users/register', {
+    const res = await fetch(`${API_BASE_URL}/api/users/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
@@ -74,7 +75,7 @@ export function UserAuthProvider({ children }) {
 
   const updateProfile = async (updates) => {
     if (!user) throw new Error('No user logged in');
-    const res = await fetch(`http://localhost:5001/api/users/profile/${user.id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/users/profile/${user.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
@@ -93,7 +94,7 @@ export function UserAuthProvider({ children }) {
 
   const activateMembership = async (plan = '1-Year Gold Pass', durationYears = 1) => {
     if (!user) throw new Error('Please login to activate VIP membership');
-    const res = await fetch(`http://localhost:5001/api/users/${user.id}/membership`, {
+    const res = await fetch(`${API_BASE_URL}/api/users/${user.id}/membership`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ plan, durationYears })
@@ -112,7 +113,7 @@ export function UserAuthProvider({ children }) {
 
   const fetchUserOrders = async () => {
     if (!user || !user.email) return [];
-    const res = await fetch(`http://localhost:5001/api/orders?email=${encodeURIComponent(user.email)}`);
+    const res = await fetch(`${API_BASE_URL}/api/orders?email=${encodeURIComponent(user.email)}`);
     if (!res.ok) return [];
     return await res.json();
   };

@@ -15,6 +15,7 @@ import {
   Minus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../../config/api';
 
 const PRESET_IMAGES = [
   { label: 'Gold Aviator', url: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop' },
@@ -77,7 +78,7 @@ export default function AdminProducts() {
 
   const fetchProducts = () => {
     setLoading(true);
-    fetch('http://localhost:5001/api/products')
+    fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
         setProducts(data);
@@ -102,7 +103,7 @@ export default function AdminProducts() {
   const handleStockAdjust = async (product, delta) => {
     const newStock = Math.max(0, (product.stock || 0) + delta);
     try {
-      const res = await fetch(`http://localhost:5001/api/products/${product.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/${product.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ stock: newStock })
@@ -164,7 +165,7 @@ export default function AdminProducts() {
     };
 
     try {
-      const res = await fetch('http://localhost:5001/api/products', {
+      const res = await fetch(`${API_BASE_URL}/api/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -208,7 +209,7 @@ export default function AdminProducts() {
     };
 
     try {
-      const res = await fetch(`http://localhost:5001/api/products/${editingProduct.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/${editingProduct.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -231,7 +232,7 @@ export default function AdminProducts() {
     if (!deletingProduct) return;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/products/${deletingProduct.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/products/${deletingProduct.id}`, {
         method: 'DELETE'
       });
 

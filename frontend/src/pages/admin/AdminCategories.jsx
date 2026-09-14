@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, FolderTree, Check, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../../config/api';
 
 const DEFAULT_PRODUCT_IMG = "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=600&auto=format&fit=crop";
 
@@ -15,8 +16,8 @@ export default function AdminCategories() {
   const fetchData = () => {
     setLoading(true);
     Promise.all([
-      fetch('http://localhost:5001/api/categories').then(r => r.json()),
-      fetch('http://localhost:5001/api/products').then(r => r.json())
+      fetch(`${API_BASE_URL}/api/categories`).then(r => r.json()),
+      fetch(`${API_BASE_URL}/api/products`).then(r => r.json())
     ])
       .then(([cats, prods]) => {
         setCategories(cats);
@@ -43,7 +44,7 @@ export default function AdminCategories() {
     if (!newCat.name.trim()) return;
 
     try {
-      const res = await fetch('http://localhost:5001/api/categories', {
+      const res = await fetch(`${API_BASE_URL}/api/categories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newCat)

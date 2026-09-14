@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useUserAuth } from '../../context/UserAuthContext';
+import { API_BASE_URL } from '../../config/api';
 import { 
   User, 
   Package, 
@@ -97,7 +98,7 @@ export default function AccountDashboard() {
       : selectedReason;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${cancellingOrder.id}/cancel-request`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${cancellingOrder.id}/cancel-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: fullReason })

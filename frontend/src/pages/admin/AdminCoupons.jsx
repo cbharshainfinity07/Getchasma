@@ -17,6 +17,7 @@ import {
   AlertCircle 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../../config/api';
 
 export default function AdminCoupons() {
   const [coupons, setCoupons] = useState([]);
@@ -44,7 +45,7 @@ export default function AdminCoupons() {
 
   const fetchCoupons = () => {
     setLoading(true);
-    fetch('http://localhost:5001/api/coupons')
+    fetch(`${API_BASE_URL}/api/coupons`)
       .then(res => res.json())
       .then(data => {
         setCoupons(data);
@@ -75,7 +76,7 @@ export default function AdminCoupons() {
   // Toggle displayOnSite directly from table
   const handleToggleDisplay = async (coupon) => {
     try {
-      const res = await fetch(`http://localhost:5001/api/coupons/${coupon.id}/display`, {
+      const res = await fetch(`${API_BASE_URL}/api/coupons/${coupon.id}/display`, {
         method: 'PATCH'
       });
       if (res.ok) {
@@ -129,8 +130,8 @@ export default function AdminCoupons() {
 
     try {
       const url = editingCoupon 
-        ? `http://localhost:5001/api/coupons/${editingCoupon.id}`
-        : 'http://localhost:5001/api/coupons';
+        ? `${API_BASE_URL}/api/coupons/${editingCoupon.id}`
+        : `${API_BASE_URL}/api/coupons`;
       
       const method = editingCoupon ? 'PUT' : 'POST';
 
@@ -168,7 +169,7 @@ export default function AdminCoupons() {
   const handleDelete = async () => {
     if (!deletingCoupon) return;
     try {
-      const res = await fetch(`http://localhost:5001/api/coupons/${deletingCoupon.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/coupons/${deletingCoupon.id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

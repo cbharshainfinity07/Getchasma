@@ -31,38 +31,38 @@ const REVIEWS = [
 
 export default function Testimonials() {
   return (
-    <section className="bg-[#f8fafc] py-20 md:py-28 border-t border-slate-200/70 text-slate-900 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+    <section className="bg-[#f8fafc] py-12 sm:py-20 md:py-28 border-t border-slate-200/70 text-slate-900 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-14 gap-4 sm:gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-extrabold uppercase tracking-widest mb-3 shadow-sm">
-              <ShieldCheck size={13} className="text-emerald-600" /> Verified Eyewear Clients
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 text-[10px] font-mono font-bold uppercase tracking-widest mb-2.5">
+              <ShieldCheck size={13} className="text-slate-700" /> Verified Eyewear Clients
             </div>
-            <h2 className="font-serif text-3xl md:text-5xl font-bold text-slate-950 tracking-tight">
-              Endorsed by Discerning Eyes<span className="text-blue-600">.</span>
+            <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-slate-950 tracking-tight">
+              Endorsed by Discerning Eyes<span className="text-neutral-400">.</span>
             </h2>
-            <p className="text-xs md:text-sm text-slate-600 mt-2 max-w-lg">
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 max-w-lg">
               Read verified testimonials from surgeons, architects, and designers wearing GetChasma daily.
             </p>
           </div>
 
-          <div className="flex items-center gap-4 bg-white border border-slate-200/90 rounded-2xl p-3.5 px-5 shadow-sm">
+          <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-2xl p-2.5 px-4 shadow-sm self-start md:self-auto">
             <div className="flex text-amber-400 gap-0.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={16} className="fill-amber-400" />
+                <Star key={i} size={14} className="fill-amber-400" />
               ))}
             </div>
-            <div className="border-l border-slate-200 pl-4">
-              <span className="font-bold text-sm text-slate-950 block">4.92 / 5.0</span>
-              <span className="text-[10px] text-slate-500">Over 10,000+ Verified Reviews</span>
+            <div className="border-l border-slate-200 pl-3">
+              <span className="font-bold text-xs sm:text-sm text-slate-950 block">4.92 / 5.0</span>
+              <span className="text-[10px] text-slate-500">10,000+ Reviews</span>
             </div>
           </div>
         </div>
 
         {/* Review Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
           {REVIEWS.map((rev, idx) => (
             <motion.div
               key={idx}
@@ -70,7 +70,7 @@ export default function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="p-8 rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-blue-400/50 transition-all duration-300 flex flex-col justify-between"
+              className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-slate-200/80 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">

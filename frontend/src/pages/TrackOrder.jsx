@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 import { 
   Search, 
   CheckCircle2, 
@@ -93,7 +94,7 @@ export default function TrackOrder() {
     setLoading(true);
     setError('');
 
-    fetch(`http://localhost:5001/api/orders/${encodeURIComponent(id.trim())}`)
+    fetch(`${API_BASE_URL}/api/orders/${encodeURIComponent(id.trim())}`)
       .then(res => {
         if (!res.ok) throw new Error('Order not found');
         return res.json();
@@ -170,7 +171,7 @@ export default function TrackOrder() {
       : selectedReason;
 
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${order.id}/cancel-request`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${order.id}/cancel-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: fullReason })
@@ -234,7 +235,7 @@ export default function TrackOrder() {
         };
 
     try {
-      const res = await fetch(`http://localhost:5001/api/orders/${order.id}/return-request`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders/${order.id}/return-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

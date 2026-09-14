@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle2, Package, Truck, ArrowRight, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../config/api';
 
 export default function OrderConfirmation() {
   const { id } = useParams();
@@ -9,7 +10,7 @@ export default function OrderConfirmation() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5001/api/orders/${id}`)
+    fetch(`${API_BASE_URL}/api/orders/${id}`)
       .then(res => res.json())
       .then(data => {
         setOrder(data);

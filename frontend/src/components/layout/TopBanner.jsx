@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, X, Copy, Check, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../config/api';
 
 export default function TopBanner() {
   const [dismissed, setDismissed] = useState(false);
@@ -9,7 +10,7 @@ export default function TopBanner() {
   const [copiedCode, setCopiedCode] = useState(null);
 
   const fetchCoupons = () => {
-    fetch('http://localhost:5001/api/coupons?display=true')
+    fetch(`${API_BASE_URL}/api/coupons?display=true`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

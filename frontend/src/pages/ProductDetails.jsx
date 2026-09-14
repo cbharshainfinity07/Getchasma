@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
+import { API_BASE_URL } from '../config/api';
 
 // Studio & Inspection Modals
 import EyewearInspector from '../components/product/EyewearInspector';
@@ -81,7 +82,7 @@ export default function ProductDetails() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:5001/api/products/${id}`)
+    fetch(`${API_BASE_URL}/api/products/${id}`)
       .then(res => {
         if (!res.ok) throw new Error('Product not found');
         return res.json();
@@ -98,7 +99,7 @@ export default function ProductDetails() {
         } catch {}
 
         // Fetch related products
-        fetch(`http://localhost:5001/api/products?category=${encodeURIComponent(data.category)}`)
+        fetch(`${API_BASE_URL}/api/products?category=${encodeURIComponent(data.category)}`)
           .then(res => res.json())
           .then(related => {
             setRelatedProducts(related.filter(item => item.id !== data.id).slice(0, 4));
@@ -290,87 +291,134 @@ export default function ProductDetails() {
              ======================================================== */}
           <div className="lg:col-span-7 space-y-4">
             
-            {/* Gallery Mode Controls & 3D Virtual Try-On Trigger */}
-            <div className="flex items-center justify-between bg-white p-2 rounded-2xl border border-gray-200 shadow-sm">
-              <div className="flex items-center gap-1">
+            {/* View Mode Switcher + 3D Try-On Launch */}
+            <div className="flex items-center justify-between gap-2 pb-2">
+              {/* Mode Toggle Chips */}
+              <div className="flex items-center gap-1 bg-gray-100/80 p-1 rounded-2xl border border-gray-200/80 overflow-x-auto scrollbar-hide">
                 <button
                   onClick={() => setGalleryMode('grid')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all ${
                     galleryMode === 'grid' 
                       ? 'bg-black text-white shadow-sm' 
                       : 'text-gray-500 hover:text-black'
                   }`}
                 >
-                  2x2 Studio Grid
+                  <span className="hidden sm:inline">2x2 Studio Grid</span>
+                  <span className="sm:hidden">Studio</span>
                 </button>
                 <button
                   onClick={() => setGalleryMode('strip')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all ${
                     galleryMode === 'strip' 
                       ? 'bg-black text-white shadow-sm' 
                       : 'text-gray-500 hover:text-black'
                   }`}
                 >
-                  Focus Strip
+                  <span className="hidden sm:inline">Focus Strip</span>
+                  <span className="sm:hidden">Focus</span>
                 </button>
                 <button
                   onClick={() => setGalleryMode('studio')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition-all ${
                     galleryMode === 'studio' 
                       ? 'bg-black text-white shadow-sm' 
                       : 'text-gray-500 hover:text-black'
                   }`}
                 >
-                  360° Simulator
+                  <span>360°</span>
                 </button>
               </div>
 
               {/* 3D Try-On Trigger Button */}
               <button
                 onClick={() => setTryOnOpen(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 shadow-md shadow-blue-500/25 transition-transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                className="px-3 sm:px-3.5 py-1.5 rounded-xl bg-slate-950 text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm hover:bg-slate-800 active:scale-95 transition-all whitespace-nowrap cursor-pointer"
               >
-                <Camera size={14} />
-                <span>Virtual 3D Try-On</span>
+                <Camera size={13} />
+                <span>3D Try-On</span>
               </button>
             </div>
 
-            {/* VIEW MODE 1: TITAN EYEPLUS 2x2 MULTI-ANGLE STUDIO GRID */}
+            {/* VIEW MODE 1: TITAN EYEPLUS MULTI-ANGLE STUDIO */}
             {galleryMode === 'grid' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {multiAngles.map((angle, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setSelectedAngleIdx(idx);
-                      setGalleryMode('strip');
-                    }}
-                    className="group relative aspect-[4/3] bg-white rounded-3xl p-6 border border-gray-200/90 shadow-sm hover:shadow-md transition-all cursor-zoom-in flex items-center justify-center overflow-hidden"
-                  >
-                    {/* Corner Tag on First View (Titan Eyeplus 'New' badge) */}
-                    {idx === 0 && (
-                      <div className="absolute top-3.5 left-3.5 z-10">
-                        <span className="bg-gradient-to-r from-rose-500 to-amber-500 text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-md">
-                          New
-                        </span>
-                      </div>
-                    )}
-
+              <>
+                {/* Mobile View (< sm): Single Stage + Compact Thumbnails */}
+                <div className="block sm:hidden space-y-2.5">
+                  <div className="relative aspect-[4/3] max-h-[260px] bg-white rounded-2xl p-4 border border-gray-200/90 shadow-sm flex items-center justify-center overflow-hidden">
                     {/* Angle Chip */}
-                    <div className="absolute bottom-3 right-3.5 z-10">
-                      <span className="text-[10px] font-mono font-bold text-gray-400 group-hover:text-black bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200 transition-colors">
-                        {angle.label}
+                    <div className="absolute top-2.5 left-2.5 z-10">
+                      <span className="text-[9px] font-mono font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+                        {multiAngles[selectedAngleIdx].label}
                       </span>
                     </div>
 
+                    <div className="absolute top-2.5 right-2.5 z-10 bg-white/95 backdrop-blur-md px-2 py-0.5 rounded-full border border-gray-200 text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
+                      <span>{product.rating || 4.9}</span>
+                      <Star size={10} className="fill-amber-400 text-amber-400" />
+                    </div>
+
                     <img
-                      src={angle.url}
-                      alt={`${product.name} ${angle.label}`}
-                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-500 ease-out"
+                      src={multiAngles[selectedAngleIdx].url}
+                      alt={product.name}
+                      className="w-full h-full max-h-[220px] object-contain mix-blend-multiply"
                     />
                   </div>
-                ))}
-              </div>
+
+                  {/* Mobile Thumbnail Selector Strip */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                    {multiAngles.map((angle, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedAngleIdx(idx)}
+                        className={`flex-1 min-w-[60px] py-1.5 px-1.5 rounded-xl border flex flex-col items-center gap-1 transition-all ${
+                          selectedAngleIdx === idx
+                            ? 'border-slate-950 bg-slate-50 ring-1 ring-slate-950'
+                            : 'border-gray-200 bg-white'
+                        }`}
+                      >
+                        <img src={angle.url} alt={angle.label} className="w-8 h-6 object-contain mix-blend-multiply" />
+                        <span className="text-[8px] font-mono font-bold text-slate-600 truncate max-w-[54px]">{angle.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desktop View (>= sm): 2x2 Multi-Angle Studio Grid */}
+                <div className="hidden sm:grid sm:grid-cols-2 gap-3.5">
+                  {multiAngles.map((angle, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => {
+                        setSelectedAngleIdx(idx);
+                        setGalleryMode('strip');
+                      }}
+                      className="group relative aspect-[4/3] bg-white rounded-3xl p-6 border border-gray-200/90 shadow-sm hover:shadow-md transition-all cursor-zoom-in flex items-center justify-center overflow-hidden"
+                    >
+                      {/* Corner Tag on First View (Titan Eyeplus 'New' badge) */}
+                      {idx === 0 && (
+                        <div className="absolute top-3.5 left-3.5 z-10">
+                          <span className="bg-slate-950 text-white text-[9px] font-mono font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-sm">
+                            NEW
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Angle Chip */}
+                      <div className="absolute bottom-3 right-3.5 z-10">
+                        <span className="text-[10px] font-mono font-bold text-gray-400 group-hover:text-black bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200 transition-colors">
+                          {angle.label}
+                        </span>
+                      </div>
+
+                      <img
+                        src={angle.url}
+                        alt={`${product.name} ${angle.label}`}
+                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-500 ease-out"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
 
             {/* VIEW MODE 2: LENSKART VERTICAL THUMBNAIL STRIP + LARGE VIEW */}
@@ -988,15 +1036,15 @@ export default function ProductDetails() {
 
                 <button
                   onClick={handleQuickAdd}
-                  className="px-6 sm:px-8 py-3 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-lg shadow-blue-500/30 font-extrabold text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5 active:scale-95 transition-all"
+                  className="px-5 sm:px-8 py-2.5 sm:py-3 rounded-full bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider shadow-md flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
                 >
                   {isAdded ? (
                     <>
-                      <Check size={16} /> Added
+                      <Check size={15} /> Added
                     </>
                   ) : (
                     <>
-                      <ShoppingBag size={16} /> Add to cart
+                      <ShoppingBag size={15} /> Add to Cart
                     </>
                   )}
                 </button>

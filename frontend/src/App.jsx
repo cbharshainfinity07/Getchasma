@@ -31,6 +31,7 @@ import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminCoupons from './pages/admin/AdminCoupons';
+import { API_BASE_URL } from './config/api';
 
 function AppContent() {
   const location = useLocation();
@@ -38,7 +39,7 @@ function AppContent() {
 
   // Backend connection check
   useEffect(() => {
-    fetch('http://localhost:5001/api/status')
+    fetch(`${API_BASE_URL}/api/status`)
       .then(res => res.json())
       .then(data => console.log(`Backend connected: ${data.message}`))
       .catch(() => console.warn('Backend not connected yet.'));

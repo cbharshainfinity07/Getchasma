@@ -17,6 +17,7 @@ import {
   Tag
 } from 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { API_BASE_URL } from '../../config/api';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -27,7 +28,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     // Fetch pending orders count for badge
-    fetch('http://localhost:5001/api/stats')
+    fetch(`${API_BASE_URL}/api/stats`)
       .then(res => res.json())
       .then(data => {
         if (data.pendingOrders !== undefined) {

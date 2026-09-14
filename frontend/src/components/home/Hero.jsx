@@ -64,7 +64,7 @@ export default function Hero() {
 
       {/* 3D Floating Glasses Image with Ambient Levitation + Interactive Tilt */}
       <motion.div
-        className="absolute z-10 w-full max-w-5xl pointer-events-none flex justify-center items-center px-4"
+        className="absolute z-10 w-full max-w-5xl pointer-events-none flex justify-center items-center px-4 -translate-y-4 sm:translate-y-0"
         style={{
           rotateX,
           rotateY,
@@ -74,22 +74,22 @@ export default function Hero() {
         }}
       >
         <motion.img
-          animate={{ y: [0, -10, 0] }}
+          animate={{ y: [0, -8, 0] }}
           transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
           src="/3d-glasses.png"
           alt="Floating 3D Glasses"
-          className="w-full max-w-[340px] sm:max-w-md md:max-w-3xl lg:max-w-5xl h-auto object-contain drop-shadow-2xl"
+          className="w-full max-w-[220px] sm:max-w-[340px] md:max-w-3xl lg:max-w-5xl h-auto object-contain drop-shadow-2xl"
           style={{ transform: "translateZ(80px)" }}
         />
       </motion.div>
 
       {/* Main Content */}
-      <div className="relative z-20 text-center px-4 mt-8 md:mt-16 flex flex-col items-center pointer-events-none">
+      <div className="relative z-20 text-center px-4 mt-6 sm:mt-12 md:mt-16 flex flex-col items-center pointer-events-none">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-gray-400 text-[11px] sm:text-xs font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-4 sm:mb-6"
+          className="text-gray-400 text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-3 sm:mb-6"
         >
           Up To 15% Off
         </motion.p>
@@ -98,10 +98,10 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-white font-serif text-3xl sm:text-5xl md:text-7xl font-bold tracking-[-0.03em] md:tracking-[-0.05em] leading-[1.15] max-w-4xl mx-auto mb-6 md:mb-10 px-2"
+          className="text-white font-serif text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.2] sm:leading-[1.15] max-w-3xl mx-auto mb-5 sm:mb-8 md:mb-10 px-2"
           style={{ textShadow: "0 10px 30px rgba(0,0,0,0.85)" }}
         >
-          Perfect Glasses For Your<br />Unique Style
+          Perfect Glasses For Your<br className="hidden sm:inline" /> Unique Style
         </motion.h1>
 
         <motion.div
@@ -113,7 +113,7 @@ export default function Hero() {
           <Link to="/shop">
             <Button
               radius="none"
-              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-8 py-5 sm:py-6 rounded-sm hover:bg-gray-200 active:scale-95 transition-all cursor-pointer shadow-xl"
+              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-6 sm:px-8 py-4 sm:py-6 rounded-sm hover:bg-gray-200 active:scale-95 transition-all cursor-pointer shadow-xl"
             >
               See More
             </Button>
