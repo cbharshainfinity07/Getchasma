@@ -78,7 +78,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-black selection:text-white overflow-x-hidden">
       <CustomCursor />
-      <TopBanner />
+      {location.pathname !== '/' && <TopBanner />}
       <AppNavbar />
       <SideCart />
       

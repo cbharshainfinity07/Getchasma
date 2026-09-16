@@ -10,10 +10,13 @@ export default function SpecialOfferBanner() {
         {/* Left Side: Lifestyle Eyewear Photo */}
         <div className="relative min-h-[220px] sm:min-h-[280px] bg-neutral-100 overflow-hidden">
           <img
-            src="https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=1000&auto=format&fit=crop"
+            src="/curated/special-offer-beach.jpg"
             alt="Special Offer Eyewear"
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
             loading="lazy"
+            onError={(e) => {
+              e.target.src = "https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=1000&auto=format&fit=crop";
+            }}
           />
         </div>
 

@@ -27,10 +27,13 @@ export default function PromoBanner() {
         {/* Right Side: Clean White Studio Showcase */}
         <div className="bg-white p-6 sm:p-10 flex items-center justify-center min-h-[240px] sm:min-h-[300px]">
           <img
-            src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop"
+            src="/curated/summer-glasses.jpg"
             alt="Summer Collection Eyewear"
             className="w-full max-w-md h-auto max-h-56 sm:max-h-72 object-contain filter drop-shadow-md hover:scale-105 transition-transform duration-500"
             loading="lazy"
+            onError={(e) => {
+              e.target.src = "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop";
+            }}
           />
         </div>
 

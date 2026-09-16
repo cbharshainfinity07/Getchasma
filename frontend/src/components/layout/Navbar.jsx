@@ -74,41 +74,43 @@ export default function AppNavbar() {
 
   return (
     <>
-      {/* 1. TOP UTILITY STRIP (Lenskart / Titan Eyeplus signature) */}
-      <div className="hidden md:block bg-black border-b border-neutral-800 text-gray-400 text-[11px] py-1.5 px-4 sm:px-6 select-none">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6 font-medium">
-            <span className="flex items-center gap-1.5 text-gray-300">
-              <Phone size={11} className="text-gray-400" />
-              Toll Free: <strong className="text-white font-mono font-bold">1800-CHASMA</strong> (9 AM - 9 PM IST)
-            </span>
-            <span className="text-neutral-800">|</span>
-            <span className="flex items-center gap-1.5 text-gray-300">
-              <MapPin size={11} className="text-gray-400" />
-              Store Locator: <span className="text-gray-400">Kalaburagi Flagship &bull; Free Eye Checkup</span>
-            </span>
-          </div>
+      {/* 1. TOP UTILITY STRIP (Shown on shop & inner pages only) */}
+      {location.pathname !== '/' && (
+        <div className="hidden md:block bg-black border-b border-neutral-800 text-gray-400 text-[11px] py-1.5 px-4 sm:px-6 select-none">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-6 font-medium">
+              <span className="flex items-center gap-1.5 text-gray-300">
+                <Phone size={11} className="text-gray-400" />
+                Toll Free: <strong className="text-white font-mono font-bold">1800-CHASMA</strong> (9 AM - 9 PM IST)
+              </span>
+              <span className="text-neutral-800">|</span>
+              <span className="flex items-center gap-1.5 text-gray-300">
+                <MapPin size={11} className="text-gray-400" />
+                Store Locator: <span className="text-gray-400">Kalaburagi Flagship &bull; Free Eye Checkup</span>
+              </span>
+            </div>
 
-          <div className="flex items-center gap-5 font-medium">
-            <Link to="/membership" className="text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors">
-              <Crown size={11} className="fill-amber-400" />
-              Gold VIP Club
-            </Link>
-            <Link to="/track-order" className="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
-              <Truck size={11} />
-              Track Package
-            </Link>
-            <a 
-              href="https://wa.me/919740310101" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1"
-            >
-              WhatsApp Optometrist
-            </a>
+            <div className="flex items-center gap-5 font-medium">
+              <Link to="/membership" className="text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                <Crown size={11} className="fill-amber-400" />
+                Gold VIP Club
+              </Link>
+              <Link to="/track-order" className="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                <Truck size={11} />
+                Track Package
+              </Link>
+              <a 
+                href="https://wa.me/919740310101" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center gap-1"
+              >
+                WhatsApp Optometrist
+              </a>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 2. MAIN NAVIGATION HEADER */}
       <header className="sticky top-0 w-full z-40 bg-black text-white border-b border-neutral-800/80 shadow-[0_4px_25px_rgba(0,0,0,0.8)] transition-colors duration-300">

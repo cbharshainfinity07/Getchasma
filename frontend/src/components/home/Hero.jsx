@@ -54,7 +54,7 @@ export default function Hero() {
       onMouseLeave={handleMouseLeave}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative w-full min-h-[85vh] sm:min-h-[90vh] md:h-screen bg-black overflow-hidden flex flex-col justify-center items-center py-12 md:py-0 select-none"
+      className="relative w-full min-h-[90dvh] md:min-h-[92dvh] bg-black overflow-hidden flex flex-col justify-center items-center py-12 md:py-0 select-none"
       style={{ perspective: "1000px" }}
     >
       {/* Clean neutral ambient lighting */}
@@ -62,7 +62,7 @@ export default function Hero() {
         <div className="w-[75vw] h-[75vw] max-w-[700px] max-h-[700px] bg-neutral-700 rounded-full blur-[140px]" />
       </div>
 
-      {/* 3D Floating Glasses Image with Ambient Levitation + Interactive Tilt */}
+      {/* 3D Floating Glasses Image with Levitation + Interactive Tilt */}
       <motion.div
         className="absolute z-10 w-full max-w-5xl pointer-events-none flex justify-center items-center px-4 -translate-y-4 sm:translate-y-0"
         style={{
@@ -78,18 +78,18 @@ export default function Hero() {
           transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
           src="/3d-glasses.png"
           alt="Floating 3D Glasses"
-          className="w-full max-w-[220px] sm:max-w-[340px] md:max-w-3xl lg:max-w-5xl h-auto object-contain drop-shadow-2xl"
+          className="w-full max-w-[240px] sm:max-w-[340px] md:max-w-2xl lg:max-w-4xl h-auto object-contain drop-shadow-2xl"
           style={{ transform: "translateZ(80px)" }}
         />
       </motion.div>
 
       {/* Main Content */}
-      <div className="relative z-20 text-center px-4 mt-6 sm:mt-12 md:mt-16 flex flex-col items-center pointer-events-none">
+      <div className="relative z-20 text-center px-4 mt-6 sm:mt-10 md:mt-12 flex flex-col items-center pointer-events-none">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-gray-400 text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-3 sm:mb-6"
+          className="text-gray-400 text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-3 sm:mb-5"
         >
           Up To 15% Off
         </motion.p>
@@ -98,7 +98,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-white font-sans text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] max-w-3xl mx-auto mb-5 sm:mb-8 px-2"
+          className="text-white font-sans text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15] max-w-3xl mx-auto mb-5 sm:mb-8 px-2"
           style={{ textShadow: "0 10px 30px rgba(0,0,0,0.85)" }}
         >
           Perfect Glasses For Your<br className="hidden sm:inline" /> Unique Style

@@ -4,25 +4,57 @@ import { ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { API_BASE_URL } from '../../config/api';
 
+const CURATED_WHATS_HOT = [
+  {
+    id: 1,
+    name: "Classic Aviator",
+    category: "Sun Glass",
+    price: 120,
+    originalPrice: 145,
+    discount: "15%",
+    image: "/curated/prod-classic-aviator.jpg"
+  },
+  {
+    id: 2,
+    name: "Retro Square",
+    category: "Eye Glasses",
+    price: 95,
+    originalPrice: 120,
+    discount: "15%",
+    image: "/curated/prod-retro-square.jpg"
+  },
+  {
+    id: 3,
+    name: "Round Tortoise",
+    category: "Sun Glass",
+    price: 110,
+    originalPrice: 135,
+    discount: "15%",
+    image: "/curated/prod-round-tortoise.jpg"
+  }
+];
+
 export default function WhatsHot() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(CURATED_WHATS_HOT);
   const { addToCart } = useCart();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
-        setProducts(Array.isArray(data) ? data.slice(0, 3) : []);
-        setLoading(false);
+        if (Array.isArray(data) && data.length >= 3) {
+          const mapped = data.slice(0, 3).map((item, idx) => ({
+            ...item,
+            image: item.image || CURATED_WHATS_HOT[idx % 3].image,
+            category: item.category || CURATED_WHATS_HOT[idx % 3].category
+          }));
+          setProducts(mapped);
+        }
       })
-      .catch(err => {
-        console.error("Error fetching WhatsHot products:", err);
-        setLoading(false);
+      .catch(() => {
+        // Keep curated fallback
       });
   }, []);
-
-  if (loading || products.length === 0) return null;
 
   return (
     <section className="bg-white py-10 sm:py-16 px-4 sm:px-6 max-w-7xl mx-auto">

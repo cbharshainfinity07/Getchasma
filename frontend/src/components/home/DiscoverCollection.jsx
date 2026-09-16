@@ -5,22 +5,32 @@ import { API_BASE_URL } from '../../config/api';
 
 const TABS = ['ALL', 'MEN', 'WOMEN'];
 
+const CURATED_COLLECTION = [
+  { id: 101, name: "Classic Aviator", category: "Sun Glass", gender: "Unisex", price: 120, originalPrice: 145, discount: "10%", image: "/curated/prod-classic-aviator.jpg" },
+  { id: 102, name: "Retro Square", category: "Eye Glasses", gender: "Men", price: 95, originalPrice: 120, discount: null, image: "/curated/prod-retro-square.jpg" },
+  { id: 103, name: "Round Tortoise", category: "Sun Glass", gender: "Women", price: 110, originalPrice: 135, discount: null, image: "/curated/prod-round-tortoise.jpg" },
+  { id: 104, name: "Classic Aviator", category: "Sun Glass", gender: "Unisex", price: 120, originalPrice: 145, discount: "10%", image: "/curated/prod-classic-aviator.jpg" },
+  { id: 105, name: "Retro Square", category: "Eye Glasses", gender: "Men", price: 95, originalPrice: 120, discount: null, image: "/curated/prod-retro-square.jpg" },
+  { id: 106, name: "Round Tortoise", category: "Sun Glass", gender: "Women", price: 110, originalPrice: 135, discount: null, image: "/curated/prod-round-tortoise.jpg" },
+  { id: 107, name: "Classic Aviator", category: "Sun Glass", gender: "Unisex", price: 120, originalPrice: 145, discount: "10%", image: "/curated/prod-classic-aviator.jpg" },
+  { id: 108, name: "Retro Square", category: "Eye Glasses", gender: "Men", price: 95, originalPrice: 120, discount: null, image: "/curated/prod-retro-square.jpg" },
+];
+
 export default function DiscoverCollection() {
   const [activeTab, setActiveTab] = useState('ALL');
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(CURATED_COLLECTION);
   const { addToCart } = useCart();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
-        setProducts(Array.isArray(data) ? data : []);
-        setLoading(false);
+        if (Array.isArray(data) && data.length >= 8) {
+          setProducts(data);
+        }
       })
-      .catch(err => {
-        console.error("Error fetching DiscoverCollection:", err);
-        setLoading(false);
+      .catch(() => {
+        // Keep curated fallback
       });
   }, []);
 
@@ -29,8 +39,6 @@ export default function DiscoverCollection() {
     if (activeTab === 'WOMEN') return p.gender === 'Women' || p.gender === 'Unisex';
     return true;
   }).slice(0, 8);
-
-  if (loading) return null;
 
   return (
     <section className="bg-white py-12 sm:py-20 px-4 sm:px-6 max-w-7xl mx-auto">
@@ -67,9 +75,11 @@ export default function DiscoverCollection() {
           >
             {/* Image Box */}
             <div className="relative w-full aspect-square bg-neutral-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
-              <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-xs shadow-xs z-10 uppercase">
-                {idx % 2 === 0 ? '10%' : 'SALE'}
-              </span>
+              {product.discount && (
+                <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-xs shadow-xs z-10 uppercase">
+                  {product.discount}
+                </span>
+              )}
 
               <Link to={`/product/${product.id || idx}`} className="w-full h-full flex items-center justify-center">
                 <img
@@ -77,6 +87,9 @@ export default function DiscoverCollection() {
                   alt={product.name}
                   className="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
+                  onError={(e) => {
+                    e.target.src = CURATED_COLLECTION[idx % 8].image;
+                  }}
                 />
               </Link>
             </div>

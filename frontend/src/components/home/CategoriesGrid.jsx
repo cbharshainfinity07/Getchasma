@@ -6,22 +6,22 @@ const CATEGORIES = [
   {
     title: 'Women',
     link: '/shop?category=women',
-    image: 'https://images.unsplash.com/photo-1509695507497-903c140c43b0?q=80&w=800&auto=format&fit=crop'
+    image: '/curated/cat-women.jpg'
   },
   {
     title: 'Men',
     link: '/shop?category=men',
-    image: 'https://images.unsplash.com/photo-1582142407894-ec85a1260a46?q=80&w=800&auto=format&fit=crop'
+    image: '/curated/cat-men.jpg'
   },
   {
     title: 'Kids',
     link: '/shop?category=kids',
-    image: 'https://images.unsplash.com/photo-1577803645773-f96470509666?q=80&w=800&auto=format&fit=crop'
+    image: '/curated/cat-kids.jpg'
   },
   {
     title: 'Sunglasses',
     link: '/shop?category=sun-glass',
-    image: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=800&auto=format&fit=crop'
+    image: '/curated/cat-sunglasses.jpg'
   }
 ];
 

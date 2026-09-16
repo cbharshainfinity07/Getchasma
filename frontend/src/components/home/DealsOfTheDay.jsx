@@ -4,26 +4,54 @@ import { ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { API_BASE_URL } from '../../config/api';
 
+const CURATED_DEALS = [
+  {
+    id: 4,
+    name: "Classic Aviator",
+    category: "Sun Glass",
+    price: 120,
+    originalPrice: 145,
+    image: "/curated/prod-classic-aviator.jpg"
+  },
+  {
+    id: 5,
+    name: "Retro Square",
+    category: "Eye Glasses",
+    price: 95,
+    originalPrice: 120,
+    image: "/curated/prod-retro-square.jpg"
+  },
+  {
+    id: 6,
+    name: "Round Tortoise",
+    category: "Sun Glass",
+    price: 110,
+    originalPrice: 135,
+    image: "/curated/prod-round-tortoise.jpg"
+  }
+];
+
 export default function DealsOfTheDay() {
-  const [deals, setDeals] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [deals, setDeals] = useState(CURATED_DEALS);
   const { addToCart } = useCart();
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/products`)
       .then(res => res.json())
       .then(data => {
-        // Grab items 3 through 6 for deals
-        setDeals(Array.isArray(data) ? data.slice(3, 6) : []);
-        setLoading(false);
+        if (Array.isArray(data) && data.length >= 6) {
+          const mapped = data.slice(3, 6).map((item, idx) => ({
+            ...item,
+            image: item.image || CURATED_DEALS[idx % 3].image,
+            category: item.category || CURATED_DEALS[idx % 3].category
+          }));
+          setDeals(mapped);
+        }
       })
-      .catch(err => {
-        console.error("Error fetching DealsOfTheDay:", err);
-        setLoading(false);
+      .catch(() => {
+        // Keep curated fallback
       });
   }, []);
-
-  if (loading || deals.length === 0) return null;
 
   return (
     <section className="bg-white py-10 sm:py-16 px-4 sm:px-6 max-w-7xl mx-auto">
