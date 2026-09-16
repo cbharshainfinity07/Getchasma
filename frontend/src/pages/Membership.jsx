@@ -36,22 +36,21 @@ export default function Membership() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/50 via-white to-slate-50 text-slate-900 pt-12 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Sunlit golden ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-gradient-to-b from-amber-300/20 via-orange-200/15 to-transparent rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-80 -right-40 w-96 h-96 bg-blue-400/10 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 pt-12 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Subtle ambient glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[450px] bg-neutral-200/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-20 relative z-10">
 
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 via-amber-400/20 to-amber-500/10 border border-amber-300/60 text-amber-900 text-[11px] font-bold uppercase tracking-widest shadow-sm">
-            <Crown size={14} className="fill-amber-500 text-amber-500" />
-            Lenskart & Atelier-Grade Privilege Club
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900 text-[11px] font-semibold uppercase tracking-widest shadow-sm">
+            <Crown size={14} className="fill-neutral-900 text-neutral-900" />
+            Privilege Club & Concierge
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-slate-900 leading-tight">
-            Chasma Gold <span className="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-500 bg-clip-text text-transparent">VIP Privilege</span>
+          <h1 className="font-serif text-4xl sm:text-6xl font-bold tracking-tight text-neutral-950 leading-tight">
+            Chasma Gold VIP Privilege
           </h1>
 
           <p className="text-sm md:text-base text-slate-600 leading-relaxed max-w-2xl mx-auto">
@@ -221,16 +220,16 @@ export default function Membership() {
               className="p-8 rounded-3xl bg-white border-2 border-amber-400 shadow-xl shadow-amber-500/10 flex flex-col justify-between relative overflow-hidden"
             >
               <div className="space-y-4">
-                <div className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider shadow-sm">
-                  MOST POPULAR
+                <div className="inline-block px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-950 text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                  STANDARD VIP
                 </div>
                 <div>
-                  <h4 className="font-serif text-2xl font-bold text-slate-900">1-Year Gold VIP Pass</h4>
-                  <p className="text-xs text-slate-500 mt-1">365 Days of BOGO, 50% off lenses & free courier</p>
+                  <h4 className="font-serif text-2xl font-bold text-slate-900">1-Year Atelier Gold</h4>
+                  <p className="text-xs text-slate-500 mt-1">Full access to private club pricing and complimentary secondary frames</p>
                 </div>
                 <div className="flex items-baseline gap-2 pt-2">
                   <span className="font-serif text-4xl font-bold text-slate-900 font-mono">₹999</span>
-                  <span className="text-xs text-slate-500">/ 1 full year</span>
+                  <span className="text-xs text-slate-500">/ year</span>
                 </div>
                 <ul className="space-y-2.5 text-xs text-slate-700 pt-4 border-t border-slate-100">
                   <li className="flex items-center gap-2"><Check size={15} className="text-amber-500 stroke-[2.5]" /> BOGO on all frames</li>
@@ -242,7 +241,7 @@ export default function Membership() {
 
               <button
                 onClick={() => handleSelectPlan('1-Year Chasma Gold Pass', 1)}
-                className="w-full mt-8 py-4 bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-lg shadow-amber-500/25 active:scale-95 text-center cursor-pointer"
+                className="w-full mt-8 py-4 bg-neutral-950 hover:bg-black text-amber-400 border border-amber-400/40 text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md active:scale-95 text-center cursor-pointer"
               >
                 Activate 1-Year Pass (₹999)
               </button>
@@ -254,7 +253,7 @@ export default function Membership() {
               className="p-8 rounded-3xl bg-white border border-slate-200/90 hover:border-indigo-400/80 transition-all flex flex-col justify-between shadow-xl"
             >
               <div className="space-y-4">
-                <div className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                <div className="inline-block px-3 py-1 rounded-full bg-neutral-950 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
                   BEST VALUE (SAVE ₹499)
                 </div>
                 <div>
@@ -275,7 +274,7 @@ export default function Membership() {
 
               <button
                 onClick={() => handleSelectPlan('2-Year Luxury Connoisseur Pass', 2)}
-                className="w-full mt-8 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-lg shadow-blue-500/25 active:scale-95 text-center cursor-pointer"
+                className="w-full mt-8 py-4 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md active:scale-95 text-center cursor-pointer"
               >
                 Activate 2-Year Pass (₹1,499)
               </button>

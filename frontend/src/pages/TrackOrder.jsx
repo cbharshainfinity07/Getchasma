@@ -299,43 +299,43 @@ export default function TrackOrder() {
   const canRequestReturn = order && order.status.toLowerCase() === 'delivered' && !isReturnPending && !isReturnApproved && !isRefunded;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/40 via-white to-slate-50 text-slate-900 pt-12 pb-24 px-4 md:px-8 relative overflow-hidden">
-      {/* Decorative sunlit ambient glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-blue-200/20 via-indigo-100/10 to-transparent rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 pt-12 pb-24 px-4 md:px-8 relative overflow-hidden">
+      {/* Subtle ambient lighting */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-neutral-200/20 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-3xl mx-auto relative z-10">
         
         {/* Luxury Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-[11px] font-bold uppercase tracking-widest mb-3 shadow-sm">
-            <ShieldCheck size={14} className="text-blue-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-800 text-[11px] font-semibold uppercase tracking-widest mb-3 shadow-sm">
+            <ShieldCheck size={14} className="text-neutral-700" />
             Concierge Logistics & Optical Tracking
           </div>
-          <h1 className="font-serif text-3xl md:text-5xl font-bold text-slate-900 mb-3 tracking-tight">
-            Track Your <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">Eyewear</span>
+          <h1 className="font-serif text-3xl md:text-5xl font-bold text-neutral-950 mb-3 tracking-tight">
+            Track Your Eyewear
           </h1>
-          <p className="text-slate-600 text-xs md:text-sm max-w-md mx-auto">
+          <p className="text-neutral-600 text-xs md:text-sm max-w-md mx-auto">
             Experience real-time white-glove status updates as your bespoke frames are crafted, calibrated, and securely dispatched.
           </p>
         </div>
 
         {/* Tracking Input Card */}
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-xl shadow-slate-100 mb-8">
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-neutral-200/80 shadow-xl shadow-neutral-100 mb-8">
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
-              <Search size={18} className="absolute left-4 top-4 text-slate-400" />
+              <Search size={18} className="absolute left-4 top-4 text-neutral-400" />
               <input
                 type="text"
                 placeholder="e.g. ORD-7820"
                 value={orderIdInput}
                 onChange={(e) => setOrderIdInput(e.target.value)}
-                className="w-full pl-11 pr-4 py-3.5 text-sm uppercase font-semibold rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 tracking-wider transition-all placeholder:text-slate-400 font-mono"
+                className="w-full pl-11 pr-4 py-3.5 text-sm uppercase font-semibold rounded-2xl bg-neutral-50 border border-neutral-200 text-neutral-900 outline-none focus:border-black focus:ring-1 focus:ring-black tracking-wider transition-all placeholder:text-neutral-400 font-mono"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-2xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 shadow-lg shadow-blue-500/25 active:scale-95 cursor-pointer"
+              className="px-8 py-3.5 bg-black hover:bg-neutral-800 text-white rounded-2xl text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-50 shadow-md active:scale-95 cursor-pointer"
             >
               {loading ? 'Locating...' : 'Track Package'}
             </button>
@@ -444,7 +444,7 @@ export default function TrackOrder() {
 
             {/* GATEWAY REFUND SETTLED BANNER */}
             {isRefunded && (
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-white border-2 border-emerald-300 text-slate-900 space-y-3 shadow-md">
+              <div className="p-5 rounded-2xl bg-emerald-50/70 border border-emerald-300 text-neutral-900 space-y-3 shadow-sm">
                 <div className="flex items-center gap-3.5">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-600/20 flex-shrink-0">
                     <IndianRupee size={24} strokeWidth={2.5} />
@@ -635,7 +635,7 @@ export default function TrackOrder() {
                             isCompleted
                               ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
                               : isCurrent
-                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white ring-4 ring-blue-100 shadow-md shadow-blue-500/30 animate-pulse'
+                              ? 'bg-black text-white ring-4 ring-neutral-200 shadow-md shadow-neutral-900/10 animate-pulse'
                               : 'bg-slate-100 border border-slate-200 text-slate-400'
                           }`}>
                             {isCompleted ? (
@@ -1032,7 +1032,7 @@ export default function TrackOrder() {
                     type="button"
                     disabled={submittingReturn}
                     onClick={handleSubmitReturn}
-                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-lg shadow-blue-500/20 active:scale-95"
+                    className="px-6 py-2.5 rounded-full bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 cursor-pointer shadow-md active:scale-95"
                   >
                     {submittingReturn ? 'Submitting Case...' : 'Submit Return Request'}
                   </button>
@@ -1124,7 +1124,7 @@ export default function TrackOrder() {
                     type="button"
                     disabled={cancelling}
                     onClick={handleCancelOrder}
-                    className="px-5 py-2 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shadow-lg shadow-rose-600/20 active:scale-95 cursor-pointer"
+                    className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 shadow-md active:scale-95 cursor-pointer"
                   >
                     {cancelling ? 'Submitting...' : 'Submit Request'}
                   </button>

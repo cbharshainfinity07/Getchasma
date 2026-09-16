@@ -147,9 +147,9 @@ export default function AccountDashboard() {
   const deliveredOrders = orders.filter(o => o.status.toLowerCase() === 'delivered');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/30 via-white to-slate-50 text-slate-900 pt-8 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Decorative sunlit ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-b from-blue-200/15 via-indigo-100/10 to-transparent rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 pt-8 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Subtle ambient lighting */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-neutral-200/20 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto space-y-8 relative z-10">
 
@@ -160,18 +160,18 @@ export default function AccountDashboard() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed top-24 right-8 z-50 px-5 py-3 bg-white border border-blue-200 text-blue-900 text-xs font-bold rounded-2xl shadow-xl flex items-center gap-2"
+              className="fixed top-24 right-8 z-50 px-5 py-3 bg-white border border-neutral-200 text-neutral-900 text-xs font-bold rounded-2xl shadow-xl flex items-center gap-2"
             >
-              <Sparkles size={16} className="text-blue-600" />
+              <Sparkles size={16} className="text-neutral-700" />
               <span>{toastMessage}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Top Header Card */}
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-xl shadow-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="bg-white rounded-3xl p-6 md:p-8 border border-neutral-200/80 shadow-xl shadow-neutral-100 flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center font-serif text-2xl font-bold shadow-lg shadow-blue-500/20">
+            <div className="w-16 h-16 rounded-2xl bg-neutral-950 text-white flex items-center justify-center font-serif text-2xl font-bold shadow-md">
               {user.name.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -180,7 +180,7 @@ export default function AccountDashboard() {
                   {user.name}
                 </h1>
                 {user.isMember && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider shadow-sm">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-950 text-[10px] font-bold uppercase tracking-wider shadow-sm">
                     <Crown size={11} /> GOLD VIP
                   </span>
                 )}
@@ -232,8 +232,8 @@ export default function AccountDashboard() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-neutral-950 text-white shadow-md'
+                    : 'text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100'
                 }`}
               >
                 <Icon size={15} />
@@ -286,7 +286,7 @@ export default function AccountDashboard() {
                 </p>
                 <Link
                   to="/shop"
-                  className="inline-block px-8 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 text-white text-xs font-bold uppercase tracking-widest rounded-full hover:from-blue-500 hover:to-indigo-500 transition-all shadow-lg shadow-blue-500/25 active:scale-95"
+                  className="inline-block px-8 py-3.5 bg-black text-white text-xs font-bold uppercase tracking-widest rounded-full hover:bg-neutral-800 transition-all shadow-md active:scale-95"
                 >
                   Explore Eyewear Collection
                 </Link>
@@ -552,7 +552,7 @@ export default function AccountDashboard() {
               {!user.isMember ? (
                 <button
                   onClick={handleJoinMembership}
-                  className="px-8 py-4 bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 text-slate-950 text-xs font-bold uppercase tracking-widest rounded-full hover:from-amber-300 hover:to-amber-400 transition-all shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer"
+                  className="px-8 py-4 bg-neutral-950 hover:bg-black text-amber-400 border border-amber-400/40 text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md active:scale-95 cursor-pointer"
                 >
                   Activate Gold VIP Pass (₹999 / Year)
                 </button>
@@ -650,7 +650,7 @@ export default function AccountDashboard() {
               <button
                 type="submit"
                 disabled={savingProfile}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all disabled:opacity-50 mt-4 shadow-lg shadow-blue-500/25 active:scale-95 cursor-pointer"
+                className="w-full py-4 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all disabled:opacity-50 mt-4 shadow-md active:scale-95 cursor-pointer"
               >
                 {savingProfile ? 'Saving Changes...' : 'Save Profile & Address'}
               </button>
@@ -735,7 +735,7 @@ export default function AccountDashboard() {
                     type="button"
                     disabled={cancelling}
                     onClick={handleCancelOrderSubmit}
-                    className="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors disabled:opacity-50 shadow-lg shadow-rose-600/20 active:scale-95 cursor-pointer"
+                    className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-colors disabled:opacity-50 shadow-md active:scale-95 cursor-pointer"
                   >
                     {cancelling ? 'Submitting Request...' : 'Submit Cancellation Request'}
                   </button>

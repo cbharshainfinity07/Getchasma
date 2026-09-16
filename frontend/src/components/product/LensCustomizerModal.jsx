@@ -391,7 +391,7 @@ export default function LensCustomizerModal({ product, isOpen, onClose, onAddToC
               <button
                 type="button"
                 onClick={handleFinishCustomization}
-                className="flex-1 sm:flex-initial px-8 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all shadow-lg shadow-blue-500/25 active:scale-95 cursor-pointer"
+                className="flex-1 sm:flex-initial px-8 py-3.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 Add To Bag &bull; ₹{totalPrice.toLocaleString('en-IN')}
               </button>
@@ -399,7 +399,7 @@ export default function LensCustomizerModal({ product, isOpen, onClose, onAddToC
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
-                className="flex-1 sm:flex-initial px-8 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 active:scale-95 cursor-pointer"
+                className="flex-1 sm:flex-initial px-8 py-3.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer"
               >
                 Continue <ArrowRight size={14} />
               </button>

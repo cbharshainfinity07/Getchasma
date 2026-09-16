@@ -63,13 +63,13 @@ export default function OrderConfirmation() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to={`/track-order?id=${order?.id || id}`}
-              className="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 active:scale-95"
+              className="w-full sm:w-auto px-8 py-3.5 bg-black hover:bg-neutral-800 text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
             >
               <Truck size={16} /> Track Order Status
             </Link>
             <Link
               to="/shop"
-              className="w-full sm:w-auto px-8 py-3.5 border border-slate-200 hover:border-blue-500 hover:text-blue-600 rounded-full text-xs font-bold uppercase tracking-wider transition-all active:scale-95"
+              className="w-full sm:w-auto px-8 py-3.5 border border-neutral-300 hover:border-black hover:text-black rounded-full text-xs font-bold uppercase tracking-wider transition-all active:scale-95"
             >
               Continue Browsing
             </Link>

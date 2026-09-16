@@ -526,10 +526,10 @@ export default function ProductDetails() {
               </p>
             </div>
 
-            {/* 3. SOCIAL PROOF BADGE (Titan Eyeplus signature: PURCHASED BY 168) */}
+            {/* 3. SOCIAL PROOF BADGE */}
             <div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-[11px] font-black tracking-widest uppercase shadow-md shadow-emerald-500/20 px-4 py-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-800 text-[11px] font-semibold tracking-wider uppercase">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
                 PURCHASED BY 168+ THIS WEEK
               </span>
             </div>
@@ -581,21 +581,21 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            {/* 5. PRODUCT OFFERS CARD (Titan Eyeplus / Lenskart signature) */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50/70 border border-amber-200/90 relative overflow-hidden">
-              <span className="text-[10px] uppercase font-black tracking-[0.2em] text-amber-800 font-extrabold block mb-1">
+            {/* 5. PRODUCT OFFERS CARD */}
+            <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200 relative overflow-hidden">
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-neutral-600 block mb-1">
                 PRODUCT OFFERS
               </span>
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-bold text-gray-900">
-                    Flat ₹500 Off with code <span className="font-mono text-black">ATELIER500</span>
+                  <p className="text-xs font-bold text-neutral-950">
+                    Flat ₹500 Off with code <span className="font-mono text-black font-extrabold">ATELIER500</span>
                   </p>
-                  <p className="text-[11px] text-gray-600">Applicable on prepaid cards, UPI &amp; NetBanking</p>
+                  <p className="text-[11px] text-neutral-500">Applicable on prepaid cards, UPI &amp; NetBanking</p>
                 </div>
                 <button
                   onClick={() => handleCopyOffer('ATELIER500')}
-                  className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-[10px] font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-1 flex-shrink-0 shadow-md shadow-orange-500/20 active:scale-95"
+                  className="px-3.5 py-1.5 bg-black hover:bg-neutral-800 text-white text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 flex-shrink-0 shadow-sm active:scale-95 cursor-pointer"
                 >
                   {copiedCode === 'ATELIER500' ? (
                     <>
@@ -671,16 +671,16 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            {/* 8. DUAL CTAs: ADD TO CART (CYAN PILL) & ADD POWER (PRESCRIPTION) */}
+            {/* 8. DUAL CTAs: ADD TO CART & ADD POWER (PRESCRIPTION) */}
             <div className="space-y-3 pt-2">
               
-              {/* PRIMARY CTA: TITAN EYEPLUS SIGNATURE TEAL/CYAN GRADIENT PILL */}
+              {/* PRIMARY CTA: LUXURY SOLID BLACK PILL */}
               <button
                 onClick={handleQuickAdd}
-                className={`w-full py-4 rounded-full font-extrabold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg active:scale-98 transition-all ${
+                className={`w-full py-4 rounded-full font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all cursor-pointer ${
                   isAdded 
                     ? 'bg-emerald-600 text-white shadow-emerald-200' 
-                    : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-xl shadow-blue-500/30 active:scale-95'
+                    : 'bg-black hover:bg-neutral-800 text-white shadow-md'
                 }`}
               >
                 {isAdded ? (
@@ -696,12 +696,12 @@ export default function ProductDetails() {
                 )}
               </button>
 
-              {/* SECONDARY CTA: LENSKART 'ADD POWER' PRESCRIPTION SELECTOR */}
+              {/* SECONDARY CTA: CLEAN BORDER PILL */}
               <button
                 onClick={() => setCustomizerOpen(true)}
-                className="w-full py-3.5 rounded-full border-2 border-indigo-600 hover:bg-indigo-600 hover:text-white text-indigo-700 font-extrabold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all duration-200 shadow-sm active:scale-95 group"
+                className="w-full py-3.5 rounded-full border-2 border-black hover:bg-black hover:text-white text-black font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-200 shadow-sm active:scale-95 group cursor-pointer"
               >
-                <Sparkles size={16} className="text-amber-500 group-hover:rotate-12 transition-transform" />
+                <Sparkles size={16} className="text-neutral-600 group-hover:text-white group-hover:rotate-12 transition-transform" />
                 <span>Add Power / Select Prescription Lenses</span>
               </button>
 

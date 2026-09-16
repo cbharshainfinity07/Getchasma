@@ -91,19 +91,18 @@ export default function CustomerLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50/40 via-white to-slate-50 text-slate-900 flex flex-col justify-center py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Decorative sunlit ambient glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-200/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-10 right-10 w-80 h-80 bg-amber-200/20 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 flex flex-col justify-center py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Subtle ambient glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-neutral-200/20 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="text-center">
           <Link to="/" className="inline-block mb-3">
-            <span className="font-serif text-3xl font-bold tracking-tight text-slate-900 hover:text-blue-600 transition-colors">
-              GetChasma<span className="text-blue-600">.</span>
+            <span className="font-serif text-3xl font-bold tracking-tight text-neutral-950">
+              GetChasma<span className="text-black">.</span>
             </span>
           </Link>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-[10px] font-bold uppercase tracking-widest mx-auto mb-2 shadow-sm">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200 text-neutral-800 text-[10px] font-semibold uppercase tracking-widest mx-auto mb-2 shadow-sm">
             <Sparkles size={11} /> Atelier Private Client Access
           </div>
           <h2 className="font-serif text-2xl md:text-3xl font-bold tracking-tight text-slate-900">
@@ -197,7 +196,7 @@ export default function CustomerLogin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 mt-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                className="w-full py-3.5 mt-2 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md active:scale-[0.98] disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Authenticating...' : 'Sign In To Account'}
               </button>
@@ -321,7 +320,7 @@ export default function CustomerLogin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 mt-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-lg shadow-blue-500/25 disabled:opacity-50 cursor-pointer"
+                className="w-full py-3.5 mt-2 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md disabled:opacity-50 cursor-pointer"
               >
                 {loading ? 'Registering...' : 'Create Atelier Account'}
               </button>

@@ -511,9 +511,9 @@ export default function Checkout() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-widest rounded-full transition-all shadow-xl shadow-blue-500/25 active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest rounded-full transition-all shadow-lg active:scale-95 disabled:opacity-50 cursor-pointer"
               >
-                {isSubmitting ? 'Confirming Acquisition...' : `Place Order &bull; ₹${finalTotal.toLocaleString('en-IN')}`}
+                {isSubmitting ? 'Confirming Acquisition...' : `Place Order \u2022 \u20B9${finalTotal.toLocaleString('en-IN')}`}
               </button>
 
             </form>
@@ -590,7 +590,7 @@ export default function Checkout() {
                       <button
                         type="submit"
                         disabled={isApplyingCoupon || !couponCode.trim()}
-                        className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl uppercase tracking-wider disabled:opacity-50 transition-all shadow-sm active:scale-95 cursor-pointer"
+                        className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-bold rounded-xl uppercase tracking-wider disabled:opacity-50 transition-all shadow-sm active:scale-95 cursor-pointer"
                       >
                         {isApplyingCoupon ? 'Verifying...' : 'Apply'}
                       </button>
@@ -629,7 +629,7 @@ export default function Checkout() {
 
               {/* Gold VIP Member Privilege Badge */}
               {isMember && (
-                <div className="p-3.5 bg-gradient-to-r from-amber-50 to-amber-100/60 border border-amber-300 rounded-2xl flex items-center justify-between text-xs mb-4 shadow-sm">
+                <div className="p-3.5 bg-amber-50/80 border border-amber-300 rounded-2xl flex items-center justify-between text-xs mb-4 shadow-sm">
                   <div className="flex items-center gap-2 text-amber-950 font-bold">
                     <Crown size={18} className="text-amber-600 fill-amber-500" />
                     <span>Gold VIP Privilege Active</span>

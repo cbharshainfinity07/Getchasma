@@ -54,18 +54,18 @@ export default function SideCart() {
             </div>
 
             {/* Free Shipping Meter */}
-            <div className="px-6 py-3 bg-blue-50/50 border-b border-blue-100/60">
+            <div className="px-6 py-3 bg-neutral-50 border-b border-neutral-200/80">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
-                <span className="text-slate-700">
+                <span className="text-neutral-700">
                   {remainingForFreeShipping > 0 
                     ? `Add ₹${Math.round(remainingForFreeShipping).toLocaleString('en-IN')} more for FREE Delivery` 
-                    : '🎉 You unlocked FREE Express Delivery!'}
+                    : 'You unlocked FREE Express Delivery!'}
                 </span>
-                <span className="text-blue-700 font-bold">{Math.round(progressToFreeShipping)}%</span>
+                <span className="text-neutral-950 font-bold">{Math.round(progressToFreeShipping)}%</span>
               </div>
-              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+              <div className="w-full h-1.5 bg-neutral-200 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 transition-all duration-500 rounded-full shadow-sm"
+                  className="h-full bg-neutral-950 transition-all duration-500 rounded-full"
                   style={{ width: `${progressToFreeShipping}%` }}
                 />
               </div>
@@ -75,12 +75,12 @@ export default function SideCart() {
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {cartItems.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-400 space-y-4 text-center">
-                  <div className="w-20 h-20 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
-                    <Trash2 size={28} />
+                  <div className="w-16 h-16 bg-neutral-100 text-neutral-400 rounded-full flex items-center justify-center">
+                    <Trash2 size={24} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-base text-slate-800 mb-1">Your bag is empty</h3>
-                    <p className="text-xs text-slate-500 max-w-[200px]">
+                    <h3 className="font-semibold text-base text-neutral-900 mb-1">Your bag is empty</h3>
+                    <p className="text-xs text-neutral-500 max-w-[200px]">
                       Discover our collection of handcrafted sunglasses and optical frames.
                     </p>
                   </div>
@@ -89,46 +89,46 @@ export default function SideCart() {
                       closeCart();
                       navigate('/shop');
                     }}
-                    className="mt-4 px-7 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-lg shadow-blue-500/25 active:scale-95 transition-all cursor-pointer"
+                    className="mt-4 px-7 py-3 bg-black hover:bg-neutral-800 text-white text-xs font-bold uppercase tracking-wider rounded-full shadow-md active:scale-95 transition-all cursor-pointer"
                   >
                     Browse Eyewear
                   </button>
                 </div>
               ) : (
                 cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
-                    <div className="w-20 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center p-2 border border-slate-100">
+                  <div key={item.id} className="flex gap-4 p-3.5 bg-neutral-50 rounded-2xl border border-neutral-200/80">
+                    <div className="w-20 h-20 bg-white rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center p-2 border border-neutral-200">
                       <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                     </div>
                     <div className="flex-1 flex flex-col justify-between">
                       <div>
-                        <h3 className="font-semibold text-xs md:text-sm line-clamp-1 text-slate-900">{item.name}</h3>
+                        <h3 className="font-semibold text-xs md:text-sm line-clamp-1 text-neutral-900">{item.name}</h3>
                         {item.lensDetails && (
                           <span className="text-[10px] font-semibold text-emerald-700 block truncate">
                             &bull; {item.lensDetails.lensPackage}
                           </span>
                         )}
-                        <p className="text-slate-900 font-bold text-sm mt-0.5 font-mono">₹{Number(item.price || 0).toLocaleString('en-IN')}</p>
+                        <p className="text-neutral-950 font-bold text-sm mt-0.5 font-mono">₹{Number(item.price || 0).toLocaleString('en-IN')}</p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center bg-white border border-slate-200 rounded-lg">
+                        <div className="flex items-center bg-white border border-neutral-200 rounded-lg">
                           <button 
                             onClick={() => updateQuantity(item.id, -1)}
-                            className="p-1 hover:bg-slate-100 rounded-l-lg transition-colors text-slate-500"
+                            className="p-1 hover:bg-neutral-100 rounded-l-lg transition-colors text-neutral-500"
                           >
                             <Minus size={13} />
                           </button>
-                          <span className="w-7 text-center text-xs font-bold text-slate-900">{item.quantity}</span>
+                          <span className="w-7 text-center text-xs font-bold text-neutral-900">{item.quantity}</span>
                           <button 
                             onClick={() => updateQuantity(item.id, 1)}
-                            className="p-1 hover:bg-slate-100 rounded-r-lg transition-colors text-slate-500"
+                            className="p-1 hover:bg-neutral-100 rounded-r-lg transition-colors text-neutral-500"
                           >
                             <Plus size={13} />
                           </button>
                         </div>
                         <button 
                           onClick={() => removeFromCart(item.id)}
-                          className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                          className="text-neutral-400 hover:text-red-500 transition-colors p-1 cursor-pointer"
                           title="Remove item"
                         >
                           <Trash2 size={15} />
@@ -142,21 +142,21 @@ export default function SideCart() {
 
             {/* Footer */}
             {cartItems.length > 0 && (
-              <div className="p-6 border-t border-slate-100 bg-white">
+              <div className="p-6 border-t border-neutral-200 bg-white">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-slate-500 text-sm font-medium">Subtotal</span>
-                  <span className="text-xl font-bold text-slate-900 font-mono">₹{Number(cartTotal || 0).toLocaleString('en-IN')}</span>
+                  <span className="text-neutral-500 text-sm font-medium">Subtotal</span>
+                  <span className="text-xl font-bold text-neutral-950 font-mono">₹{Number(cartTotal || 0).toLocaleString('en-IN')}</span>
                 </div>
-                <p className="text-[11px] text-slate-400 mb-4">Taxes and shipping calculated at checkout</p>
+                <p className="text-[11px] text-neutral-400 mb-4">Taxes and shipping calculated at checkout</p>
                 
                 <button
                   onClick={handleProceedToCheckout}
-                  className="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-xl shadow-blue-500/25 active:scale-95 cursor-pointer"
+                  className="w-full py-3.5 bg-black hover:bg-neutral-800 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer"
                 >
-                  Proceed to Checkout <ArrowRight size={16} />
+                  Proceed to Checkout <ArrowRight size={15} />
                 </button>
 
-                <div className="mt-3 flex items-center justify-center gap-2 text-[11px] text-slate-500">
+                <div className="mt-3 flex items-center justify-center gap-2 text-[11px] text-neutral-500">
                   <ShieldCheck size={14} className="text-emerald-600" />
                   <span>Secure 256-bit SSL Encrypted Checkout</span>
                 </div>

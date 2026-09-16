@@ -343,23 +343,23 @@ export default function Shop() {
               </div>
             </div>
 
-            {/* 2. Try in 3D Switch Toggle (Lenskart Signature) */}
-            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/80 text-slate-900 flex items-center justify-between">
+            {/* 2. Try in 3D Switch Toggle */}
+            <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-200/80 text-neutral-900 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-md">
+                <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shadow-sm">
                   <Camera size={14} />
                 </div>
                 <div>
-                  <span className="font-bold text-xs text-slate-950 font-bold block">Try in 3D</span>
-                  <span className="text-[10px] text-slate-500">Virtual Face Fitting</span>
+                  <span className="font-bold text-xs text-neutral-950 block">Try in 3D</span>
+                  <span className="text-[10px] text-neutral-500">Virtual Face Fitting</span>
                 </div>
               </div>
 
               {/* Animated Switch */}
               <button
                 onClick={() => setTryIn3DOnly(!tryIn3DOnly)}
-                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 ${
-                  tryIn3DOnly ? 'bg-gradient-to-r from-blue-600 to-indigo-600' : 'bg-slate-300'
+                className={`w-11 h-6 rounded-full transition-colors relative p-0.5 cursor-pointer ${
+                  tryIn3DOnly ? 'bg-black' : 'bg-neutral-300'
                 }`}
               >
                 <motion.div
