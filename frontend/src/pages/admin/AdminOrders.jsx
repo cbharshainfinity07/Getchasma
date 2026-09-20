@@ -798,7 +798,7 @@ export default function AdminOrders() {
               {order.refundStatus === 'pending_gateway_refund' && order.status !== 'refunded' && (
                 <button
                   onClick={() => setRefundingOrder(order)}
-                  className="w-full py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1.5 shadow"
+                  className="w-full py-2 bg-[#0f766e] hover:bg-teal-800 text-white rounded-xl text-xs font-bold uppercase flex items-center justify-center gap-1.5 shadow"
                 >
                   <Zap size={13} className="text-amber-300" />
                   <span>⚡ Issue Gateway Refund (₹{Number(order.total || 0).toLocaleString('en-IN')})</span>
@@ -1105,7 +1105,7 @@ export default function AdminOrders() {
                           <button
                             type="button"
                             onClick={() => setRefundingOrder(order)}
-                            className="w-full px-2.5 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold uppercase flex items-center justify-center gap-1 shadow-sm transition-colors"
+                            className="w-full px-2.5 py-1 rounded-lg bg-[#0f766e] hover:bg-teal-800 text-white text-[10px] font-bold uppercase flex items-center justify-center gap-1 shadow-sm transition-colors"
                             title="Process instant payment gateway refund"
                           >
                             <Zap size={11} className="text-amber-300 animate-pulse" />
@@ -1355,7 +1355,7 @@ export default function AdminOrders() {
                         <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold flex-shrink-0 shadow ${
                           (selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse)
                             ? 'bg-emerald-600 text-white'
-                            : 'bg-blue-600 text-white'
+                            : 'bg-[#0f766e] text-white'
                         }`}>
                           <Truck size={22} className={!(selectedOrder.returnRequest?.receivedAtWarehouse || selectedOrder.cancellationRequest?.receivedAtWarehouse) ? 'animate-pulse' : ''} />
                         </div>
@@ -1690,14 +1690,14 @@ export default function AdminOrders() {
                   <div className={`p-5 rounded-2xl border-2 space-y-4 shadow-sm ${
                     selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded'
                       ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                      : 'bg-indigo-50 border-indigo-300 text-indigo-950'
+                      : 'bg-teal-50 border-teal-300 text-teal-950'
                   }`}>
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 shadow ${
                           selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded'
                             ? 'bg-emerald-600 text-white'
-                            : 'bg-indigo-600 text-white'
+                            : 'bg-[#0f766e] text-white'
                         }`}>
                           <Zap size={20} className={selectedOrder.status === 'refunded' ? '' : 'animate-pulse'} />
                         </div>
@@ -1713,7 +1713,7 @@ export default function AdminOrders() {
                                 ? 'bg-emerald-200 text-emerald-900'
                                 : isAwaitingWarehouseArrival(selectedOrder) && isPrepaidOrder(selectedOrder)
                                 ? 'bg-amber-200 text-amber-900 border border-amber-300'
-                                : 'bg-indigo-200 text-indigo-900'
+                                : 'bg-teal-200 text-teal-900'
                             }`}>
                               {selectedOrder.status === 'refunded' || selectedOrder.refundStatus === 'refunded'
                                 ? 'Settled'
@@ -1742,7 +1742,7 @@ export default function AdminOrders() {
                           <button
                             type="button"
                             onClick={() => setRefundingOrder(selectedOrder)}
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase rounded-xl tracking-wider flex items-center gap-1.5 shadow transition-colors self-start sm:self-auto animate-pulse"
+                            className="px-4 py-2 bg-[#0f766e] hover:bg-teal-800 text-white text-xs font-bold uppercase rounded-xl tracking-wider flex items-center gap-1.5 shadow transition-colors self-start sm:self-auto animate-pulse"
                           >
                             <Zap size={14} className="text-amber-300" />
                             <span>⚡ Process Gateway Refund (₹{Number(selectedOrder.total || 0).toLocaleString('en-IN')})</span>
@@ -1757,11 +1757,11 @@ export default function AdminOrders() {
                         <span className="font-bold text-gray-500 uppercase text-[10px] block">Target Destination</span>
                         <div className="font-bold text-gray-900 flex items-center gap-1.5">
                           {selectedOrder.paymentMethod === 'Cash on Delivery' ? (
-                            <Wallet size={14} className="text-purple-600" />
+                            <Wallet size={14} className="text-zinc-700" />
                           ) : selectedOrder.paymentMethod === 'UPI' ? (
-                            <Smartphone size={14} className="text-indigo-600" />
+                            <Smartphone size={14} className="text-[#0f766e]" />
                           ) : (
-                            <CreditCard size={14} className="text-blue-600" />
+                            <CreditCard size={14} className="text-[#0f766e]" />
                           )}
                           <span>
                             {selectedOrder.refundDetails?.destination || (
@@ -2040,14 +2040,14 @@ export default function AdminOrders() {
                   )}
                 </div>
 
-                <div className="p-3 bg-white rounded-xl border border-indigo-100">
+                <div className="p-3 bg-white rounded-xl border border-teal-100">
                   <div className="font-semibold text-gray-900 flex items-center gap-2">
                     {refundingOrder.paymentMethod === 'Cash on Delivery' ? (
-                      <Wallet size={16} className="text-purple-600" />
+                      <Wallet size={16} className="text-zinc-700" />
                     ) : refundingOrder.paymentMethod === 'UPI' ? (
-                      <Smartphone size={16} className="text-indigo-600" />
+                      <Smartphone size={16} className="text-[#0f766e]" />
                     ) : (
-                      <CreditCard size={16} className="text-blue-600" />
+                      <CreditCard size={16} className="text-[#0f766e]" />
                     )}
                     <span>
                       {refundingOrder.refundDetails?.destination || (
@@ -2081,7 +2081,7 @@ export default function AdminOrders() {
                 <select
                   value={gatewayProvider}
                   onChange={(e) => setGatewayProvider(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-gray-300 text-xs font-semibold bg-white outline-none focus:border-indigo-600"
+                  className="w-full p-3 rounded-xl border border-gray-300 text-xs font-semibold bg-white outline-none focus:border-[#0f766e]"
                 >
                   <option value="Razorpay Instant Payouts">Razorpay Instant Payouts (Direct UPI / Card Reversal)</option>
                   <option value="Cashfree AutoCollect & Payouts">Cashfree AutoCollect &amp; Payouts Engine</option>
@@ -2108,7 +2108,7 @@ export default function AdminOrders() {
               {/* Gateway Reference ID Preview */}
               <div className="text-[10px] text-gray-500 flex items-center justify-between font-mono bg-gray-50 p-2 rounded-lg border border-gray-200">
                 <span>Gateway ID Preview:</span>
-                <span className="font-bold text-indigo-700">rfnd_rzp_{refundingOrder.id.replace(/[^a-zA-Z0-9]/g, '').slice(-8)}</span>
+                <span className="font-bold text-[#0f766e]">rfnd_rzp_{refundingOrder.id.replace(/[^a-zA-Z0-9]/g, '').slice(-8)}</span>
               </div>
 
               {/* Notes */}
@@ -2121,7 +2121,7 @@ export default function AdminOrders() {
                   value={refundNotes}
                   onChange={(e) => setRefundNotes(e.target.value)}
                   placeholder="e.g. Return approved by Optical Quality Lab, customer satisfied..."
-                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs text-black outline-none focus:border-indigo-500 resize-none bg-gray-50"
+                  className="w-full p-2.5 rounded-xl border border-gray-200 text-xs text-black outline-none focus:border-[#0f766e] resize-none bg-gray-50"
                 />
               </div>
 
@@ -2138,7 +2138,7 @@ export default function AdminOrders() {
                   type="button"
                   disabled={refundLoading}
                   onClick={handleProcessRefund}
-                  className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md disabled:opacity-50"
+                  className="px-6 py-2.5 bg-[#0f766e] hover:bg-teal-800 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 shadow-md disabled:opacity-50"
                 >
                   <Zap size={14} className="text-amber-300" />
                   <span>{refundLoading ? 'Processing Gateway Reversal...' : `Authorize & Refund ₹${Number(refundingOrder.refundDetails?.amount || refundingOrder.total || 0).toLocaleString('en-IN')}`}</span>

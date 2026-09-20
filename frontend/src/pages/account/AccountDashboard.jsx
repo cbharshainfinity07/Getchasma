@@ -265,7 +265,7 @@ export default function AccountDashboard() {
               </div>
               <Link
                 to="/track-order"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-wider"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0f766e] hover:text-teal-900 transition-colors uppercase tracking-wider"
               >
                 <Truck size={14} /> Live Courier Tracker <ChevronRight size={14} />
               </Link>
@@ -277,7 +277,7 @@ export default function AccountDashboard() {
               </div>
             ) : orders.length === 0 ? (
               <div className="p-16 text-center bg-white rounded-3xl border border-slate-200/80 shadow-md space-y-4">
-                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto text-blue-500">
+                <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center mx-auto text-[#0f766e]">
                   <Package size={28} />
                 </div>
                 <h4 className="font-serif text-lg font-bold text-slate-900">No Commissions Yet</h4>
@@ -303,7 +303,7 @@ export default function AccountDashboard() {
                   return (
                     <div
                       key={order.id}
-                      className="bg-white rounded-3xl p-6 border border-slate-200/80 hover:border-blue-300 shadow-md shadow-slate-100 transition-all space-y-5"
+                      className="bg-white rounded-3xl p-6 border border-slate-200/80 hover:border-teal-300 shadow-md shadow-slate-100 transition-all space-y-5"
                     >
                       {/* Order Header */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
@@ -317,7 +317,7 @@ export default function AccountDashboard() {
                                 ? 'bg-rose-50 text-rose-700 border-rose-200'
                                 : isCancelPending
                                 ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                : 'bg-blue-50 text-blue-700 border-blue-200'
+                                : 'bg-teal-50 text-[#0f766e] border-teal-200'
                             }`}>
                               {isCancelPending ? 'Cancel Requested' : order.status}
                             </span>
@@ -330,7 +330,7 @@ export default function AccountDashboard() {
                         <div className="flex items-center gap-3">
                           <Link
                             to={`/track-order?id=${order.id}`}
-                            className="px-4 py-2 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5"
+                            className="px-4 py-2 bg-slate-100 hover:bg-teal-50 text-slate-700 hover:text-[#0f766e] rounded-full text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1.5"
                           >
                             <Truck size={13} />
                             Track

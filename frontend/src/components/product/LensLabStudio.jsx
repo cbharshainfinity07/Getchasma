@@ -1,286 +1,279 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Shield, Activity, Layers, ArrowRight, CornerDownRight, Check, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { ShieldCheck, Eye, Layers, Sparkles } from "lucide-react";
 import { useCart } from "../../context/CartContext";
 
-const LENS_LAB_VARIANTS = [
-  {
-    id: "v156",
-    index: "01",
-    name: "BLUCUT 1.56 STANDARD ESSENTIAL",
-    sku: "LAB-SKU // BC-156-CR",
-    description: "Precision-cast organic monomer optimized for digital display shielding and lighter corrections.",
-    priceDelta: 0,
-    specs: { index: "1.56 Aspheric", abbe: "38 Value", uv: "400nm Block" }
+const SIMULATOR_PROFILES = {
+  standard: {
+    name: "Standard Monomer (1.50)",
+    index: "1.50",
+    abbe: "58",
+    uvProtection: "UV380",
+    edgeThickness: "4.8 mm",
+    distortionLevel: 12,
+    blurRadius: 5,
   },
-  {
-    id: "v160",
-    index: "02",
-    name: "THIN HYDROPHOBIC 1.60 MILITARY-GRADE",
-    sku: "LAB-SKU // HY-160-TI",
-    description: "Ultra-tough polycarbonate core with premium anti-smudge Oleophobic coatings. 20% thinner than standard.",
-    priceDelta: 2200,
-    specs: { index: "1.61 MR-8", abbe: "41 Value", uv: "420nm Block" }
+  polycarbonate: {
+    name: "High-Impact Poly (1.60)",
+    index: "1.60",
+    abbe: "42",
+    uvProtection: "UV400",
+    edgeThickness: "3.6 mm",
+    distortionLevel: 7,
+    blurRadius: 3,
   },
-  {
-    id: "v167",
-    index: "03",
-    name: "ULTRA-THIN ASPHERIC 1.67 HIGH-INDEX",
-    sku: "LAB-SKU // AS-167-PT",
-    description: "Engineered specifically for high prescription fields. Suppresses peripheral distortion flawlessly.",
-    priceDelta: 4500,
-    specs: { index: "1.67 High-Index", abbe: "32 Value", uv: "400nm Block" }
-  }
-];
+  aspheric: {
+    name: "Precision Aspheric (1.67)",
+    index: "1.67",
+    abbe: "32",
+    uvProtection: "UV400 PureCut",
+    edgeThickness: "2.8 mm",
+    distortionLevel: 3,
+    blurRadius: 1,
+  },
+  ultraHigh: {
+    name: "Diamond-Turned Ultra (1.74)",
+    index: "1.74",
+    abbe: "33",
+    uvProtection: "UV420 DualGuard",
+    edgeThickness: "2.1 mm",
+    distortionLevel: 0,
+    blurRadius: 0,
+  },
+};
 
-export default function LensLabStudio({ product, onClose, onComplete }) {
-  const [selectedLens, setSelectedLens] = useState(LENS_LAB_VARIANTS[0]);
-  const [coatingSelected, setCoatingSelected] = useState(true);
-  const [isCommitted, setIsCommitted] = useState(false);
+export const LensLabStudio = ({ product, onClose, onComplete }) => {
+  const [activeProfileKey, setActiveProfileKey] = useState("aspheric");
+  const [simulatedPower, setSimulatedPower] = useState("-4.50");
+  const [coatingActive, setCoatingActive] = useState(true);
+  const [isAdded, setIsAdded] = useState(false);
   const { addToCart } = useCart();
 
-  const coatingFee = coatingSelected ? 1200 : 0;
-  const basePrice = product?.price ? Number(product.price) : 24500;
-  const totalPrice = basePrice + selectedLens.priceDelta + coatingFee;
+  const profile = SIMULATOR_PROFILES[activeProfileKey];
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
+  const handleAcquire = () => {
+    const lensTierPrice =
+      profile.index === "1.50" ? 0 : profile.index === "1.60" ? 1800 : profile.index === "1.67" ? 3400 : 5800;
+    const coatingPrice = coatingActive ? 1200 : 0;
+    const basePrice = product?.price ? Number(product.price) : 2499;
+    const computedFinalPrice = basePrice + lensTierPrice + coatingPrice;
 
-  const handleCommit = () => {
-    const customizedItem = {
-      id: product ? `${product.id}-lab-${selectedLens.id}` : `lab-${selectedLens.id}-${Date.now()}`,
-      name: product
-        ? `${product.name} [${selectedLens.name}]`
-        : `Atelier Custom Frame [${selectedLens.name}]`,
-      price: totalPrice,
+    const calibratedItem = {
+      id: product ? `${product.id}-lab-${activeProfileKey}-${Date.now()}` : `lab-${activeProfileKey}-${Date.now()}`,
+      sku: product?.sku || `FT-${product?.id || "CAL"}-721-LAB`,
+      name: product ? `${product.name} [${profile.name}]` : `Atelier Custom Frame [${profile.name}]`,
+      price: computedFinalPrice,
+      finalPrice: computedFinalPrice,
       image: product?.image || "/curated/summer-glasses.jpg",
-      selectedLens: selectedLens.name,
-      refractiveIndex: selectedLens.specs.index,
-      abbeDispersion: selectedLens.specs.abbe,
-      uvAttenuance: selectedLens.specs.uv,
-      hydrophobicCoating: coatingSelected,
-      isCustomLabCalibrated: true
+      lensConfig: {
+        prescriptionType: `Single Vision (${simulatedPower} D)`,
+        lensTier: { title: profile.name, spec: `Refractive Index ${profile.index} · Abbe ${profile.abbe}` },
+        hydrophobicCoating: coatingActive,
+        finalPrice: computedFinalPrice,
+      },
     };
 
     if (onComplete) {
-      onComplete(customizedItem);
+      onComplete(calibratedItem);
     } else {
-      addToCart(customizedItem, 1);
+      addToCart(calibratedItem, 1);
     }
 
-    setIsCommitted(true);
+    setIsAdded(true);
     setTimeout(() => {
-      setIsCommitted(false);
+      setIsAdded(false);
       if (onClose) onClose();
-    }, 1800);
+    }, 1200);
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#fcfcfb] text-zinc-950 font-sans antialiased selection:bg-teal-800 selection:text-white">
-      
-      {/* ATELIER TOP UTILITY BAR */}
-      <header className="w-full border-b border-zinc-900/10 px-6 py-4 lg:px-12 flex justify-between items-center font-mono text-[11px] tracking-widest text-zinc-500">
-        <div className="flex items-center gap-4">
-          <span>ATELIER CALIBRATION MODULE v4.3.3</span>
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Section Header */}
+      <div className="border-b border-brand-black/10 pb-4 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#0f766e] flex items-center gap-1.5 mb-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#0f766e] animate-pulse" />
+            <Sparkles className="w-3 h-3 text-[#0f766e]" />
+            VIRTUAL OPTICAL RETICLE // SPEC-SURFACING
+          </span>
+          <h2 className="text-2xl font-bold tracking-tight text-brand-black">
+            Laboratory Aberration &amp; Thickness Visualizer
+          </h2>
           {product && (
-            <span className="hidden sm:inline text-zinc-900 font-bold">
-              // TARGET: {product.name.toUpperCase()}
-            </span>
+            <p className="font-mono text-xs text-zinc-500 mt-1">
+              TARGET EYEWEAR: <span className="text-brand-black font-semibold uppercase">{product.name}</span>
+            </p>
           )}
         </div>
-        <div className="hidden md:block">CHASMA LABS // TOKYO - MILAN - BENGALURU</div>
         <div className="flex items-center gap-4">
-          <div className="text-zinc-900 font-bold uppercase">STATUS: ACTIVE LAB PROFILE</div>
+          <div className="font-mono text-[11px] text-zinc-500">
+            POWER CALIBRATION: <span className="text-brand-black font-semibold">{simulatedPower} D</span>
+          </div>
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1 hover:text-zinc-950 transition-colors cursor-pointer text-zinc-400"
-              title="Close Calibration"
+              className="px-2.5 py-1 border border-brand-black/20 hover:border-brand-black text-brand-black text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
             >
-              <X size={16} />
+              ✕ Close Studio
             </button>
           )}
         </div>
-      </header>
+      </div>
 
-      {/* SPLIT EXPERIENTIAL GRID */}
-      <main className="w-full grid grid-cols-1 lg:grid-cols-12 min-h-[calc(100vh-53px)]">
-        
-        {/* LEFT COLUMN: HERO ARCHITECTURAL VISUAL (7 Cols) */}
-        <section className="lg:col-span-7 border-b lg:border-b-0 lg:border-r border-zinc-900/10 p-6 lg:p-12 flex flex-col justify-between bg-[#f5f5f3]">
-          <div className="flex justify-between items-start font-mono text-xs text-zinc-400">
-            <div>[ VISUAL RECONSTRUCTION ]</div>
-            <div className="text-right">{selectedLens.sku}</div>
+      {/* 7:5 Atelier Laboratory Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Visualizer Lens Chamber: 7 Columns */}
+        <div className="lg:col-span-7 bg-[#09090b] border border-brand-black p-6 relative overflow-hidden text-white">
+          {/* Grid Calibration Lines */}
+          <div className="absolute inset-0 opacity-15 pointer-events-none">
+            <svg width="100%" height="100%">
+              <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#fff" strokeWidth="1" strokeDasharray="4 4" />
+              <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#fff" strokeWidth="1" strokeDasharray="4 4" />
+              <circle cx="50%" cy="50%" r="80" stroke="#fff" strokeWidth="1" fill="none" />
+              <circle cx="50%" cy="50%" r="160" stroke="#fff" strokeWidth="1" fill="none" />
+            </svg>
           </div>
 
-          {/* Dynamic Render Showcase Area */}
-          <div className="my-12 relative w-full aspect-[16/10] bg-white border border-zinc-900/5 overflow-hidden flex items-center justify-center">
-            <div className="absolute inset-0 bg-radial from-transparent to-zinc-900/5 opacity-40 pointer-events-none" />
-            
-            {/* Structural Technical Grid lines overlaid */}
-            <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 opacity-[0.03] pointer-events-none font-mono text-[9px] text-zinc-900 p-2">
-              {[...Array(24)].map((_, i) => (
-                <div key={i} className="border-t border-l border-zinc-950 p-1">+{i * 10}</div>
-              ))}
-            </div>
-
-            <motion.div 
-              key={selectedLens.id}
-              initial={{ scale: 0.96, opacity: 0, filter: "blur(4px)" }}
-              animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center p-8 space-y-4 z-10"
+          {/* Optical Target Chamber */}
+          <div className="relative aspect-[4/3] w-full flex items-center justify-center p-8">
+            {/* The Lens Element */}
+            <motion.div
+              layout
+              transition={{ duration: 0.4 }}
+              className="relative w-64 h-64 rounded-full border border-white/30 flex items-center justify-center overflow-hidden"
+              style={{
+                boxShadow: coatingActive ? "0 0 35px rgba(15, 118, 110, 0.25)" : "none",
+                backdropFilter: `blur(${profile.blurRadius}px)`,
+              }}
             >
-              <span className="font-mono text-[10px] bg-zinc-900 text-white px-2 py-0.5 tracking-widest uppercase">
-                {selectedLens.specs.index} SPEC
-              </span>
-              <h3 className="text-2xl font-bold tracking-tighter text-zinc-900 max-w-md mx-auto leading-none">
-                {selectedLens.name}
-              </h3>
-              <p className="text-xs font-mono text-zinc-500 max-w-sm mx-auto">
-                SURFACED MICRON TOLERANCE // ZERO SPHERICAL ABERRATION
-              </p>
+              {/* Refraction Target Card */}
+              <div
+                className="text-center font-mono select-none transition-all duration-300"
+                style={{
+                  filter: `blur(${profile.blurRadius}px)`,
+                  transform: `scale(${1 - profile.distortionLevel * 0.015})`,
+                }}
+              >
+                <span className="block text-2xl font-bold tracking-tight text-white mb-1">
+                  E D F C Z P
+                </span>
+                <span className="block text-xs text-zinc-400 tracking-widest">
+                  100% SNELLEN 20/20 RETICLE
+                </span>
+                <span className="block text-[9px] text-[#0f766e] mt-2 uppercase tracking-wider">
+                  {coatingActive ? "AR GLAZE: 99.4% LUMEN TRANSMISSION" : "RAW SPEC: SURFACE REFLECTION ACTIVE"}
+                </span>
+              </div>
+
+              {/* Edge Glare Ring for Lower Indices */}
+              {profile.distortionLevel > 5 && (
+                <div className="absolute inset-0 rounded-full border-4 border-white/20 pointer-events-none" />
+              )}
             </motion.div>
-          </div>
 
-          {/* Precision Metrics Banner */}
-          <div className="grid grid-cols-3 gap-4 border-t border-zinc-900/10 pt-6">
-            <div className="space-y-1">
-              <span className="block font-mono text-[10px] text-zinc-400 tracking-wider">REFRACTIVE INDEX</span>
-              <span className="font-mono text-sm font-semibold text-zinc-800">{selectedLens.specs.index}</span>
+            {/* Live Telemetry Overlay */}
+            <div className="absolute top-4 left-4 font-mono text-[9px] text-zinc-400 space-y-1">
+              <div>ABBE: {profile.abbe}</div>
+              <div>INDEX: {profile.index}</div>
+              <div className="text-[#0f766e]">{profile.uvProtection}</div>
             </div>
-            <div className="space-y-1 border-x border-zinc-900/10 px-4">
-              <span className="block font-mono text-[10px] text-zinc-400 tracking-wider">ABBE DISPERSION</span>
-              <span className="font-mono text-sm font-semibold text-zinc-800">{selectedLens.specs.abbe}</span>
-            </div>
-            <div className="space-y-1 text-right">
-              <span className="block font-mono text-[10px] text-zinc-400 tracking-wider">UV ATTENUANCE</span>
-              <span className="font-mono text-sm font-semibold text-zinc-800">{selectedLens.specs.uv}</span>
+
+            <div className="absolute bottom-4 right-4 font-mono text-[9px] text-zinc-400 text-right">
+              <div>EDGE GAUGE:</div>
+              <div className="text-white font-semibold text-xs">{profile.edgeThickness}</div>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* RIGHT COLUMN: INDUSTRIAL SELECTION MATRIX (5 Cols) */}
-        <section className="lg:col-span-5 p-6 lg:p-12 flex flex-col justify-between bg-white">
-          <div>
-            <div className="space-y-2">
-              <span className="font-mono text-xs text-teal-800 tracking-widest block font-semibold">// CRITERIA SELECTION</span>
-              <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 leading-none">LENS CONFIGURATION MATRIX</h2>
-              <p className="text-zinc-500 text-sm pt-2 leading-relaxed">
-                Choose the architectural foundation of your optics. All custom laboratory prescriptions are surfaced digitally under micron-level robotic calibration tolerances.
-              </p>
-            </div>
+        {/* Index Selector Matrix: 5 Columns */}
+        <div className="lg:col-span-5 space-y-4">
+          <span className="block font-mono text-[10px] uppercase tracking-widest text-zinc-400 flex items-center gap-1">
+            <Layers className="w-3 h-3 text-[#0f766e]" />
+            01 // Select Monomer Surfacing Grade
+          </span>
 
-            {/* HIGH-FIDELITY INTERACTIVE ROW SELECTORS */}
-            <div className="mt-10 space-y-3">
-              {LENS_LAB_VARIANTS.map((lens) => {
-                const isSelected = selectedLens.id === lens.id;
-                return (
-                  <button
-                    key={lens.id}
-                    onClick={() => setSelectedLens(lens)}
-                    className={`w-full text-left p-5 transition-all duration-500 ease-[0.16,1,0.3,1] border relative flex flex-col justify-between rounded-none cursor-pointer ${
-                      isSelected 
-                        ? "border-zinc-950 bg-[#fcfcfb] ring-1 ring-zinc-950" 
-                        : "border-zinc-900/10 bg-transparent hover:border-zinc-900/30"
-                    }`}
-                  >
-                    <div className="flex justify-between items-baseline w-full">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-[10px] text-zinc-400">[{lens.index}]</span>
-                        <span className="font-bold tracking-tight text-sm text-zinc-900">{lens.name}</span>
-                      </div>
-                      <span className="font-mono text-xs font-bold text-teal-800">
-                        {lens.priceDelta === 0 ? "BASE SPEC" : `+ ${formatCurrency(lens.priceDelta)}`}
-                      </span>
-                    </div>
-
-                    {/* Progressive disclosure of content only on active choice */}
-                    <AnimatePresence initial={false}>
-                      {isSelected && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                          animate={{ height: "auto", opacity: 1, marginTop: 12 }}
-                          exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                          className="overflow-hidden"
-                        >
-                          <p className="text-zinc-500 text-xs leading-relaxed max-w-sm border-t border-zinc-900/5 pt-2">
-                            {lens.description}
-                          </p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* ADALON PREX COATING TOGGLE (ADDITIONAL TECHNICAL PARAMETER) */}
-            <div className="mt-8 pt-6 border-t border-zinc-900/10">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2 font-mono text-[11px] tracking-wider text-zinc-400 font-bold uppercase">
-                    <Layers size={12} className="text-zinc-900" /> LAB INTEGRATED COATING
-                  </div>
-                  <h4 className="text-xs font-bold text-zinc-800">Sartorial Anti-Reflective Hydrophobic Glaze</h4>
-                  <span className="font-mono text-[10px] text-teal-800 font-bold block">+ ₹1,200 (INCLUDED)</span>
-                </div>
-                
-                <button 
-                  onClick={() => setCoatingSelected(!coatingSelected)}
-                  className={`w-12 h-6 flex items-center p-0.5 transition-colors duration-300 rounded-none border cursor-pointer ${
-                    coatingSelected ? "bg-zinc-950 border-zinc-950 justify-end" : "bg-zinc-100 border-zinc-900/20 justify-start"
+          <div className="space-y-2.5">
+            {Object.entries(SIMULATOR_PROFILES).map(([key, item]) => {
+              const isSelected = activeProfileKey === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveProfileKey(key)}
+                  className={`w-full text-left p-4 border transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-brand-black bg-white ring-1 ring-brand-black"
+                      : "border-brand-black/10 bg-[#fbfbfa] hover:border-brand-black/30"
                   }`}
                 >
-                  <motion.div layout className="w-4 h-4 bg-white border border-zinc-900/10" />
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-sans font-semibold text-xs text-brand-black">
+                      {item.name}
+                    </span>
+                    <span className="font-mono text-[10px] font-semibold text-[#0f766e]">
+                      Index {item.index}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 font-mono text-[10px] text-zinc-500 mt-2 pt-2 border-t border-brand-black/5">
+                    <div>Abbe: <span className="text-brand-black">{item.abbe}</span></div>
+                    <div>Edge: <span className="text-brand-black">{item.edgeThickness}</span></div>
+                    <div>Prism: <span className="text-brand-black">0.{item.distortionLevel}Δ</span></div>
+                  </div>
                 </button>
-              </div>
-            </div>
-
+              );
+            })}
           </div>
 
-          {/* FIXED BOTTOM LAB ACTIONS */}
-          <div className="mt-12 pt-6 border-t border-zinc-900/10 space-y-4">
-            <div className="flex justify-between items-baseline font-mono">
-              <span className="text-xs uppercase tracking-wider text-zinc-400">TOTAL CALIBRATION VALUE</span>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-zinc-900">
-                  {formatCurrency(totalPrice)}
+          {/* Glaze & Diopter Calibration */}
+          <div className="border border-brand-black/10 p-4 bg-white space-y-4 mt-4">
+            <div>
+              <div className="flex justify-between items-center mb-2 font-mono text-[10px] uppercase text-zinc-400">
+                <span className="flex items-center gap-1">
+                  <Eye className="w-3 h-3 text-[#0f766e]" />
+                  Diopter Simulation (-8.00 to +4.00)
                 </span>
-                <span className="block text-[10px] text-zinc-400 font-mono">
-                  (INCL. OF ALL TAXES &amp; CERTIFICATION)
-                </span>
+                <span className="text-brand-black font-semibold">{simulatedPower} D</span>
               </div>
+              <input
+                type="range"
+                min="-8.00"
+                max="4.00"
+                step="0.25"
+                value={simulatedPower}
+                onChange={(e) => setSimulatedPower(parseFloat(e.target.value).toFixed(2))}
+                className="w-full h-1 bg-zinc-200 accent-black appearance-none cursor-pointer"
+              />
             </div>
 
-            <button
-              onClick={handleCommit}
-              className="w-full bg-zinc-950 hover:bg-teal-800 text-white font-mono text-xs uppercase tracking-widest py-4 px-6 flex items-center justify-between transition-colors duration-500 ease-[0.16,1,0.3,1] rounded-none group cursor-pointer active:scale-[0.99]"
-            >
-              <span>{isCommitted ? "CALIBRATION COMMITTED // ADDED TO BAG" : "COMMIT CALIBRATION TO ATELIER BAG"}</span>
-              {isCommitted ? (
-                <Check size={14} className="text-white" />
-              ) : (
-                <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform duration-300" />
-              )}
-            </button>
-
-            <div className="flex items-center justify-between font-mono text-[10px] text-zinc-400 tracking-wider pt-2">
-              <span className="flex items-center gap-1.5">
-                <Shield size={11} className="text-teal-800" /> ISO 8980-3 COMPLIANT // ZEISS LAB
+            <div className="flex items-center justify-between pt-3 border-t border-brand-black/10">
+              <span className="font-sans text-xs text-brand-black flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0f766e]" />
+                Zeiss Anti-Reflective Glaze
               </span>
-              <span>ZERO TOLERANCE ROBOTIC SURFACING</span>
+              <button
+                onClick={() => setCoatingActive(!coatingActive)}
+                className={`font-mono text-[10px] uppercase px-3 py-1 border transition-colors cursor-pointer ${
+                  coatingActive
+                    ? "bg-brand-black text-white border-brand-black"
+                    : "bg-white text-zinc-500 border-brand-black/20"
+                }`}
+              >
+                {coatingActive ? "Coating Applied" : "Uncoated"}
+              </button>
             </div>
           </div>
 
-        </section>
-      </main>
+          {/* Acquire Calibrated Option */}
+          <button
+            onClick={handleAcquire}
+            className="w-full py-3.5 bg-brand-black text-white font-mono text-xs uppercase tracking-widest hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99]"
+          >
+            {isAdded ? "Optics Calibrated & In Bag ✓" : "Acquire Calibrated Optics"}
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default LensLabStudio;

@@ -118,7 +118,7 @@ export default function Membership() {
               tag: 'OPTICAL LAB',
               title: '50% Off Prescription Lenses',
               desc: 'Half-price privilege on premium anti-glare, blue-cut screen shields, and ultra-lightweight high-index lenses.',
-              accent: 'border-blue-200 bg-blue-50/80 text-blue-600'
+              accent: 'border-teal-200 bg-teal-50/80 text-[#0f766e]'
             },
             {
               icon: Truck,
@@ -132,7 +132,7 @@ export default function Membership() {
               tag: 'LIFETIME CARE',
               title: 'Atelier Warranty & Fit',
               desc: 'Free frame adjustments, ultrasonic lens cleanings, and nose pad replacements at any partner showroom.',
-              accent: 'border-violet-200 bg-violet-50/80 text-violet-600'
+              accent: 'border-zinc-200 bg-zinc-50 text-zinc-700'
             }
           ].map((feature, idx) => {
             const Icon = feature.icon;
@@ -160,7 +160,7 @@ export default function Membership() {
         {/* COMPARISON TABLE: Regular vs Gold VIP */}
         <div className="bg-white rounded-3xl p-6 md:p-10 border border-slate-200/80 shadow-xl">
           <div className="text-center mb-8">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-blue-600">Unrivaled Optical Value</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#0f766e]">Unrivaled Optical Value</span>
             <h3 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 mt-1">
               Privilege Comparison Matrix
             </h3>

@@ -526,20 +526,50 @@ export default function Checkout() {
 
               {/* Items List */}
               <div className="divide-y divide-gray-100 max-h-72 overflow-y-auto mb-6 pr-2">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="py-3 flex items-center gap-4">
-                    <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center p-2 border border-gray-100">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                {cartItems.map((item) => {
+                  const itemPrice = item.finalPrice !== undefined ? item.finalPrice : item.price;
+                  const lensConfig = item.lensConfig || (item.lensDetails ? {
+                    lensTier: { title: item.lensDetails.lensPackage || "Classic Precision" },
+                    prescriptionType: item.lensDetails.visionType || "Single Vision",
+                    hydrophobicCoating: item.lensDetails.hydrophobicCoating || false
+                  } : null);
+
+                  return (
+                    <div key={item.id} className="py-3 flex items-start gap-4">
+                      <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center p-2 border border-gray-100">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs font-bold text-gray-900 truncate">{item.name}</h4>
+                        {lensConfig ? (
+                          <div className="mt-1 text-[10px] font-mono text-zinc-500 bg-zinc-50 border border-zinc-200/60 p-1.5 rounded-sm space-y-0.5">
+                            <div className="flex justify-between">
+                              <span className="text-zinc-400">SURFACING:</span>
+                              <span className="font-semibold text-zinc-800">{lensConfig.lensTier?.title}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-zinc-400">APPLICATION:</span>
+                              <span className="text-zinc-700">{lensConfig.prescriptionType}</span>
+                            </div>
+                            {lensConfig.hydrophobicCoating && (
+                              <div className="text-[#0f766e] font-semibold">
+                                + Hydrophobic Glaze
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="inline-block mt-0.5 text-[9px] font-mono text-zinc-400 uppercase">
+                            Frame Only
+                          </span>
+                        )}
+                        <p className="text-xs text-gray-400 mt-1 font-mono">Qty: {item.quantity}</p>
+                      </div>
+                      <span className="text-xs font-bold text-black font-mono">
+                        ₹{(itemPrice * item.quantity).toLocaleString('en-IN')}
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-bold text-gray-900 truncate">{item.name}</h4>
-                      <p className="text-xs text-gray-400 mt-0.5">Qty: {item.quantity}</p>
-                    </div>
-                    <span className="text-xs font-bold text-black font-mono">
-                      ₹{(item.price * item.quantity).toLocaleString('en-IN')}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Coupon Code Input & Available Offers */}

@@ -64,7 +64,7 @@ export default function ValueProps() {
                   <span className="text-[9px] font-mono uppercase font-bold tracking-widest text-slate-400 block mb-1">
                     {perk.tag}
                   </span>
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-slate-950 mb-1.5 group-hover:text-blue-600 transition-colors">
+                  <h3 className="font-serif text-base sm:text-lg font-bold text-slate-950 mb-1.5 group-hover:text-[#0f766e] transition-colors">
                     {perk.title}
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed font-normal">

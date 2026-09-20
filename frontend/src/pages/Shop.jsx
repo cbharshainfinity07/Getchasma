@@ -718,7 +718,7 @@ export default function Shop() {
                             {shape}
                           </span>
                           <Link to={`/product/${product.id}`}>
-                            <h3 className="font-bold text-xs sm:text-sm text-gray-950 line-clamp-1 sm:line-clamp-2 hover:text-blue-600 transition-colors">
+                            <h3 className="font-bold text-xs sm:text-sm text-gray-950 line-clamp-1 sm:line-clamp-2 hover:text-[#0f766e] transition-colors">
                               {product.name}
                             </h3>
                           </Link>

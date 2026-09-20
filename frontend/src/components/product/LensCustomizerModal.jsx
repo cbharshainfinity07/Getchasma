@@ -307,7 +307,7 @@ export default function LensCustomizerModal({ product, isOpen, onClose, onAddToC
                     prescriptionMethod === 'upload' ? 'border-black bg-gray-50 font-bold' : 'border-gray-200'
                   }`}
                 >
-                  <Upload size={22} className="mx-auto mb-2 text-indigo-600" />
+                  <Upload size={22} className="mx-auto mb-2 text-[#0f766e]" />
                   <span className="text-xs block font-bold text-black">Upload Slip</span>
                   <span className="text-[10px] text-gray-400 block mt-0.5">Photo or PDF</span>
                 </div>

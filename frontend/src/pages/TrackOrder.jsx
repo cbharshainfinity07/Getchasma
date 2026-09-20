@@ -388,7 +388,7 @@ export default function TrackOrder() {
             {/* Order Overview Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-4">
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-blue-600">Order Identification</span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[#0f766e]">Order Identification</span>
                 <h3 className="font-serif text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">{order.id}</h3>
                 <span className="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
                   <Calendar size={13} />
@@ -513,7 +513,7 @@ export default function TrackOrder() {
                       {order.returnRequest?.receivedAtWarehouse ? (
                         <><CheckCircle2 size={13} className="text-emerald-600" /> Received at Warehouse</>
                       ) : (
-                        <><Truck size={13} className="text-blue-600" /> In Transit to Warehouse</>
+                        <><Truck size={13} className="text-[#0f766e]" /> In Transit to Warehouse</>
                       )}
                     </span>
                   </div>
@@ -676,7 +676,7 @@ export default function TrackOrder() {
             {/* Recipient and Eyewear Package Summary */}
             <div className="pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs text-slate-600">
               <div className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
-                <MapPin size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
+                <MapPin size={18} className="text-[#0f766e] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold text-slate-900 uppercase tracking-wider text-[11px] block mb-1">
                     Destination Address
@@ -688,13 +688,13 @@ export default function TrackOrder() {
               </div>
 
               <div className="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
-                <Package size={18} className="text-indigo-600 flex-shrink-0 mt-0.5" />
+                <Package size={18} className="text-[#0f766e] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="font-bold text-slate-900 uppercase tracking-wider text-[11px] block mb-1">
                     Atelier Packaging &amp; Care
                   </span>
                   <p className="text-slate-700">{order.items?.length || 1} handcrafted frame(s) in leather presentation vault</p>
-                  <p className="text-blue-600 font-semibold mt-1">Free UV400 test card &amp; microfiber cloth included</p>
+                  <p className="text-[#0f766e] font-semibold mt-1">Free UV400 test card &amp; microfiber cloth included</p>
                 </div>
               </div>
             </div>
@@ -803,13 +803,13 @@ export default function TrackOrder() {
                     <label className="text-[11px] uppercase font-bold tracking-wider text-slate-700">
                       3. Upload Defect Photos * <span className="text-rose-500">(At least 1 mandatory)</span>
                     </label>
-                    <span className="text-[10px] text-blue-600 font-mono font-semibold">
+                    <span className="text-[10px] text-[#0f766e] font-mono font-semibold">
                       {returnPhotos.length} photo(s) attached
                     </span>
                   </div>
 
                   {/* Photo Uploader Dropzone */}
-                  <label className="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all group">
+                  <label className="border-2 border-dashed border-slate-300 hover:border-teal-700 bg-slate-50 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all group">
                     <input
                       type="file"
                       accept="image/*"
@@ -817,10 +817,10 @@ export default function TrackOrder() {
                       onChange={handlePhotoUpload}
                       className="hidden"
                     />
-                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-full bg-teal-50 text-[#0f766e] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                       <Camera size={18} />
                     </div>
-                    <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600">
+                    <span className="text-xs font-bold text-slate-800 group-hover:text-[#0f766e]">
                       Take Photo or Choose Files
                     </span>
                     <span className="text-[10px] text-slate-400 mt-0.5">
@@ -858,7 +858,7 @@ export default function TrackOrder() {
                     <label className="text-[11px] uppercase font-bold tracking-wider text-slate-700 block">
                       4. Refund Reimbursement Destination *
                     </label>
-                    <span className="text-[10px] font-bold text-blue-600">
+                    <span className="text-[10px] font-bold text-[#0f766e]">
                       Amount: ₹{Number(order?.total || 0).toLocaleString('en-IN')}
                     </span>
                   </div>
