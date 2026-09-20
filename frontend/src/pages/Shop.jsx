@@ -262,12 +262,12 @@ export default function Shop() {
           </div>
 
           {/* Quick Stats Pill */}
-          <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-gray-500 flex-shrink-0">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200 text-[11px]">
-              ✓ 100% Genuine Optics
+          <div className="hidden lg:flex items-center gap-2 text-xs font-medium text-neutral-500 flex-shrink-0 font-mono">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-800 font-bold border border-neutral-200 text-[10px] uppercase tracking-wider">
+              100% Genuine Optics
             </span>
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-50 text-slate-500 font-bold border border-amber-200 text-[11px]">
-              🏷️ Free Lenses Included
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-800 font-bold border border-neutral-200 text-[10px] uppercase tracking-wider">
+              Standard Lenses Included
             </span>
           </div>
         </div>

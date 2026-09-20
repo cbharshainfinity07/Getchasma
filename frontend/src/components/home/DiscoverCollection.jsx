@@ -66,65 +66,126 @@ export default function DiscoverCollection() {
         </div>
       </div>
 
-      {/* 4-Column Product Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-6">
-        {filteredProducts.map((product, idx) => (
-          <div
-            key={product.id || idx}
-            className="group bg-white rounded-2xl border border-neutral-200/80 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
-          >
-            {/* Image Box */}
-            <div className="relative w-full aspect-square bg-neutral-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
-              {product.discount && (
-                <span className="absolute top-2.5 left-2.5 bg-[#10b981] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-xs shadow-xs z-10 uppercase">
-                  {product.discount}
-                </span>
-              )}
+      {/* Asymmetrical Bento Grid: 1 Dominant Editorial Anchor + Supporting Tiles */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 items-stretch">
+        {filteredProducts.map((product, idx) => {
+          const isLead = idx === 0;
 
-              <Link to={`/product/${product.id || idx}`} className="w-full h-full flex items-center justify-center">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.target.src = CURATED_COLLECTION[idx % 8].image;
-                  }}
-                />
-              </Link>
-            </div>
+          if (isLead) {
+            return (
+              <div
+                key={product.id || idx}
+                className="col-span-2 sm:col-span-2 md:col-span-2 lg:col-span-2 bg-neutral-50/80 rounded-3xl border border-neutral-200/90 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group"
+              >
+                {/* Large Lead Image Container */}
+                <div className="relative w-full aspect-[16/10] sm:aspect-[16/11] flex items-center justify-center p-6 sm:p-10 overflow-hidden">
+                  <span className="absolute top-4 left-4 bg-neutral-950 text-white text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">
+                    FEATURED // ATELIER SELECTION
+                  </span>
 
-            {/* Product Body */}
-            <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between bg-white">
-              <div>
-                <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
-                  {product.category || 'Sun Glass'}
-                </span>
-                <Link to={`/product/${product.id || idx}`}>
-                  <h3 className="text-xs sm:text-sm font-bold text-neutral-900 hover:text-neutral-600 transition-colors truncate mb-1.5">
-                    {product.name}
-                  </h3>
-                </Link>
-                <div className="flex items-center gap-1.5 mb-3">
-                  <span className="text-[10px] sm:text-xs text-neutral-400 line-through">
-                    ₹{product.originalPrice || Math.round(product.price * 1.25)}/-
-                  </span>
-                  <span className="text-xs sm:text-sm font-bold text-neutral-950">
-                    ₹{product.price}/-
-                  </span>
+                  <Link to={`/product/${product.id || idx}`} className="w-full h-full flex items-center justify-center">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.src = CURATED_COLLECTION[0].image;
+                      }}
+                    />
+                  </Link>
+                </div>
+
+                {/* Lead Product Body */}
+                <div className="p-6 sm:p-7 bg-white border-t border-neutral-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-400 block mb-1">
+                      {product.category || 'Sun Glass'} &bull; BESPOKE SERIES
+                    </span>
+                    <Link to={`/product/${product.id || idx}`}>
+                      <h3 className="text-lg sm:text-xl font-bold text-neutral-950 hover:text-neutral-600 transition-colors">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-neutral-400 line-through font-mono">
+                        ₹{product.originalPrice || Math.round(product.price * 1.25)}/-
+                      </span>
+                      <span className="text-base font-bold text-neutral-950 font-mono">
+                        ₹{product.price}/-
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="w-full sm:w-auto px-7 py-3 bg-neutral-950 hover:bg-black text-white text-xs font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer shadow-xs active:scale-95 whitespace-nowrap"
+                  >
+                    Acquire Frame
+                  </button>
                 </div>
               </div>
+            );
+          }
 
-              {/* Buy Now Button */}
-              <button
-                onClick={() => addToCart(product)}
-                className="w-full bg-neutral-950 hover:bg-black text-white text-[11px] font-semibold py-2 rounded-full transition-all cursor-pointer shadow-xs active:scale-98"
-              >
-                BUY NOW
-              </button>
+          return (
+            <div
+              key={product.id || idx}
+              className="group bg-white rounded-2xl border border-neutral-200/80 overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+            >
+              {/* Image Box */}
+              <div className="relative w-full aspect-square bg-neutral-50 flex items-center justify-center p-4 sm:p-5 overflow-hidden">
+                {product.discount && (
+                  <span className="absolute top-2.5 left-2.5 bg-emerald-600 text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-xs shadow-xs z-10 uppercase">
+                    {product.discount}
+                  </span>
+                )}
+
+                <Link to={`/product/${product.id || idx}`} className="w-full h-full flex items-center justify-center">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-contain filter drop-shadow-xs group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.src = CURATED_COLLECTION[idx % 8].image;
+                    }}
+                  />
+                </Link>
+              </div>
+
+              {/* Product Body */}
+              <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between bg-white">
+                <div>
+                  <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-neutral-400 block mb-0.5">
+                    {product.category || 'Sun Glass'}
+                  </span>
+                  <Link to={`/product/${product.id || idx}`}>
+                    <h3 className="text-xs sm:text-sm font-bold text-neutral-900 hover:text-neutral-600 transition-colors truncate mb-1.5">
+                      {product.name}
+                    </h3>
+                  </Link>
+                  <div className="flex items-center gap-1.5 mb-3">
+                    <span className="text-[10px] sm:text-xs text-neutral-400 line-through font-mono">
+                      ₹{product.originalPrice || Math.round(product.price * 1.25)}/-
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-neutral-950 font-mono">
+                      ₹{product.price}/-
+                    </span>
+                  </div>
+                </div>
+
+                {/* Buy Now Button */}
+                <button
+                  onClick={() => addToCart(product)}
+                  className="w-full bg-neutral-950 hover:bg-black text-white text-[11px] font-bold uppercase tracking-wider py-2 rounded-full transition-all cursor-pointer shadow-xs active:scale-98"
+                >
+                  Quick Add
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Load More Button */}
