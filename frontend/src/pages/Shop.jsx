@@ -22,6 +22,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { API_BASE_URL } from '../config/api';
 import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
+import InteractiveCatalogImage from '../components/product/InteractiveCatalogImage';
 
 const TABS = [
   { id: 'all', label: 'All Eyewear', icon: 'grid' },
@@ -638,32 +639,45 @@ export default function Shop() {
                         </button>
                       </div>
 
-                      {/* PRODUCT IMAGE CONTAINER */}
-                      <div className="relative aspect-square bg-[#fbfbfb] p-3 sm:p-6 flex items-center justify-center overflow-hidden border-b border-gray-100">
-                        <Link to={`/product/${product.id}`} className="w-full h-full flex items-center justify-center">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-500 ease-out"
+                      {/* PRODUCT IMAGE CONTAINER: STUDIO MULTI-ANGLE HOVER SCRUB */}
+                      <div className="relative aspect-square w-full overflow-hidden">
+                        <Link to={`/product/${product.id}`} className="block w-full h-full">
+                          <InteractiveCatalogImage
+                            angles={product.angles || (product.images?.length > 1 ? product.images.map((img, i) => ({ url: img, angle: `${i * 45}°` })) : [
+                              { url: product.image, angle: "0° Frontal" },
+                              { url: product.images?.[0] || product.image, angle: "45° Angle" },
+                              { url: product.images?.[1] || product.image, angle: "90° Profile" },
+                              { url: product.images?.[2] || product.image, angle: "180° Folded" }
+                            ])}
+                            fallbackImage={product.image}
+                            name={product.name}
                           />
                         </Link>
 
-                        {/* Hover Quick Actions Pill (View Similar + Try in 3D) */}
-                        <div className="hidden sm:flex absolute bottom-3 inset-x-3 items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
+                        {/* Hover Quick Actions Pill (Try-On + Inspect) */}
+                        <div className="hidden sm:flex absolute bottom-3 right-3 items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
                           <button
-                            onClick={() => setTryOnProduct(product)}
-                            className="px-3 py-1 rounded-full bg-slate-950 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md transition-transform hover:scale-105 active:scale-95"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setTryOnProduct(product);
+                            }}
+                            className="px-2.5 py-1 bg-brand-black text-white font-mono text-[9px] uppercase tracking-wider flex items-center gap-1 shadow-xs hover:bg-[#0f766e] transition-colors cursor-pointer"
                           >
-                            <Camera size={11} />
+                            <Camera size={10} />
                             <span>Try-On</span>
                           </button>
                           
                           <button
-                            onClick={() => setQuickViewProduct(product)}
-                            className="px-3 py-1 rounded-full bg-white hover:bg-neutral-100 text-neutral-900 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md transition-transform hover:scale-105 active:scale-95 border border-neutral-200"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setQuickViewProduct(product);
+                            }}
+                            className="px-2.5 py-1 bg-white hover:bg-brand-cream text-brand-black font-mono text-[9px] uppercase tracking-wider flex items-center gap-1 shadow-xs border border-brand-black/10 transition-colors cursor-pointer"
                           >
-                            <Eye size={11} />
-                            <span>Quick View</span>
+                            <Eye size={10} />
+                            <span>Inspect</span>
                           </button>
                         </div>
                       </div>
