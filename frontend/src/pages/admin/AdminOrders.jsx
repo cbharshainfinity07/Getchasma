@@ -7,7 +7,6 @@ import {
   CheckCircle2, 
   XCircle, 
   X, 
-  MapPin, 
   Phone, 
   Mail, 
   Package, 
@@ -18,16 +17,12 @@ import {
   ShieldAlert,
   RotateCcw,
   Camera,
-  ExternalLink,
-  ChevronRight,
   IndianRupee,
   ZoomIn,
   Zap,
   Wallet,
-  Building,
   Smartphone,
-  Lock,
-  RefreshCw
+  Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../../config/api';

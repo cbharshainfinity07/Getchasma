@@ -16,8 +16,7 @@ import {
   Tag, 
   Filter, 
   RotateCcw,
-  Glasses,
-  Copy
+  Glasses
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { API_BASE_URL } from '../config/api';
@@ -602,7 +601,6 @@ export default function Shop() {
               <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-6">
                 {filteredProducts.map((product) => {
                   const isWishlisted = wishlist.includes(product.id);
-                  const isDeal = product.isDealOfDay;
                   const discountPct = product.originalPrice && product.originalPrice > product.price
                     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
                     : 33;

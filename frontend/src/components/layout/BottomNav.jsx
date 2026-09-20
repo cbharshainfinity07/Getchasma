@@ -7,8 +7,8 @@ export default function BottomNav() {
   const location = useLocation();
   const { cartCount, toggleCart } = useCart();
 
-  // Don't show mobile bottom nav when on admin dashboard or checkout
-  if (location.pathname.startsWith('/admin') || location.pathname === '/checkout') {
+  // Don't show mobile bottom nav when on admin dashboard, checkout, or PDP
+  if (location.pathname.startsWith('/admin') || location.pathname === '/checkout' || location.pathname.startsWith('/product/')) {
     return null;
   }
 

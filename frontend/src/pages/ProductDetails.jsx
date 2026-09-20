@@ -2,36 +2,23 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ChevronLeft, 
-  Star, 
-  ShieldCheck, 
   Truck, 
-  RotateCcw, 
-  Minus, 
-  Plus, 
   ShoppingBag, 
   Check, 
   Camera, 
-  Layers, 
   Ruler, 
-  Sparkles,
-  Phone,
-  Share2,
-  Heart,
-  Tag,
-  Copy,
-  Info,
-  ChevronRight,
-  Eye,
-  Glasses
+  Sparkles, 
+  Phone, 
+  Share2, 
+  Heart, 
+  Glasses 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { API_BASE_URL } from '../config/api';
 
 // Studio & Inspection Modals
-import EyewearInspector from '../components/product/EyewearInspector';
 import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
-import LensCustomizerModal from '../components/product/LensCustomizerModal';
 import SizeGuideModal from '../components/product/SizeGuideModal';
 import FrameDimensionCaliper from '../components/product/FrameDimensionCaliper';
 import PrescriptionConfigDrawer from '../components/product/PrescriptionConfigDrawer';
@@ -67,8 +54,7 @@ export default function ProductDetails() {
   const [showDeliveryInput, setShowDeliveryInput] = useState(false);
   const [activeSpecTab, setActiveSpecTab] = useState('specs'); // 'specs' | 'dimensions' | 'care'
 
-  // Offers & Copy
-  const [copiedCode, setCopiedCode] = useState(null);
+  // Share & Wishlist
   const [shareSuccess, setShareSuccess] = useState(false);
 
   // Wishlist
@@ -163,12 +149,6 @@ export default function ProductDetails() {
     }
   };
 
-  const handleCopyOffer = (code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2500);
-  };
-
   const handleCheckDelivery = (e) => {
     e.preventDefault();
     if (!pincode || pincode.length < 6) return;
@@ -243,7 +223,6 @@ export default function ProductDetails() {
   }
 
   // Derive shape and specs
-  const productName = product.name;
   const productPrice = Number(product.price);
   const originalPrice = product.originalPrice ? Number(product.originalPrice) : Math.round(productPrice * 1.45);
   const discountPct = Math.round(((originalPrice - productPrice) / originalPrice) * 100);
