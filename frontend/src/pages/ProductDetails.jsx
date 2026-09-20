@@ -51,10 +51,12 @@ export default function ProductDetails() {
   const [selectedAngleIdx, setSelectedAngleIdx] = useState(0);
   const [galleryMode, setGalleryMode] = useState('grid'); // 'grid' (Titan 2x2) | 'strip' (Lenskart strip) | 'studio' (360 inspector)
 
-  // Delivery checker
+  // Delivery checker & Progressive disclosure
   const [pincode, setPincode] = useState('');
   const [deliveryResult, setDeliveryResult] = useState(null);
   const [checkingPincode, setCheckingPincode] = useState(false);
+  const [showDeliveryInput, setShowDeliveryInput] = useState(false);
+  const [activeSpecTab, setActiveSpecTab] = useState('specs'); // 'specs' | 'dimensions' | 'care'
 
   // Offers & Copy
   const [copiedCode, setCopiedCode] = useState(null);
@@ -707,42 +709,61 @@ export default function ProductDetails() {
 
             </div>
 
-            {/* 9. PINCODE DELIVERY ESTIMATOR (Lenskart / Titan Eyeplus signature) */}
+            {/* 9. PROGRESSIVE DISCLOSURE: PINCODE DELIVERY ESTIMATOR */}
             <div id="delivery-section" className="pt-3 border-t border-gray-100">
-              <label className="text-xs font-bold text-gray-800 block mb-1.5 flex items-center gap-1.5">
-                <Truck size={14} className="text-gray-500" />
-                <span>Check Estimated Delivery Date</span>
-              </label>
-
-              <form onSubmit={handleCheckDelivery} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  maxLength={6}
-                  placeholder="Enter 6-digit Pincode (e.g. 560001)"
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono text-gray-900 outline-none focus:border-black transition-colors"
-                />
+              <div className="flex items-center justify-between">
                 <button
-                  type="submit"
-                  disabled={pincode.length < 6 || checkingPincode}
-                  className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-neutral-800 disabled:opacity-50 transition-all"
+                  type="button"
+                  onClick={() => setShowDeliveryInput(!showDeliveryInput)}
+                  className="text-xs font-bold text-gray-800 hover:text-black flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  {checkingPincode ? 'Checking...' : 'Check'}
+                  <Truck size={14} className="text-gray-500" />
+                  <span>Check Estimated Delivery Date</span>
+                  <span className="text-[10px] text-neutral-400 font-mono underline ml-1">
+                    {showDeliveryInput ? '(Hide)' : '(Calculate)'}
+                  </span>
                 </button>
-              </form>
 
-              {deliveryResult && (
-                <div className="mt-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2">
-                  <Check size={15} className="text-emerald-700 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-bold block text-[11px]">
-                      ⚡ Expected Delivery by {deliveryResult.date}
-                    </span>
-                    <span className="text-[10px] text-emerald-800 block">
-                      Free Express Shipping &bull; COD Available &bull; Optical Lab QC Inspected
-                    </span>
-                  </div>
+                {deliveryResult && !showDeliveryInput && (
+                  <span className="text-[11px] font-mono font-bold text-emerald-700">
+                    By {deliveryResult.date}
+                  </span>
+                )}
+              </div>
+
+              {(showDeliveryInput || deliveryResult) && (
+                <div className="mt-2.5 space-y-2">
+                  <form onSubmit={handleCheckDelivery} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      maxLength={6}
+                      placeholder="Enter 6-digit Pincode (e.g. 560001)"
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+                      className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-mono text-gray-900 outline-none focus:border-black transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      disabled={pincode.length < 6 || checkingPincode}
+                      className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-neutral-800 disabled:opacity-50 transition-all cursor-pointer"
+                    >
+                      {checkingPincode ? 'Checking...' : 'Check'}
+                    </button>
+                  </form>
+
+                  {deliveryResult && (
+                    <div className="p-3 rounded-xl bg-emerald-50/80 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-2">
+                      <Check size={15} className="text-emerald-700 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-[11px]">
+                          ⚡ Expected Delivery by {deliveryResult.date}
+                        </span>
+                        <span className="text-[10px] text-emerald-800 block">
+                          Free Express Shipping &bull; COD Available &bull; Optical Lab QC Inspected
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -793,144 +814,181 @@ export default function ProductDetails() {
             TITAN EYEPLUS BOTTOM SECTION: FRAME DIMENSIONS & SPECS
             (As seen in user screenshot media_1789048121798.png)
            ======================================================== */}
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* ========================================================
+            PROGRESSIVE DISCLOSURE: SPECIFICATIONS & MEASUREMENTS HUB
+           ======================================================== */}
+        <div className="mt-14 bg-white rounded-3xl p-6 sm:p-8 border border-neutral-200/90 shadow-xs">
           
-          {/* CARD 1: FRAME DIMENSIONS WITH MEASUREMENT SCHEMATICS */}
-          <div className="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="font-bold text-sm uppercase tracking-wider text-black">
-                Frame Dimensions
-              </h3>
-              <button
-                onClick={() => setSizeGuideOpen(true)}
-                className="text-xs font-bold text-neutral-900 hover:text-neutral-950 underline"
-              >
-                Size Guide
-              </button>
+          {/* Progressive Disclosure Navigation Tabs */}
+          <div className="flex items-center justify-between flex-wrap gap-4 pb-6 border-b border-neutral-100">
+            <div className="flex items-center gap-2 p-1 bg-neutral-100 rounded-2xl">
+              {[
+                { id: 'specs', label: 'Technical Specs' },
+                { id: 'dimensions', label: 'Frame Dimensions' },
+                { id: 'care', label: 'Optics & Warranty' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveSpecTab(tab.id)}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                    activeSpecTab === tab.id
+                      ? 'bg-neutral-950 text-white shadow-xs'
+                      : 'text-neutral-500 hover:text-neutral-900'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            {/* 4 SCHEMATIC DIAGRAM MEASUREMENTS */}
-            <div className="grid grid-cols-2 gap-6">
-              
-              {/* 1. Temple Size */}
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <svg viewBox="0 0 100 40" className="w-14 h-8 stroke-neutral-900 fill-none flex-shrink-0">
-                  <path d="M 10 15 L 75 15 Q 90 15 85 35" strokeWidth="3" strokeLinecap="round" />
-                  <line x1="10" y1="5" x2="85" y2="5" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="2 2" />
-                </svg>
-                <div>
-                  <span className="text-xs text-gray-500 block">Temple Size</span>
-                  <span className="text-sm font-bold font-mono text-black">148 mm</span>
-                </div>
-              </div>
-
-              {/* 2. Bridge */}
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <svg viewBox="0 0 100 40" className="w-14 h-8 stroke-gray-400 fill-none flex-shrink-0">
-                  <rect x="10" y="10" width="30" height="22" rx="6" strokeWidth="2" />
-                  <rect x="60" y="10" width="30" height="22" rx="6" strokeWidth="2" />
-                  <path d="M 40 18 Q 50 12 60 18" stroke="#18181b" strokeWidth="3.5" strokeLinecap="round" />
-                </svg>
-                <div>
-                  <span className="text-xs text-gray-500 block">Bridge</span>
-                  <span className="text-sm font-bold font-mono text-black">18 mm</span>
-                </div>
-              </div>
-
-              {/* 3. Lens Width */}
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <svg viewBox="0 0 100 40" className="w-14 h-8 stroke-gray-400 fill-none flex-shrink-0">
-                  <rect x="25" y="8" width="50" height="26" rx="8" stroke="#18181b" strokeWidth="3" />
-                  <line x1="25" y1="37" x2="75" y2="37" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="2 2" />
-                </svg>
-                <div>
-                  <span className="text-xs text-gray-500 block">Lens Width</span>
-                  <span className="text-sm font-bold font-mono text-black">51 mm</span>
-                </div>
-              </div>
-
-              {/* 4. Lens Height */}
-              <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-gray-50 border border-gray-100">
-                <svg viewBox="0 0 100 40" className="w-14 h-8 stroke-gray-400 fill-none flex-shrink-0">
-                  <rect x="30" y="8" width="40" height="26" rx="8" strokeWidth="2" />
-                  <line x1="80" y1="8" x2="80" y2="34" stroke="#18181b" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-                <div>
-                  <span className="text-xs text-gray-500 block">Lens Height</span>
-                  <span className="text-sm font-bold font-mono text-black">43 mm</span>
-                </div>
-              </div>
-
-            </div>
-
-            <p className="text-xs text-gray-500 leading-relaxed pt-2">
-              Calibrated for standard Indian facial proportions. Sizing verified through our precision optical laboratory.
-            </p>
+            <span className="text-[11px] font-mono text-neutral-400">
+              ATELIER // CERTIFIED QC
+            </span>
           </div>
 
-          {/* CARD 2: PRODUCT SPECIFICATIONS GRID */}
-          <div className="lg:col-span-6 bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="font-bold text-sm uppercase tracking-wider text-black">
-                Product Specifications
-              </h3>
-              <span className="text-xs font-mono text-gray-400">SPEC // CERTIFIED</span>
+          {/* TAB 1: TECHNICAL SPECS */}
+          {activeSpecTab === 'specs' && (
+            <div className="pt-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6 text-xs">
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">SKU</span>
+                  <span className="font-mono font-bold text-neutral-950 break-all">{sku}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Brand</span>
+                  <span className="font-bold text-neutral-950">GetChasma Atelier</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Gender</span>
+                  <span className="font-bold text-neutral-950">{product.gender || 'Unisex'}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Frame Fit</span>
+                  <span className="font-bold text-neutral-950">{selectedSize}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Colorway</span>
+                  <span className="font-bold text-neutral-950">{COLOR_OPTIONS[selectedColorIdx].name}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Temple Material</span>
+                  <span className="font-bold text-neutral-950">{COLOR_OPTIONS[selectedColorIdx].temple}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Composition</span>
+                  <span className="font-bold text-neutral-950">{product.specs?.['Frame Material'] || 'Aerospace Grade-1 Titanium'}</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Silhouette</span>
+                  <span className="font-bold text-neutral-950">Geometric Aviator / Wayfarer</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Hinge Design</span>
+                  <span className="font-bold text-neutral-950">German 5-Barrel Screws</span>
+                </div>
+                <div>
+                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Origin</span>
+                  <span className="font-bold text-neutral-950">Handcrafted in India</span>
+                </div>
+              </div>
             </div>
+          )}
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-              <div>
-                <span className="text-gray-400 block text-[11px]">SKU</span>
-                <span className="font-mono font-bold text-neutral-900 break-all">{sku}</span>
+          {/* TAB 2: FRAME DIMENSIONS & SCHEMATICS */}
+          {activeSpecTab === 'dimensions' && (
+            <div className="pt-6 space-y-6">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-neutral-500">
+                  Precision schematics engineered for comfortable Indian facial contours.
+                </p>
+                <button
+                  onClick={() => setSizeGuideOpen(true)}
+                  className="text-xs font-bold text-neutral-950 underline cursor-pointer"
+                >
+                  Interactive Size Guide &rarr;
+                </button>
               </div>
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Brand</span>
-                <span className="font-bold text-black">GetChasma</span>
-              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
+                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-900 fill-none flex-shrink-0">
+                    <path d="M 10 15 L 75 15 Q 90 15 85 35" strokeWidth="3" strokeLinecap="round" />
+                    <line x1="10" y1="5" x2="85" y2="5" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="2 2" />
+                  </svg>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Temple</span>
+                    <span className="text-base font-bold font-mono text-neutral-950">148 mm</span>
+                  </div>
+                </div>
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Gender</span>
-                <span className="font-bold text-black">{product.gender || 'Unisex'}</span>
-              </div>
+                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
+                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-400 fill-none flex-shrink-0">
+                    <rect x="10" y="10" width="30" height="22" rx="6" strokeWidth="2" />
+                    <rect x="60" y="10" width="30" height="22" rx="6" strokeWidth="2" />
+                    <path d="M 40 18 Q 50 12 60 18" stroke="#18181b" strokeWidth="3.5" strokeLinecap="round" />
+                  </svg>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Bridge</span>
+                    <span className="text-base font-bold font-mono text-neutral-950">18 mm</span>
+                  </div>
+                </div>
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Size</span>
-                <span className="font-bold text-black">{selectedSize}</span>
-              </div>
+                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
+                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-400 fill-none flex-shrink-0">
+                    <rect x="25" y="8" width="50" height="26" rx="8" stroke="#18181b" strokeWidth="3" />
+                    <line x1="25" y1="37" x2="75" y2="37" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="2 2" />
+                  </svg>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Lens Width</span>
+                    <span className="text-base font-bold font-mono text-neutral-950">51 mm</span>
+                  </div>
+                </div>
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Frame Color</span>
-                <span className="font-bold text-black">{COLOR_OPTIONS[selectedColorIdx].name}</span>
+                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
+                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-400 fill-none flex-shrink-0">
+                    <rect x="30" y="8" width="40" height="26" rx="8" strokeWidth="2" />
+                    <line x1="80" y1="8" x2="80" y2="34" stroke="#18181b" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Lens Height</span>
+                    <span className="text-base font-bold font-mono text-neutral-950">43 mm</span>
+                  </div>
+                </div>
               </div>
+            </div>
+          )}
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Temple Color</span>
-                <span className="font-bold text-black">{COLOR_OPTIONS[selectedColorIdx].temple}</span>
-              </div>
-
-              <div>
-                <span className="text-gray-400 block text-[11px]">Frame Material</span>
-                <span className="font-bold text-black">
-                  {product.specs?.['Frame Material'] || 'Aerospace Titanium'}
+          {/* TAB 3: OPTICS & WARRANTY */}
+          {activeSpecTab === 'care' && (
+            <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
+              <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
+                  365-DAY ATELIER WARRANTY
                 </span>
+                <p className="text-neutral-600 leading-relaxed">
+                  Complimentary repair or direct replacement for structural hinge fractures, solder failures, and manufacturing anomalies.
+                </p>
               </div>
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Frame Shape</span>
-                <span className="font-bold text-black">Wayfarer / Aviator</span>
+              <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
+                  ZEISS COATING CALIBRATION
+                </span>
+                <p className="text-neutral-600 leading-relaxed">
+                  Clean lenses exclusively with microfiber cloth. Rinse with lukewarm water before wiping to preserve anti-reflective coatings.
+                </p>
               </div>
 
-              <div>
-                <span className="text-gray-400 block text-[11px]">Rim Details</span>
-                <span className="font-bold text-black">Full Rim</span>
-              </div>
-
-              <div>
-                <span className="text-gray-400 block text-[11px]">Country of Origin</span>
-                <span className="font-bold text-black">India</span>
+              <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
+                  COMPLIMENTARY TUNE-UPS
+                </span>
+                <p className="text-neutral-600 leading-relaxed">
+                  Lifetime free ultrasonic sanitization, screw tightening, and nose-pad replacements at any GetChasma flagship atelier.
+                </p>
               </div>
             </div>
-          </div>
+          )}
 
         </div>
 

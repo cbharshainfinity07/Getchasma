@@ -1,11 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
 
 @import "tailwindcss";
 @import "@heroui/styles";
 
 @theme {
-  --font-sans: 'Poppins', sans-serif;
-  --font-serif: 'Poppins', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-serif: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
   --color-primary: #000000;
   --color-background: #ffffff;
 }
@@ -20,39 +22,14 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-background);
   color: #111111;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   overflow-x: hidden;
   width: 100%;
 }
 
-/* Custom Utilities based on design */
+/* Custom Editorial Utilities */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* Puffy Button Styles */
-.puffy-button {
-  background: linear-gradient(145deg, #2b2b2b, #111111);
-  box-shadow:  5px 5px 15px #d1d1d1,
-              -5px -5px 15px #ffffff,
-              inset 0px 5px 10px rgba(255, 255, 255, 0.1),
-              inset 0px -5px 10px rgba(0, 0, 0, 0.5);
-  color: white;
-  border-radius: 9999px;
-  position: relative;
-  overflow: hidden;
-}
-
-.puffy-button::after {
-  content: '';
-  position: absolute;
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 40%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
-  border-radius: 9999px;
-  pointer-events: none;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
