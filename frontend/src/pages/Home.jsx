@@ -5,6 +5,7 @@ import PromoBanner from '../components/home/PromoBanner';
 import WhatsHot from '../components/home/WhatsHot';
 import CategoriesGrid from '../components/home/CategoriesGrid';
 import SpecialOfferBanner from '../components/home/SpecialOfferBanner';
+import ProductAtelierSpec from '../components/product/ProductAtelierSpec';
 import DealsOfTheDay from '../components/home/DealsOfTheDay';
 import DiscoverCollection from '../components/home/DiscoverCollection';
 
@@ -20,7 +21,7 @@ export default function Home() {
       {/* 3. 25% Off Summer Collection Split Banner */}
       <PromoBanner />
 
-      {/* 4. Whats Hot - 3 Clean Product Cards */}
+      {/* 4. Whats Hot - 7/5 Asymmetric Spotlight */}
       <WhatsHot />
 
       {/* 5. Our Categories - 4 Full-Bleed Cards */}
@@ -29,10 +30,13 @@ export default function Home() {
       {/* 6. Special Offer - Frames from ₹999 Banner */}
       <SpecialOfferBanner />
 
-      {/* 7. Deals of the Day - 3 Clean Product Cards */}
+      {/* 7. Product Atelier Spec - 7/5 Asymmetric Spec Grid Showcase */}
+      <ProductAtelierSpec />
+
+      {/* 8. Deals of the Day - 5/7 Editorial Manifesto Split */}
       <DealsOfTheDay />
 
-      {/* 8. Discover Our Collection - 4-Column Grid with Filters */}
+      {/* 9. Discover Our Collection - Asymmetric Bento Matrix */}
       <DiscoverCollection />
     </div>
   );
