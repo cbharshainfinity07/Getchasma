@@ -37,6 +37,7 @@ import { API_BASE_URL } from './config/api';
 function AppContent() {
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith('/admin');
+  const isPDP = location.pathname.startsWith('/product/');
 
   // Backend connection check
   useEffect(() => {
@@ -77,13 +78,13 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-black selection:text-white overflow-x-hidden">
+    <div className="relative min-h-screen bg-brand-offwhite text-brand-black font-sans selection:bg-brand-black selection:text-brand-offwhite overflow-x-hidden">
       <CustomCursor />
       {location.pathname !== '/' && <TopBanner />}
       <AppNavbar />
       <SideCart />
       
-      <main className="pb-20 md:pb-0">
+      <main className={isPDP ? "pb-0" : "pb-20 md:pb-0"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
@@ -100,7 +101,8 @@ function AppContent() {
       </main>
 
       <Footer />
-      <BottomNav />
+      {/* Suppress BottomNav entirely on PDP to grant full real estate to the Buy Bar */}
+      {!isPDP && <BottomNav />}
     </div>
   );
 }

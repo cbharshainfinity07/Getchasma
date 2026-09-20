@@ -9,6 +9,13 @@ export default function CustomCursor() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
 
+  // Strict touch / mobile device detection
+  const isTouchDevice = 
+    typeof window !== 'undefined' && 
+    (('ontouchstart' in window) || 
+     (navigator.maxTouchPoints > 0) || 
+     (window.matchMedia && window.matchMedia('(pointer: coarse)').matches));
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
@@ -17,14 +24,13 @@ export default function CustomCursor() {
   const smoothY = useSpring(cursorY, springConfig);
 
   useEffect(() => {
-    // If in admin dashboard or on touch device, keep natural cursor
-    const isTouchDevice = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    // If in admin dashboard or on touch device, disable all custom cursor listeners and keep natural cursor
     if (isAdmin || isTouchDevice) {
       document.body.style.cursor = 'auto';
       return;
     }
 
-    // Hide default body cursor for luxury storefront
+    // Hide default body cursor for desktop luxury storefront
     document.body.style.cursor = 'none';
 
     const moveCursor = (e) => {
@@ -52,13 +58,13 @@ export default function CustomCursor() {
       window.removeEventListener('mouseover', handleMouseOver);
       document.body.style.cursor = 'auto';
     };
-  }, [cursorX, cursorY, isVisible, isAdmin]);
+  }, [cursorX, cursorY, isVisible, isAdmin, isTouchDevice]);
 
-  if (isAdmin || !isVisible) return null;
+  if (isAdmin || isTouchDevice || !isVisible) return null;
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference text-white hidden md:flex"
+      className="fixed top-0 left-0 w-8 h-8 pointer-events-none z-[9999] items-center justify-center mix-blend-difference text-white hidden md:flex"
       style={{
         x: smoothX,
         y: smoothY,
