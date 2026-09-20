@@ -13,6 +13,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import LensLabStudio from './LensLabStudio';
 
 const VISION_TYPES = [
   {
@@ -92,7 +93,25 @@ export default function LensCustomizerModal({ product, isOpen, onClose, onAddToC
     leftAxis: '0'
   });
 
+  const [useLabStudio, setUseLabStudio] = useState(false);
+
   if (!isOpen) return null;
+
+  if (useLabStudio) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-white">
+        <LensLabStudio 
+          product={product} 
+          onClose={() => { setUseLabStudio(false); onClose(); }} 
+          onComplete={(customizedItem) => {
+            onAddToCart(customizedItem);
+            setUseLabStudio(false);
+            onClose();
+          }} 
+        />
+      </div>
+    );
+  }
 
   const framePrice = product?.price || 120;
   const lensUpgradePrice = selectedVision.price + (selectedVision.id !== 'frame-only' ? selectedPackage.price : 0);
@@ -148,9 +167,19 @@ export default function LensCustomizerModal({ product, isOpen, onClose, onAddToC
                 Select Your Prescription Lenses
               </h3>
             </div>
-            <button onClick={onClose} className="p-2 text-gray-400 hover:text-black rounded-full hover:bg-gray-100">
-              <X size={20} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setUseLabStudio(true)}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-zinc-950 hover:bg-teal-800 text-white text-[10px] font-mono uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                <Sparkles size={11} />
+                <span>Atelier Lab Studio</span>
+              </button>
+              <button onClick={onClose} className="p-2 text-gray-400 hover:text-black rounded-full hover:bg-gray-100 cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* STEP 1: SELECT VISION NEED */}

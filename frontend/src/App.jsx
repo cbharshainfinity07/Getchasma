@@ -17,6 +17,7 @@ import TrackOrder from './pages/TrackOrder';
 import Membership from './pages/Membership';
 import CustomerLogin from './pages/account/Login';
 import AccountDashboard from './pages/account/AccountDashboard';
+import LensLabStudio from './components/product/LensLabStudio';
 
 // Customer & Admin Authentication
 import { UserAuthProvider } from './context/UserAuthContext';
@@ -93,6 +94,8 @@ function AppContent() {
           <Route path="/membership" element={<Membership />} />
           <Route path="/account" element={<AccountDashboard />} />
           <Route path="/account/login" element={<CustomerLogin />} />
+          <Route path="/lens-lab" element={<LensLabStudio />} />
+          <Route path="/optical-lab" element={<LensLabStudio />} />
         </Routes>
       </main>
 
