@@ -4,27 +4,42 @@
 @import "@heroui/styles";
 
 @theme {
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
-  --font-serif: 'Plus Jakarta Sans', sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --color-primary: #000000;
-  --color-background: #ffffff;
+  /* Atelier Off-Neutrals & High Contrast */
+  --color-brand-black: #09090b;      /* Zinc-950 deep editorial backdrop */
+  --color-brand-offwhite: #f8fafc;   /* Slate-50 luxurious paper white */
+  --color-brand-cream: #f5f5f4;      /* Stone-100 soft luxury framing */
+  --color-brand-accent: #0f766e;     /* Deep Teal - laboratory precision */
+
+  /* Structural Radii - Sharp & Technical */
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px; /* Maximum limit for minor accents */
+
+  /* Typographic Hierarchy Mapping */
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Custom Physics Animations for Framer Motion / CSS Transitions */
+  --ease-atelier: cubic-bezier(0.16, 1, 0.3, 1); /* Ultra premium ultra-slow snap out */
 }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
+/* Base Editorial Strictness */
+@layer base {
+  body {
+    background-color: var(--color-brand-offwhite);
+    color: var(--color-brand-black);
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-background);
-  color: #111111;
-  letter-spacing: -0.02em;
-  overflow-x: hidden;
-  width: 100%;
+  /* Force the crisp letter-spacing for Plus Jakarta Sans */
+  h1, h2, h3, h4 {
+    letter-spacing: -0.03em;
+  }
+  p {
+    letter-spacing: -0.015em;
+  }
 }
 
 /* Custom Editorial Utilities */
