@@ -33,6 +33,7 @@ import EyewearInspector from '../components/product/EyewearInspector';
 import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
 import LensCustomizerModal from '../components/product/LensCustomizerModal';
 import SizeGuideModal from '../components/product/SizeGuideModal';
+import FrameDimensionCaliper from '../components/product/FrameDimensionCaliper';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -244,6 +245,11 @@ export default function ProductDetails() {
   const originalPrice = product.originalPrice ? Number(product.originalPrice) : Math.round(productPrice * 1.45);
   const discountPct = Math.round(((originalPrice - productPrice) / originalPrice) * 100);
   const sku = `FT${product.id}721MFP1${COLOR_OPTIONS[selectedColorIdx].name.charAt(0)}KCGV | 51`;
+  const frameDimensions = {
+    lensWidth: product?.dimensions?.lensWidth || product?.specs?.LensWidth || 51,
+    bridgeWidth: product?.dimensions?.bridgeWidth || product?.specs?.BridgeWidth || 19,
+    templeLength: product?.dimensions?.templeLength || product?.specs?.TempleLength || 148
+  };
 
   // Multi-angle photo collection
   const multiAngles = [
@@ -522,6 +528,9 @@ export default function ProductDetails() {
               <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-gray-950 mb-1.5">
                 {product.name}
               </h1>
+
+              {/* Bespoke Millimeter Caliper Component (Box Measurement System) */}
+              <FrameDimensionCaliper dimensions={frameDimensions} />
 
               <p className="text-xs text-gray-500 leading-relaxed font-normal">
                 {product.description || 'Premium handcrafted eyewear built with aerospace grade durability and zero-strain optics.'}
