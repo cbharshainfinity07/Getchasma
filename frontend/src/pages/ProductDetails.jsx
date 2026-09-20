@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   ChevronLeft, 
-  Truck, 
   ShoppingBag, 
   Check, 
   Camera, 
@@ -23,6 +22,7 @@ import SizeGuideModal from '../components/product/SizeGuideModal';
 import FrameDimensionCaliper from '../components/product/FrameDimensionCaliper';
 import PrescriptionConfigDrawer from '../components/product/PrescriptionConfigDrawer';
 import OpticalBlueprint from '../components/product/OpticalBlueprint';
+import DeliveryEstimator from '../components/product/DeliveryEstimator';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -48,11 +48,7 @@ export default function ProductDetails() {
   const [selectedAngleUrl, setSelectedAngleUrl] = useState('');
   const [isPrescriptionDrawerOpen, setIsPrescriptionDrawerOpen] = useState(false);
 
-  // Delivery checker & Progressive disclosure
-  const [pincode, setPincode] = useState('');
-  const [deliveryResult, setDeliveryResult] = useState(null);
-  const [checkingPincode, setCheckingPincode] = useState(false);
-  const [showDeliveryInput, setShowDeliveryInput] = useState(false);
+  // Progressive disclosure tabs
   const [activeSpecTab, setActiveSpecTab] = useState('specs'); // 'specs' | 'dimensions' | 'care'
 
   // Share & Wishlist
@@ -148,30 +144,6 @@ export default function ProductDetails() {
       setShareSuccess(true);
       setTimeout(() => setShareSuccess(false), 2000);
     }
-  };
-
-  const handleCheckDelivery = (e) => {
-    e.preventDefault();
-    if (!pincode || pincode.length < 6) return;
-    setCheckingPincode(true);
-    setTimeout(() => {
-      setCheckingPincode(false);
-      // Calculate estimated delivery date: 3-4 days from today
-      const today = new Date();
-      const estDate = new Date(today);
-      estDate.setDate(today.getDate() + 3);
-      const formattedDate = estDate.toLocaleDateString('en-IN', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short'
-      });
-      setDeliveryResult({
-        pincode,
-        date: formattedDate,
-        freeShipping: true,
-        codAvailable: true
-      });
-    }, 600);
   };
 
   const handleDirectAddToCart = () => {
@@ -463,6 +435,9 @@ export default function ProductDetails() {
               </div>
             </div>
 
+            {/* Integrated Pincode Delivery Estimator with Live Cutoff Telemetry */}
+            <DeliveryEstimator />
+
             {/* Dual Action Triggers */}
             <div className="space-y-2 pt-4 border-t border-brand-black/10">
               <button
@@ -490,42 +465,9 @@ export default function ProductDetails() {
               </button>
             </div>
 
-            {/* Courier Dispatch & WhatsApp Assistance Accordion */}
-            <div className="pt-4 border-t border-brand-black/10 space-y-3 font-mono text-xs">
-              <div className="flex items-center justify-between text-zinc-500">
-                <button
-                  onClick={() => setShowDeliveryInput(!showDeliveryInput)}
-                  className="flex items-center gap-1.5 hover:text-brand-black cursor-pointer uppercase tracking-wider text-[11px]"
-                >
-                  <Truck size={13} />
-                  <span>Courier Dispatch Estimate</span>
-                </button>
-                {deliveryResult && (
-                  <span className="text-[#0f766e] font-semibold text-[11px]">By {deliveryResult.date}</span>
-                )}
-              </div>
-
-              {showDeliveryInput && (
-                <form onSubmit={handleCheckDelivery} className="flex gap-2 pt-1">
-                  <input
-                    type="text"
-                    maxLength={6}
-                    placeholder="Enter 6-digit Pincode"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                    className="flex-1 border border-brand-black/20 bg-white px-3 py-2 text-xs font-mono outline-none focus:border-brand-black"
-                  />
-                  <button
-                    type="submit"
-                    disabled={pincode.length < 6 || checkingPincode}
-                    className="px-4 py-2 bg-brand-black text-white text-[11px] uppercase tracking-wider font-mono hover:bg-zinc-800 disabled:opacity-40 cursor-pointer"
-                  >
-                    {checkingPincode ? '...' : 'Check'}
-                  </button>
-                </form>
-              )}
-
-              <div className="p-3 bg-[#f5f5f3] border border-brand-black/10 flex items-center justify-between">
+            {/* Optician Verification & WhatsApp Consultation */}
+            <div className="pt-4 border-t border-brand-black/10">
+              <div className="p-3 bg-[#f5f5f3] border border-brand-black/10 flex items-center justify-between font-mono">
                 <div className="flex items-center gap-2 text-zinc-600">
                   <Phone size={13} className="text-[#0f766e]" />
                   <span className="text-[11px] uppercase tracking-wider">Optician Verification</span>
