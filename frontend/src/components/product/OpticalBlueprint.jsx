@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Ruler, HelpCircle, Check, X, CreditCard, ChevronRight } from 'lucide-react';
+import { Ruler, HelpCircle, Check, X, CreditCard, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function OpticalBlueprint({ specs, productName }) {
@@ -7,42 +7,47 @@ export default function OpticalBlueprint({ specs, productName }) {
 
   // Optical measurements (standard eyewear millimeter parameters)
   const measurements = {
-    lensWidth: '52 mm',
-    bridgeWidth: '18 mm',
-    templeLength: '142 mm',
-    frameHeight: '43 mm',
-    totalWidth: '138 mm',
-    fit: 'Medium (Fits 85% of Indian Face Structures)'
+    lensWidth: specs?.LensWidth || '52 mm',
+    bridgeWidth: specs?.BridgeWidth || '18 mm',
+    templeLength: specs?.TempleLength || '142 mm',
+    frameHeight: specs?.FrameHeight || '43 mm',
+    totalWidth: specs?.TotalWidth || '138 mm',
+    fit: 'Medium (Calibrated for Standard Ergonomic Equilibrium)'
   };
 
   return (
-    <div className="bg-white rounded-3xl p-6 md:p-7 border border-gray-200/80 shadow-sm space-y-6">
+    <div className="relative border border-brand-black/10 bg-white p-6 md:p-8 space-y-6 antialiased font-sans">
+      {/* Precision Corner Crosshairs */}
+      <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-brand-black/40" />
+      <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-brand-black/40" />
+      <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-brand-black/40" />
+      <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-brand-black/40" />
       
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+      <div className="flex items-center justify-between pb-4 border-b border-brand-black/10">
         <div>
-          <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-neutral-400 block">
-            Optical Precision Specs
+          <span className="font-mono text-[10px] tracking-[0.1em] uppercase text-zinc-400 block mb-1">
+            OPTICAL SCHEMATICS // SPEC-MM
           </span>
-          <h3 className="font-serif text-lg font-bold text-black flex items-center gap-2">
-            Frame Blueprint &amp; Millimeter Dimensions
+          <h3 className="text-xl font-bold tracking-tight text-brand-black flex items-center gap-2">
+            Frame Blueprint &amp; Millimeter Calibrations
           </h3>
         </div>
 
         <button
           onClick={() => setSizeGuideOpen(true)}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 hover:text-black hover:underline"
+          className="inline-flex items-center gap-1.5 font-mono text-xs text-zinc-600 hover:text-brand-black uppercase tracking-wider cursor-pointer transition-colors"
         >
-          <HelpCircle size={14} />
-          <span>Size Guide</span>
+          <HelpCircle size={14} className="text-[#0f766e]" />
+          <span>[ Size Guide ]</span>
         </button>
       </div>
 
       {/* Visual Blueprint Schematic Diagram */}
-      <div className="bg-[#0f1115] text-white rounded-2xl p-6 relative overflow-hidden">
+      <div className="bg-[#09090b] text-white p-6 relative overflow-hidden border border-brand-black/20">
         {/* Subtle grid pattern */}
         <div 
-          className="absolute inset-0 opacity-15 pointer-events-none"
+          className="absolute inset-0 opacity-10 pointer-events-none"
           style={{
             backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
             backgroundSize: '16px 16px'
@@ -50,21 +55,24 @@ export default function OpticalBlueprint({ specs, productName }) {
         />
 
         <div className="relative z-10">
-          <div className="flex items-center justify-between text-xs text-neutral-400 mb-6 font-mono">
-            <span>SCHEMATIC // CALIBRATION: 1:1 SCALE</span>
-            <span className="text-amber-400 font-bold">TITANIUM REINFORCED</span>
+          <div className="flex items-center justify-between text-xs text-zinc-400 mb-6 font-mono">
+            <span className="tracking-widest uppercase">SCHEMATIC // SCALE: 1:1 OPHTHALMIC</span>
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#0f766e] animate-pulse" />
+              <span className="text-[#0f766e] font-bold tracking-wider uppercase text-[11px]">TITANIUM VERIFIED</span>
+            </div>
           </div>
 
           {/* SVG Frame Schematic with Dimension Callouts */}
           <div className="flex flex-col items-center justify-center py-4">
-            <svg viewBox="0 0 500 160" className="w-full max-w-md stroke-neutral-400 fill-none" strokeWidth="2">
+            <svg viewBox="0 0 500 160" className="w-full max-w-md stroke-zinc-400 fill-none" strokeWidth="2">
               {/* Left Lens Rim */}
-              <rect x="40" y="30" width="160" height="90" rx="35" className="stroke-white/80" strokeWidth="2.5" />
+              <rect x="40" y="30" width="160" height="90" rx="20" className="stroke-white/80" strokeWidth="2" />
               {/* Right Lens Rim */}
-              <rect x="300" y="30" width="160" height="90" rx="35" className="stroke-white/80" strokeWidth="2.5" />
+              <rect x="300" y="30" width="160" height="90" rx="20" className="stroke-white/80" strokeWidth="2" />
               
-              {/* Nose Bridge */}
-              <path d="M 200 65 Q 250 50 300 65" className="stroke-amber-400" strokeWidth="3" />
+              {/* Nose Bridge with Laboratory Accent */}
+              <path d="M 200 65 Q 250 48 300 65" className="stroke-[#0f766e]" strokeWidth="3" strokeLinecap="square" />
               
               {/* Left Temple Hinge */}
               <path d="M 40 45 L 10 45" className="stroke-white/60" strokeWidth="2" />
@@ -72,125 +80,125 @@ export default function OpticalBlueprint({ specs, productName }) {
               <path d="M 460 45 L 490 45" className="stroke-white/60" strokeWidth="2" />
 
               {/* Lens Width Indicator (Left) */}
-              <line x1="40" y1="135" x2="200" y2="135" className="stroke-amber-400" strokeDasharray="3 3" />
-              <text x="120" y="152" fill="#fbbf24" fontSize="11" textAnchor="middle" fontFamily="monospace" fontWeight="bold">
-                52 mm Lens
+              <line x1="40" y1="135" x2="200" y2="135" className="stroke-[#0f766e]" strokeDasharray="3 3" />
+              <text x="120" y="152" fill="#0f766e" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontWeight="bold">
+                {measurements.lensWidth} Lens
               </text>
 
               {/* Bridge Width Indicator */}
-              <line x1="200" y1="20" x2="300" y2="20" className="stroke-amber-400" strokeDasharray="3 3" />
-              <text x="250" y="15" fill="#fbbf24" fontSize="11" textAnchor="middle" fontFamily="monospace" fontWeight="bold">
-                18 mm Bridge
+              <line x1="200" y1="20" x2="300" y2="20" className="stroke-[#0f766e]" strokeDasharray="3 3" />
+              <text x="250" y="15" fill="#0f766e" fontSize="11" textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontWeight="bold">
+                {measurements.bridgeWidth} Bridge
               </text>
 
               {/* Height Indicator */}
-              <line x1="25" y1="30" x2="25" y2="120" className="stroke-white/60" strokeDasharray="2 2" />
-              <text x="18" y="80" fill="#a3a3a3" fontSize="10" textAnchor="middle" transform="rotate(-90 18 80)" fontFamily="monospace">
-                43 mm
+              <line x1="25" y1="30" x2="25" y2="120" className="stroke-zinc-500" strokeDasharray="2 2" />
+              <text x="18" y="80" fill="#a1a1aa" fontSize="10" textAnchor="middle" transform="rotate(-90 18 80)" fontFamily="JetBrains Mono, monospace">
+                {measurements.frameHeight}
               </text>
             </svg>
           </div>
 
           {/* Technical Specs Key Values */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-neutral-800 text-xs font-mono">
-            <div className="p-2.5 bg-neutral-900 rounded-xl border border-neutral-800">
-              <span className="text-neutral-500 block text-[10px]">TOTAL WIDTH</span>
-              <span className="text-white font-bold text-sm">{measurements.totalWidth}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-zinc-800 text-xs font-mono">
+            <div className="p-3 bg-zinc-900/90 border border-zinc-800">
+              <span className="text-zinc-500 block text-[10px] uppercase tracking-wider mb-1">TOTAL WIDTH</span>
+              <span className="text-white font-bold text-sm tracking-tight">{measurements.totalWidth}</span>
             </div>
-            <div className="p-2.5 bg-neutral-900 rounded-xl border border-neutral-800">
-              <span className="text-neutral-500 block text-[10px]">TEMPLE LENGTH</span>
-              <span className="text-white font-bold text-sm">{measurements.templeLength}</span>
+            <div className="p-3 bg-zinc-900/90 border border-zinc-800">
+              <span className="text-zinc-500 block text-[10px] uppercase tracking-wider mb-1">TEMPLE LENGTH</span>
+              <span className="text-white font-bold text-sm tracking-tight">{measurements.templeLength}</span>
             </div>
-            <div className="p-2.5 bg-neutral-900 rounded-xl border border-neutral-800">
-              <span className="text-neutral-500 block text-[10px]">FRAME WEIGHT</span>
-              <span className="text-white font-bold text-sm">{specs?.Weight || '19 grams'}</span>
+            <div className="p-3 bg-zinc-900/90 border border-zinc-800">
+              <span className="text-zinc-500 block text-[10px] uppercase tracking-wider mb-1">FRAME MASS</span>
+              <span className="text-white font-bold text-sm tracking-tight">{specs?.Weight || '19g Featherweight'}</span>
             </div>
-            <div className="p-2.5 bg-neutral-900 rounded-xl border border-neutral-800">
-              <span className="text-neutral-500 block text-[10px]">FACE FIT</span>
-              <span className="text-emerald-400 font-bold text-xs">Standard Fit</span>
+            <div className="p-3 bg-zinc-900/90 border border-zinc-800">
+              <span className="text-zinc-500 block text-[10px] uppercase tracking-wider mb-1">FACIAL FIT</span>
+              <span className="text-[#0f766e] font-bold text-xs">Calibrated Fit</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Face Fit Recommendation Pill */}
-      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between text-xs">
+      {/* Face Fit Recommendation Strip */}
+      <div className="p-4 bg-[#f5f5f3] border border-brand-black/10 flex items-center justify-between text-xs font-mono">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">
+          <div className="w-7 h-7 bg-brand-black text-white flex items-center justify-center font-bold text-xs">
             M
           </div>
           <div>
-            <span className="font-bold text-gray-900 block">Recommended for: Medium to Wide Faces</span>
-            <span className="text-gray-500 text-[11px]">Ideal for cheekbone width 130mm to 142mm.</span>
+            <span className="font-bold text-brand-black block">CRITERIA // MEDIUM TO WIDE CRANIAL ARCH</span>
+            <span className="text-zinc-500 text-[11px] font-sans">Ideal for cheekbone width 130 mm to 142 mm.</span>
           </div>
         </div>
         <button
           onClick={() => setSizeGuideOpen(true)}
-          className="text-xs font-bold text-black underline hover:text-gray-600"
+          className="text-xs font-bold text-brand-black hover:text-[#0f766e] transition-colors cursor-pointer"
         >
-          Check My Size
+          Verify Dimensions &rarr;
         </button>
       </div>
 
-      {/* SIZE GUIDE MODAL (Credit Card Test used by Lenskart & Warby Parker) */}
+      {/* SIZE GUIDE MODAL (Precision Debit Card Calibration Standard) */}
       <AnimatePresence>
         {sizeGuideOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl border border-gray-200 relative text-xs"
+              exit={{ opacity: 0, scale: 0.96 }}
+              className="bg-white p-6 md:p-8 max-w-lg w-full border border-brand-black/10 relative text-xs shadow-2xl font-sans"
             >
               <button
                 onClick={() => setSizeGuideOpen(false)}
-                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-black rounded-full hover:bg-gray-100"
+                className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-brand-black cursor-pointer transition-colors"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
 
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-400 block mb-1">
-                Lenskart Optical Standard
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 block mb-1">
+                CALIBRATION BENCHMARK // ISO-7810
               </span>
-              <h3 className="font-serif text-2xl font-bold text-black mb-3">
-                How to Find Your Frame Size
+              <h3 className="text-2xl font-bold tracking-tight text-brand-black mb-3">
+                Determining Frame Proportions
               </h3>
-              <p className="text-gray-500 mb-6 leading-relaxed">
-                Standard debit/credit cards share the exact proportion of a standard eyewear lens. Use this 10-second mirror test to check your fit:
+              <p className="text-zinc-600 mb-6 leading-relaxed">
+                Standard ISO banking cards share the exact proportion of an optical lens. Use this 10-second reference test before a mirror:
               </p>
 
               <div className="space-y-4 mb-6">
-                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-3">
-                  <CreditCard size={20} className="text-black flex-shrink-0 mt-0.5" />
+                <div className="p-4 bg-[#f5f5f3] border border-brand-black/10 flex items-start gap-3">
+                  <CreditCard size={18} className="text-brand-black flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-bold text-black mb-1">1. Place Card at Center of Nose</h4>
-                    <p className="text-gray-600 leading-relaxed">
-                      Stand before a mirror and place the short edge of any credit card under the bridge of your nose.
+                    <h4 className="font-bold text-brand-black mb-1">1. Place Card at Center Bridge</h4>
+                    <p className="text-zinc-600 leading-relaxed font-sans">
+                      Align the short edge of any standard card vertically against the crest of your nasal bridge.
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 text-center text-[11px]">
-                  <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-                    <span className="font-bold text-black block mb-1">Card Extends Past Eye</span>
-                    <span className="text-emerald-700 font-semibold">Small Fit (&lt;130mm)</span>
+                <div className="grid grid-cols-3 gap-2.5 text-center text-[11px] font-mono">
+                  <div className="p-3 bg-white border border-brand-black/10">
+                    <span className="font-bold text-brand-black block mb-1">Past Outer Eye</span>
+                    <span className="text-zinc-500">Small (&lt;130mm)</span>
                   </div>
-                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200">
-                    <span className="font-bold text-black block mb-1">Card Ends at Edge of Eye</span>
-                    <span className="text-amber-800 font-bold">Medium Fit (Matches this frame)</span>
+                  <div className="p-3 bg-[#f5f5f3] border-2 border-brand-black text-brand-black">
+                    <span className="font-bold text-brand-black block mb-1">Edges Match</span>
+                    <span className="text-[#0f766e] font-bold">Standard Match</span>
                   </div>
-                  <div className="p-3 bg-gray-50 rounded-xl border border-gray-200">
-                    <span className="font-bold text-black block mb-1">Card Inside Edge of Eye</span>
-                    <span className="text-purple-700 font-semibold">Wide Fit (&gt;140mm)</span>
+                  <div className="p-3 bg-white border border-brand-black/10">
+                    <span className="font-bold text-brand-black block mb-1">Inside Outer Eye</span>
+                    <span className="text-zinc-500">Wide (&gt;140mm)</span>
                   </div>
                 </div>
               </div>
 
               <button
                 onClick={() => setSizeGuideOpen(false)}
-                className="w-full py-3.5 bg-black text-white font-semibold uppercase tracking-wider rounded-full hover:bg-neutral-800"
+                className="w-full py-3.5 bg-brand-black hover:bg-[#0f766e] text-white font-mono text-xs uppercase tracking-widest transition-colors cursor-pointer"
               >
-                Got It, Thanks!
+                CONFIRM CALIBRATION
               </button>
             </motion.div>
           </div>
