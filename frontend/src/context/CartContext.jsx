@@ -27,13 +27,17 @@ export function CartProvider({ children }) {
   const addToCart = (product, quantity = 1) => {
     if (!product) return;
     const qty = Math.max(1, Number(quantity) || 1);
-    const price = Number(product.price) || 0;
+    const rawPrice = Number(product.price) || 0;
+    const finalPrice = product.finalPrice !== undefined ? Number(product.finalPrice) : rawPrice;
     const safeItem = {
       ...product,
       id: product.id !== undefined ? String(product.id) : `prod-${Date.now()}`,
-      price,
+      price: rawPrice,
+      finalPrice,
+      sku: product.sku || `FT-${product.id || 'RAW'}-RAW`,
       name: product.name || 'Premium Eyewear Frame',
       image: product.image || '/3d-glasses-transparent.png',
+      lensConfig: product.lensConfig || null,
     };
 
     setCartItems(prev => {
@@ -75,7 +79,10 @@ export function CartProvider({ children }) {
     } catch (e) {}
   };
 
-  const cartTotal = cartItems.reduce((total, item) => total + (Number(item.price || 0) * (item.quantity || 1)), 0);
+  const cartTotal = cartItems.reduce((total, item) => {
+    const itemPrice = Number(item.finalPrice !== undefined ? item.finalPrice : item.price || 0);
+    return total + (itemPrice * (item.quantity || 1));
+  }, 0);
   const cartCount = cartItems.reduce((count, item) => count + (item.quantity || 1), 0);
 
   const toggleCart = () => setIsCartOpen(prev => !prev);

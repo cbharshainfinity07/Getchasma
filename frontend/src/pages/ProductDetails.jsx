@@ -178,11 +178,14 @@ export default function ProductDetails() {
     if (!product) return;
     addToCart({
       id: product.id,
+      sku: product.sku || sku,
       name: product.name,
-      price: product.price,
+      price: productPrice,
+      finalPrice: productPrice,
       image: selectedAngleUrl || product.image,
       selectedColor: activeColorway.name,
-      selectedSize: selectedSize
+      selectedSize: selectedSize,
+      lensConfig: null
     }, quantity);
 
     setIsAdded(true);
@@ -823,9 +826,12 @@ export default function ProductDetails() {
         onApplyConfig={(config) => {
           handleCustomLensAdd({
             id: `${product.id}-calibrated-${Date.now()}`,
+            sku: product.sku || sku,
             name: `${product.name} [${config.lensTier.title}]`,
             price: config.finalPrice,
+            finalPrice: config.finalPrice,
             image: selectedAngleUrl || product.image,
+            lensConfig: config,
             lensDetails: {
               visionType: config.prescriptionType,
               lensPackage: config.lensTier.title,
