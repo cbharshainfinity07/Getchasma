@@ -22,6 +22,7 @@ import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
 import SizeGuideModal from '../components/product/SizeGuideModal';
 import FrameDimensionCaliper from '../components/product/FrameDimensionCaliper';
 import PrescriptionConfigDrawer from '../components/product/PrescriptionConfigDrawer';
+import OpticalBlueprint from '../components/product/OpticalBlueprint';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -629,63 +630,18 @@ export default function ProductDetails() {
           {activeSpecTab === 'dimensions' && (
             <div className="pt-6 space-y-6">
               <div className="flex items-center justify-between">
-                <p className="text-xs text-neutral-500">
-                  Precision schematics engineered for comfortable Indian facial contours.
+                <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
+                  Orthogonal CAD Metric Schematics · Dimension Line Extensions
                 </p>
                 <button
                   onClick={() => setSizeGuideOpen(true)}
-                  className="text-xs font-bold text-neutral-950 underline cursor-pointer"
+                  className="text-xs font-mono text-brand-black underline cursor-pointer"
                 >
                   Interactive Size Guide &rarr;
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
-                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-900 fill-none flex-shrink-0">
-                    <path d="M 10 15 L 75 15 Q 90 15 85 35" strokeWidth="3" strokeLinecap="round" />
-                    <line x1="10" y1="5" x2="85" y2="5" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="2 2" />
-                  </svg>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Temple</span>
-                    <span className="text-base font-bold font-mono text-neutral-950">148 mm</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
-                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-400 fill-none flex-shrink-0">
-                    <rect x="10" y="10" width="30" height="22" rx="6" strokeWidth="2" />
-                    <rect x="60" y="10" width="30" height="22" rx="6" strokeWidth="2" />
-                    <path d="M 40 18 Q 50 12 60 18" stroke="#18181b" strokeWidth="3.5" strokeLinecap="round" />
-                  </svg>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Bridge</span>
-                    <span className="text-base font-bold font-mono text-neutral-950">18 mm</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
-                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-400 fill-none flex-shrink-0">
-                    <rect x="25" y="8" width="50" height="26" rx="8" stroke="#18181b" strokeWidth="3" />
-                    <line x1="25" y1="37" x2="75" y2="37" stroke="#9ca3af" strokeWidth="1.5" strokeDasharray="2 2" />
-                  </svg>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Lens Width</span>
-                    <span className="text-base font-bold font-mono text-neutral-950">51 mm</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-100 flex items-center gap-3">
-                  <svg viewBox="0 0 100 40" className="w-12 h-8 stroke-neutral-400 fill-none flex-shrink-0">
-                    <rect x="30" y="8" width="40" height="26" rx="8" strokeWidth="2" />
-                    <line x1="80" y1="8" x2="80" y2="34" stroke="#18181b" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
-                  <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 block">Lens Height</span>
-                    <span className="text-base font-bold font-mono text-neutral-950">43 mm</span>
-                  </div>
-                </div>
-              </div>
+              <OpticalBlueprint dimensions={product.dimensions || frameDimensions} name={product.name} />
             </div>
           )}
 
