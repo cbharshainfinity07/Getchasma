@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import AppNavbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -7,32 +7,45 @@ import BottomNav from './components/layout/BottomNav';
 import SideCart from './components/cart/SideCart';
 import TopBanner from './components/layout/TopBanner';
 
-// Storefront Pages
+// Keep Home critical path eager for instantaneous LCP
 import Home from './pages/Home';
-import Shop from './pages/Shop';
-import ProductDetails from './pages/ProductDetails';
-import Checkout from './pages/Checkout';
-import OrderConfirmation from './pages/OrderConfirmation';
-import TrackOrder from './pages/TrackOrder';
-import Membership from './pages/Membership';
-import CustomerLogin from './pages/account/Login';
-import AccountDashboard from './pages/account/AccountDashboard';
-import LensLabStudio from './components/product/LensLabStudio';
+
+// Lazy-load heavier storefront routes and visualizers
+const Shop = lazy(() => import('./pages/Shop'));
+const ProductDetails = lazy(() => import('./pages/ProductDetails'));
+const LensLabStudio = lazy(() => import('./components/product/LensLabStudio'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const OrderConfirmation = lazy(() => import('./pages/OrderConfirmation'));
+const TrackOrder = lazy(() => import('./pages/TrackOrder'));
+const Membership = lazy(() => import('./pages/Membership'));
+const CustomerLogin = lazy(() => import('./pages/account/Login'));
+const AccountDashboard = lazy(() => import('./pages/account/AccountDashboard'));
 
 // Customer & Admin Authentication
 import { UserAuthProvider } from './context/UserAuthContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import ProtectedRoute from './components/admin/ProtectedRoute';
-import AdminLogin from './pages/admin/AdminLogin';
 
-// Admin Dashboard Pages
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminOverview from './pages/admin/AdminOverview';
-import AdminProducts from './pages/admin/AdminProducts';
-import AdminOrders from './pages/admin/AdminOrders';
-import AdminCategories from './pages/admin/AdminCategories';
-import AdminCoupons from './pages/admin/AdminCoupons';
+// Lazy-load Admin Console modules
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
+const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'));
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
+const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'));
+const AdminCoupons = lazy(() => import('./pages/admin/AdminCoupons'));
+
 import { API_BASE_URL } from './config/api';
+
+// Minimal, zero-layout-shift hairline loader
+const AtelierLoader = () => (
+  <div className="flex h-screen w-full items-center justify-center bg-brand-offwhite">
+    <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-widest text-zinc-500">
+      <div className="h-2 w-2 animate-ping bg-brand-black" />
+      <span>Calibrating Atelier Viewport...</span>
+    </div>
+  </div>
+);
 
 function AppContent() {
   const location = useLocation();
@@ -54,26 +67,28 @@ function AppContent() {
 
   if (isAdminPath) {
     return (
-      <Routes>
-        {/* Unprotected Admin Login Portal */}
-        <Route path="/admin/login" element={<AdminLogin />} />
+      <Suspense fallback={<AtelierLoader />}>
+        <Routes>
+          {/* Unprotected Admin Login Portal */}
+          <Route path="/admin/login" element={<AdminLogin />} />
 
-        {/* Protected Admin Console Routes */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminOverview />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="coupons" element={<AdminCoupons />} />
-        </Route>
-      </Routes>
+          {/* Protected Admin Console Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminOverview />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="coupons" element={<AdminCoupons />} />
+          </Route>
+        </Routes>
+      </Suspense>
     );
   }
 
@@ -85,19 +100,21 @@ function AppContent() {
       <SideCart />
       
       <main className={isPDP ? "pb-0" : "pb-20 md:pb-0"}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
-          <Route path="/track-order" element={<TrackOrder />} />
-          <Route path="/membership" element={<Membership />} />
-          <Route path="/account" element={<AccountDashboard />} />
-          <Route path="/account/login" element={<CustomerLogin />} />
-          <Route path="/lens-lab" element={<LensLabStudio />} />
-          <Route path="/optical-lab" element={<LensLabStudio />} />
-        </Routes>
+        <Suspense fallback={<AtelierLoader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+            <Route path="/membership" element={<Membership />} />
+            <Route path="/account" element={<AccountDashboard />} />
+            <Route path="/account/login" element={<CustomerLogin />} />
+            <Route path="/lens-lab" element={<LensLabStudio />} />
+            <Route path="/optical-lab" element={<LensLabStudio />} />
+          </Routes>
+        </Suspense>
       </main>
 
       <Footer />
@@ -135,7 +152,7 @@ class ErrorBoundary extends React.Component {
                 this.setState({ hasError: false });
                 window.location.reload();
               }}
-              className="px-6 py-3 bg-amber-400 text-black rounded-full font-bold text-xs uppercase tracking-wider hover:bg-amber-500 transition-colors shadow-lg"
+              className="px-6 py-3 bg-brand-cream text-brand-black rounded-none font-mono font-bold text-xs uppercase tracking-wider hover:bg-white transition-colors shadow-lg cursor-pointer"
             >
               Refresh Experience
             </button>
