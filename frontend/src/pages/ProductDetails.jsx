@@ -34,6 +34,7 @@ import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
 import LensCustomizerModal from '../components/product/LensCustomizerModal';
 import SizeGuideModal from '../components/product/SizeGuideModal';
 import FrameDimensionCaliper from '../components/product/FrameDimensionCaliper';
+import PrescriptionConfigDrawer from '../components/product/PrescriptionConfigDrawer';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -1128,11 +1129,25 @@ export default function ProductDetails() {
         onClose={() => setTryOnOpen(false)}
       />
 
-      <LensCustomizerModal
-        product={product}
+      {/* LUXURY MULTI-STEP OPTICAL SURFACING DRAWER */}
+      <PrescriptionConfigDrawer
         isOpen={customizerOpen}
         onClose={() => setCustomizerOpen(false)}
-        onAddToCart={handleCustomLensAdd}
+        basePrice={productPrice}
+        onApplyConfig={(config) => {
+          handleCustomLensAdd({
+            id: `${product.id}-calibrated-${Date.now()}`,
+            name: `${product.name} [${config.lensTier.title}]`,
+            price: config.finalPrice,
+            image: product.image,
+            lensDetails: {
+              visionType: config.prescriptionType,
+              lensPackage: config.lensTier.title,
+              specs: config.lensTier.spec,
+              hydrophobicCoating: config.hydrophobicCoating
+            }
+          });
+        }}
       />
 
       <SizeGuideModal
