@@ -207,7 +207,8 @@ export default function ProductDetails() {
   const frameDimensions = {
     lensWidth: product?.dimensions?.lensWidth || product?.specs?.LensWidth || 51,
     bridgeWidth: product?.dimensions?.bridgeWidth || product?.specs?.BridgeWidth || 19,
-    templeLength: product?.dimensions?.templeLength || product?.specs?.TempleLength || 148
+    templeLength: product?.dimensions?.templeLength || product?.specs?.TempleLength || 148,
+    lensHeight: product?.dimensions?.lensHeight || product?.specs?.LensHeight || 42
   };
 
   const colorways = product?.colorways?.length > 0 ? product.colorways : COLOR_OPTIONS;
@@ -501,7 +502,7 @@ export default function ProductDetails() {
             <div className="flex items-center gap-2 p-1 bg-neutral-100 rounded-2xl">
               {[
                 { id: 'specs', label: 'Technical Specs' },
-                { id: 'dimensions', label: 'Frame Dimensions' },
+                { id: 'dimensions', label: 'Frame Dimensions & Schematics' },
                 { id: 'care', label: 'Optics & Warranty' }
               ].map(tab => (
                 <button
@@ -545,11 +546,11 @@ export default function ProductDetails() {
                 </div>
                 <div>
                   <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Colorway</span>
-                  <span className="font-bold text-neutral-950">{COLOR_OPTIONS[selectedColorIdx].name}</span>
+                  <span className="font-bold text-neutral-950">{activeColorway?.name || COLOR_OPTIONS[0].name}</span>
                 </div>
                 <div>
                   <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Temple Material</span>
-                  <span className="font-bold text-neutral-950">{COLOR_OPTIONS[selectedColorIdx].temple}</span>
+                  <span className="font-bold text-neutral-950">{activeColorway?.temple || COLOR_OPTIONS[0].temple}</span>
                 </div>
                 <div>
                   <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Composition</span>
