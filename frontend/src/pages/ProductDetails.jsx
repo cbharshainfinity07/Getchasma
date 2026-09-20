@@ -485,20 +485,20 @@ export default function ProductDetails() {
           </div>
 
           {/* ========================================================
-              RIGHT COLUMN (5 COLS): TITAN & LENSKART BUY DOSSIER
+              RIGHT COLUMN (5 COLS): ATELIER BUY DOSSIER (STICKY SIDEBAR)
              ======================================================== */}
-          <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm space-y-5">
+          <div className="lg:col-span-5 bg-white border border-brand-black/10 p-6 sm:p-8 space-y-5 lg:sticky lg:top-24 h-fit">
             
-            {/* 1. TOP ACTION CHIPS (Titan Eyeplus signature) */}
+            {/* 1. TOP ACTION CHIPS */}
             <div className="grid grid-cols-2 gap-2.5 pb-2">
               <button
                 onClick={() => {
                   const el = document.getElementById('delivery-section');
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="p-2.5 rounded-2xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200/80 rounded-full flex items-center justify-center gap-2 text-xs font-bold text-blue-900 transition-all shadow-sm active:scale-95"
+                className="p-2.5 bg-brand-cream hover:bg-zinc-200/70 border border-brand-black/10 flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-black transition-all shadow-xs active:scale-98 cursor-pointer"
               >
-                <Truck size={15} className="text-neutral-900" />
+                <Truck size={14} className="text-zinc-600" />
                 <span>Check Delivery</span>
               </button>
 
@@ -507,9 +507,9 @@ export default function ProductDetails() {
                   const el = document.getElementById('similar-frames-section');
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="p-2.5 rounded-2xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200/80 rounded-full flex items-center justify-center gap-2 text-xs font-bold text-blue-900 transition-all shadow-sm active:scale-95"
+                className="p-2.5 bg-brand-cream hover:bg-zinc-200/70 border border-brand-black/10 flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-wider text-brand-black transition-all shadow-xs active:scale-98 cursor-pointer"
               >
-                <Layers size={15} className="text-neutral-900" />
+                <Layers size={14} className="text-zinc-600" />
                 <span>View Similar</span>
               </button>
             </div>
