@@ -1,796 +1,301 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  ShoppingBag, 
-  Check, 
-  Camera, 
-  Ruler, 
-  Sparkles, 
-  Phone, 
-  Share2, 
-  Heart, 
-  Glasses 
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useCart } from '../context/CartContext';
-import { API_BASE_URL } from '../config/api';
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { AnimatePresence, motion } from 'motion/react'
+import { Heart, ShieldCheck, Truck, RotateCcw, ShoppingBag, Share2, ChevronLeft, ChevronRight, PackageX } from 'lucide-react'
+import { toast } from 'sonner'
+import { useProduct, useSettings } from '../lib/queries'
+import { useCart } from '../context/CartContext'
+import { useWishlist } from '../context/WishlistContext'
+import { ColorDots, Price, QuantityStepper, StockIndicator } from '../components/ui/Commerce'
+import { EmptyState, ErrorState, Skeleton } from '../components/ui/Feedback'
+import Button from '../components/ui/Button'
+import ProductCard from '../components/product/ProductCard'
+import { cn, formatPrice } from '../lib/format'
 
-// Studio & Inspection Modals
-import VirtualTryOnModal from '../components/product/VirtualTryOnModal';
-import SizeGuideModal from '../components/product/SizeGuideModal';
-import FrameDimensionCaliper from '../components/product/FrameDimensionCaliper';
-import PrescriptionConfigDrawer from '../components/product/PrescriptionConfigDrawer';
-import OpticalBlueprint from '../components/product/OpticalBlueprint';
-import DeliveryEstimator from '../components/product/DeliveryEstimator';
-
-export default function ProductDetails() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { addToCart } = useCart();
-
-  const [product, setProduct] = useState(null);
-  const [relatedProducts, setRelatedProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
-  const [isAdded, setIsAdded] = useState(false);
-  
-  // Selection states
-  const COLOR_OPTIONS = [
-    { name: 'Matte Black', hex: '#18181b', temple: 'Matte Black' },
-    { name: 'Tortoise Amber', hex: '#78350f', temple: 'Tortoise Gold' },
-    { name: 'Champagne Gold', hex: '#d97706', temple: 'Polished Gold' },
-    { name: 'Midnight Navy', hex: '#1e293b', temple: 'Navy Gunmetal' }
-  ];
-
-  const [activeColorway, setActiveColorway] = useState(COLOR_OPTIONS[0]);
-  const [selectedSize, setSelectedSize] = useState('Standard (51mm)');
-  const [selectedAngleUrl, setSelectedAngleUrl] = useState('');
-  const [isPrescriptionDrawerOpen, setIsPrescriptionDrawerOpen] = useState(false);
-
-  // Progressive disclosure tabs
-  const [activeSpecTab, setActiveSpecTab] = useState('specs'); // 'specs' | 'dimensions' | 'care'
-
-  // Share & Wishlist
-  const [shareSuccess, setShareSuccess] = useState(false);
-
-  // Wishlist
-  const [isWishlisted, setIsWishlisted] = useState(false);
-
-  // Modals
-  const [tryOnOpen, setTryOnOpen] = useState(false);
-  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
-
-  // Sticky bottom bar trigger on scroll
-  const [showStickyBar, setShowStickyBar] = useState(false);
-  const buySectionRef = useRef(null);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch(`${API_BASE_URL}/api/products/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Product not found');
-        return res.json();
-      })
-      .then(data => {
-        setProduct(data);
-        setSelectedAngleUrl(data.image);
-        if (data.colorways && data.colorways.length > 0) {
-          setActiveColorway(data.colorways[0]);
-        }
-        setQuantity(1);
-        setLoading(false);
-
-        // Check wishlist
-        try {
-          const savedWishlist = JSON.parse(localStorage.getItem('chasma_wishlist') || '[]');
-          setIsWishlisted(savedWishlist.includes(data.id));
-        } catch {}
-
-        // Fetch related products
-        fetch(`${API_BASE_URL}/api/products?category=${encodeURIComponent(data.category)}`)
-          .then(res => res.json())
-          .then(related => {
-            setRelatedProducts(related.filter(item => item.id !== data.id).slice(0, 4));
-          })
-          .catch(() => {});
-      })
-      .catch(err => {
-        console.error('Error fetching product:', err);
-        setLoading(false);
-      });
-  }, [id]);
-
-  // Scroll listener for sticky purchase bar
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 400) {
-        setShowStickyBar(true);
-      } else {
-        setShowStickyBar(false);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const toggleWishlist = () => {
-    if (!product) return;
-    try {
-      const savedWishlist = JSON.parse(localStorage.getItem('chasma_wishlist') || '[]');
-      let updated;
-      if (savedWishlist.includes(product.id)) {
-        updated = savedWishlist.filter(item => item !== product.id);
-        setIsWishlisted(false);
-      } else {
-        updated = [...savedWishlist, product.id];
-        setIsWishlisted(true);
-      }
-      localStorage.setItem('chasma_wishlist', JSON.stringify(updated));
-    } catch {}
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: product.name,
-          text: `Check out ${product.name} on GetChasma`,
-          url: window.location.href
-        });
-      } catch {}
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      setShareSuccess(true);
-      setTimeout(() => setShareSuccess(false), 2000);
-    }
-  };
-
-  const handleDirectAddToCart = () => {
-    if (!product) return;
-    addToCart({
-      id: product.id,
-      sku: product.sku || sku,
-      name: product.name,
-      price: productPrice,
-      finalPrice: productPrice,
-      image: selectedAngleUrl || product.image,
-      selectedColor: activeColorway.name,
-      selectedSize: selectedSize,
-      lensConfig: null
-    }, quantity);
-
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
-  };
-
-  const handleCustomLensAdd = (customItem) => {
-    addToCart({
-      ...customItem,
-      selectedColor: activeColorway.name,
-      selectedSize: selectedSize
-    }, 1);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-brand-offwhite pt-24 px-6 max-w-7xl mx-auto flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-10 h-10 border-2 border-brand-black border-t-transparent animate-spin mx-auto mb-4" />
-          <p className="text-xs font-mono font-medium text-zinc-500 uppercase tracking-widest">
-            Calibrating Optical Specifications &amp; Multi-Angle Photos...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen bg-brand-offwhite pt-24 px-6 max-w-7xl mx-auto text-center py-20">
-        <Glasses size={48} className="mx-auto text-zinc-400 mb-3" />
-        <h2 className="font-serif text-3xl font-bold mb-4 text-brand-black">Eyewear Model Not Found</h2>
-        <p className="text-zinc-500 mb-8 font-mono text-xs">The requested frame design could not be found in our collection.</p>
-        <Link to="/shop" className="px-6 py-3 bg-brand-black text-white text-xs font-mono uppercase tracking-wider">
-          Return to Catalog
-        </Link>
-      </div>
-    );
-  }
-
-  // Derive shape and specs
-  const productPrice = Number(product.price);
-  const originalPrice = product.originalPrice ? Number(product.originalPrice) : Math.round(productPrice * 1.45);
-  const discountPct = Math.round(((originalPrice - productPrice) / originalPrice) * 100);
-  const brand = product.brand || 'GetChasma Atelier';
-  const sku = product.sku || `FT-${product.id}-721-MFP1`;
-  const frameDimensions = {
-    lensWidth: product?.dimensions?.lensWidth || product?.specs?.LensWidth || 51,
-    bridgeWidth: product?.dimensions?.bridgeWidth || product?.specs?.BridgeWidth || 19,
-    templeLength: product?.dimensions?.templeLength || product?.specs?.TempleLength || 148,
-    lensHeight: product?.dimensions?.lensHeight || product?.specs?.LensHeight || 42
-  };
-
-  const colorways = product?.colorways?.length > 0 ? product.colorways : COLOR_OPTIONS;
-
-  // Multi-angle photo collection (5 angles)
-  const displayAngles = product?.multiAngles?.length > 0
-    ? product.multiAngles
-    : [
-        { angle: '0°', label: 'Front Angle', url: product.image },
-        { angle: '45°', label: '3/4 Perspective', url: product.images?.[1] || product.image },
-        { angle: '90°', label: 'Side Temple Profile', url: product.images?.[0] || product.image },
-        { angle: '180°', label: 'Inside Rim View', url: product.images?.[1] || product.image },
-        { angle: 'Top', label: 'Top Caliper View', url: product.images?.[0] || product.image }
-      ];
+function Gallery({ images, name }) {
+  const [active, setActive] = useState(0)
+  const [zoom, setZoom] = useState({ on: false, x: 50, y: 50 })
+  const img = images[active]
+  const go = (d) => setActive((i) => (i + d + images.length) % images.length)
 
   return (
-    <div className="min-h-screen bg-brand-offwhite text-brand-black antialiased pb-36">
-      
-      {/* 1. TOP BREADCRUMB & UTILITY BAR */}
-      <div className="bg-white border-b border-brand-black/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs font-mono">
-          <nav className="flex items-center gap-2 text-zinc-500 flex-wrap">
-            <Link to="/" className="hover:text-brand-black transition-colors uppercase">Home</Link>
-            <span className="text-zinc-300">/</span>
-            <Link to="/shop" className="hover:text-brand-black transition-colors uppercase">Eyewear</Link>
-            <span className="text-zinc-300">/</span>
-            <Link to={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:text-brand-black transition-colors uppercase">
-              {product.category}
-            </Link>
-            <span className="text-zinc-300">/</span>
-            <span className="text-brand-black font-semibold uppercase">{product.name}</span>
-          </nav>
-
-          <button 
-            onClick={() => navigate(-1)}
-            className="hidden sm:flex items-center gap-1 text-zinc-400 hover:text-brand-black font-mono uppercase tracking-wider text-[11px] transition-colors cursor-pointer"
-          >
-            <ChevronLeft size={14} />
-            Back
-          </button>
+    <div className="flex flex-col-reverse gap-3 md:flex-row md:gap-4">
+      {images.length > 1 && (
+        <div className="scrollbar-hide flex gap-3 overflow-x-auto md:w-20 md:flex-col md:overflow-visible">
+          {images.map((im, i) => (
+            <button
+              key={im.id || im.url}
+              onClick={() => setActive(i)}
+              aria-label={`View image ${i + 1}`}
+              aria-current={i === active}
+              className={cn(
+                'aspect-square w-16 shrink-0 overflow-hidden rounded-2xl bg-paper ring-2 ring-offset-2 transition md:w-full',
+                i === active ? 'ring-ink' : 'ring-transparent opacity-70 hover:opacity-100',
+              )}
+            >
+              <img src={im.url} alt="" className="size-full object-cover" />
+            </button>
+          ))}
         </div>
-      </div>
-
-      {/* 2. ASYMMETRIC PDP 12-COLUMN WIREFRAME (7:5 SPLIT) */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" ref={buySectionRef}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          
-          {/* ========================================================
-              LEFT GALLERY: 7 Columns (Off-center Hero + 5 Angle Strip)
-             ======================================================== */}
-          <div className="lg:col-span-7 space-y-4">
-            
-            {/* Viewport Meta Header */}
-            <div className="flex items-center justify-between pb-1">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400">
-                ATELIER STUDIO // PERSPECTIVE ARCHIVE
-              </span>
-              <button
-                onClick={() => setTryOnOpen(true)}
-                className="px-3 py-1 border border-brand-black/20 hover:border-brand-black bg-white text-brand-black text-[10px] font-mono uppercase tracking-wider flex items-center gap-1.5 transition-all cursor-pointer"
-              >
-                <Camera size={12} />
-                <span>Virtual Try-On</span>
-              </button>
-            </div>
-
-            {/* Hero Studio Viewport */}
-            <div className="relative aspect-[4/3] w-full bg-[#f5f5f3] border border-brand-black/10 flex items-center justify-center p-8 group overflow-hidden">
-              {/* Precision Crosshairs */}
-              <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t border-l border-brand-black/40" />
-              <div className="absolute top-0 right-0 w-2.5 h-2.5 border-t border-r border-brand-black/40" />
-              <div className="absolute bottom-0 left-0 w-2.5 h-2.5 border-b border-l border-brand-black/40" />
-              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b border-r border-brand-black/40" />
-
-              {/* Angle Telemetry Tag */}
-              <div className="absolute top-3 left-3 z-10">
-                <span className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase bg-white/90 backdrop-blur-xs px-2.5 py-0.5 border border-brand-black/10">
-                  ANGLE // {displayAngles.find(item => item.url === (selectedAngleUrl || product.image))?.angle || '0°'}
-                </span>
-              </div>
-
-              <img
-                src={selectedAngleUrl || product.image}
-                alt={product.name}
-                className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
-
-            {/* Angle Thumbnails */}
-            <div className="grid grid-cols-5 gap-2">
-              {displayAngles.map((item, idx) => {
-                const isSelected = (selectedAngleUrl || product.image) === item.url;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedAngleUrl(item.url)}
-                    className={`aspect-square border p-2 bg-white flex flex-col items-center justify-center transition-all cursor-pointer ${
-                      isSelected 
-                        ? 'border-brand-black ring-1 ring-brand-black shadow-xs' 
-                        : 'border-brand-black/10 hover:border-brand-black/40'
-                    }`}
-                  >
-                    <img src={item.url} alt={item.angle} className="max-h-8 object-contain mb-1" />
-                    <span className="font-mono text-[9px] text-zinc-400">{item.angle}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ========================================================
-              RIGHT STICKY SIDEBAR: 5 Columns
-             ======================================================== */}
-          <div className="lg:col-span-5 sticky top-24 space-y-6">
-            <div>
-              <div className="flex items-start justify-between">
-                <span className="font-mono text-xs tracking-widest text-zinc-400 uppercase">
-                  {brand} // {sku}
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={handleShare}
-                    className="w-8 h-8 border border-brand-black/10 hover:border-brand-black flex items-center justify-center text-zinc-500 hover:text-brand-black transition-colors relative cursor-pointer"
-                    title="Share Eyewear"
-                  >
-                    <Share2 size={14} />
-                    {shareSuccess && (
-                      <span className="absolute -top-7 right-0 text-[9px] font-mono bg-brand-black text-white px-2 py-0.5 whitespace-nowrap">
-                        Copied
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    onClick={toggleWishlist}
-                    className="w-8 h-8 border border-brand-black/10 hover:border-brand-black flex items-center justify-center transition-colors cursor-pointer"
-                    title="Save to Wishlist"
-                  >
-                    <Heart
-                      size={14}
-                      className={isWishlisted ? 'fill-rose-500 text-rose-500' : 'text-zinc-500 hover:text-rose-500'}
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <h1 className="text-2xl font-bold text-brand-black mt-1.5">{product.name}</h1>
-              
-              <div className="flex items-baseline gap-3 mt-2">
-                <p className="text-xl font-mono font-bold text-brand-black">
-                  ₹{productPrice.toLocaleString('en-IN')}
-                </p>
-                {originalPrice > productPrice && (
-                  <span className="text-xs font-mono text-zinc-400 line-through">
-                    ₹{originalPrice.toLocaleString('en-IN')}
-                  </span>
-                )}
-                {discountPct > 0 && (
-                  <span className="font-mono text-[9px] text-[#0f766e] bg-teal-50 border border-teal-200/60 px-1.5 py-0.5 uppercase tracking-wider">
-                    {discountPct}% OFF
-                  </span>
-                )}
-              </div>
-
-              <span className="text-[11px] text-zinc-400 block mt-1 font-mono">
-                Tax Included · Free Express Courier
-              </span>
-            </div>
-
-            {/* Physical Millimeter Caliper */}
-            <FrameDimensionCaliper dimensions={product.dimensions || frameDimensions} />
-
-            {/* Colorway Finishes */}
-            <div>
-              <label className="font-mono text-xs text-zinc-500 uppercase tracking-wider block mb-2">
-                Acetate &amp; Metal Finish: <span className="text-brand-black font-semibold">{activeColorway.name}</span>
-              </label>
-              <div className="flex gap-2">
-                {colorways.map((c) => (
-                  <button
-                    key={c.name}
-                    onClick={() => setActiveColorway(c)}
-                    className={`w-6 h-6 rounded-full border transition-all cursor-pointer ${
-                      activeColorway.name === c.name 
-                        ? 'ring-2 ring-brand-black ring-offset-2 scale-110' 
-                        : 'border-brand-black/20 hover:scale-105 opacity-85 hover:opacity-100'
-                    }`}
-                    style={{ backgroundColor: c.hex }}
-                    title={c.name}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Frame Size Option */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="font-mono text-xs text-zinc-500 uppercase tracking-wider">
-                  Frame Fit: <span className="text-brand-black font-semibold">{selectedSize}</span>
-                </label>
-                <button
-                  onClick={() => setSizeGuideOpen(true)}
-                  className="font-mono text-[10px] text-zinc-500 hover:text-brand-black underline flex items-center gap-1 cursor-pointer"
-                >
-                  <Ruler size={11} />
-                  Size Guide
-                </button>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {['Narrow (49mm)', 'Standard (51mm)', 'Wide (54mm)'].map((sz) => {
-                  const isSelected = selectedSize.startsWith(sz.split(' ')[0]);
-                  return (
-                    <button
-                      key={sz}
-                      onClick={() => setSelectedSize(sz.split(' ')[0])}
-                      className={`py-2 text-xs font-mono border transition-all cursor-pointer ${
-                        isSelected
-                          ? 'border-brand-black bg-brand-black text-white'
-                          : 'border-brand-black/10 bg-white text-zinc-700 hover:border-brand-black/40'
-                      }`}
-                    >
-                      {sz}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Integrated Pincode Delivery Estimator with Live Cutoff Telemetry */}
-            <DeliveryEstimator />
-
-            {/* Dual Action Triggers */}
-            <div className="space-y-2 pt-4 border-t border-brand-black/10">
-              <button
-                onClick={() => setIsPrescriptionDrawerOpen(true)}
-                className="w-full bg-brand-black text-brand-offwhite py-4 font-mono text-xs uppercase tracking-widest hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-99 shadow-xs"
-              >
-                <Sparkles size={14} className="text-[#0f766e]" />
-                <span>Select Lens &amp; Prescription</span>
-              </button>
-              <button
-                onClick={handleDirectAddToCart}
-                className="w-full border border-brand-black/20 text-brand-black py-4 font-mono text-xs uppercase tracking-widest hover:border-brand-black transition-colors flex items-center justify-center gap-2 cursor-pointer active:scale-99"
-              >
-                {isAdded ? (
-                  <>
-                    <Check size={14} className="text-[#0f766e]" />
-                    <span>Acquired to Bag</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag size={14} />
-                    <span>Acquire Frame Only</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Optician Verification & WhatsApp Consultation */}
-            <div className="pt-4 border-t border-brand-black/10">
-              <div className="p-3 bg-[#f5f5f3] border border-brand-black/10 flex items-center justify-between font-mono">
-                <div className="flex items-center gap-2 text-zinc-600">
-                  <Phone size={13} className="text-[#0f766e]" />
-                  <span className="text-[11px] uppercase tracking-wider">Optician Verification</span>
-                </div>
-                <a
-                  href="https://wa.me/919740310101"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[10px] text-[#0f766e] font-bold uppercase tracking-widest underline hover:text-teal-950"
-                >
-                  WhatsApp Consultation &rarr;
-                </a>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ========================================================
-            TITAN EYEPLUS BOTTOM SECTION: FRAME DIMENSIONS & SPECS
-            (As seen in user screenshot media_1789048121798.png)
-           ======================================================== */}
-        {/* ========================================================
-            PROGRESSIVE DISCLOSURE: SPECIFICATIONS & MEASUREMENTS HUB
-           ======================================================== */}
-        <div className="mt-14 bg-white rounded-3xl p-6 sm:p-8 border border-neutral-200/90 shadow-xs">
-          
-          {/* Progressive Disclosure Navigation Tabs */}
-          <div className="flex items-center justify-between flex-wrap gap-4 pb-6 border-b border-neutral-100">
-            <div className="flex items-center gap-2 p-1 bg-neutral-100 rounded-2xl">
-              {[
-                { id: 'specs', label: 'Technical Specs' },
-                { id: 'dimensions', label: 'Frame Dimensions & Schematics' },
-                { id: 'care', label: 'Optics & Warranty' }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveSpecTab(tab.id)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                    activeSpecTab === tab.id
-                      ? 'bg-neutral-950 text-white shadow-xs'
-                      : 'text-neutral-500 hover:text-neutral-900'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <span className="text-[11px] font-mono text-neutral-400">
-              ATELIER // CERTIFIED QC
-            </span>
-          </div>
-
-          {/* TAB 1: TECHNICAL SPECS */}
-          {activeSpecTab === 'specs' && (
-            <div className="pt-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-6 text-xs">
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">SKU</span>
-                  <span className="font-mono font-bold text-neutral-950 break-all">{sku}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Brand</span>
-                  <span className="font-bold text-neutral-950">GetChasma Atelier</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Gender</span>
-                  <span className="font-bold text-neutral-950">{product.gender || 'Unisex'}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Frame Fit</span>
-                  <span className="font-bold text-neutral-950">{selectedSize}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Colorway</span>
-                  <span className="font-bold text-neutral-950">{activeColorway?.name || COLOR_OPTIONS[0].name}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Temple Material</span>
-                  <span className="font-bold text-neutral-950">{activeColorway?.temple || COLOR_OPTIONS[0].temple}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Composition</span>
-                  <span className="font-bold text-neutral-950">{product.specs?.['Frame Material'] || 'Aerospace Grade-1 Titanium'}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Silhouette</span>
-                  <span className="font-bold text-neutral-950">Geometric Aviator / Wayfarer</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Hinge Design</span>
-                  <span className="font-bold text-neutral-950">German 5-Barrel Screws</span>
-                </div>
-                <div>
-                  <span className="text-neutral-400 block text-[10px] font-mono uppercase tracking-wider">Origin</span>
-                  <span className="font-bold text-neutral-950">Handcrafted in India</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 2: FRAME DIMENSIONS & SCHEMATICS */}
-          {activeSpecTab === 'dimensions' && (
-            <div className="pt-6 space-y-6">
-              <div className="flex items-center justify-between">
-                <p className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-                  Orthogonal CAD Metric Schematics · Dimension Line Extensions
-                </p>
-                <button
-                  onClick={() => setSizeGuideOpen(true)}
-                  className="text-xs font-mono text-brand-black underline cursor-pointer"
-                >
-                  Interactive Size Guide &rarr;
-                </button>
-              </div>
-
-              <OpticalBlueprint dimensions={product.dimensions || frameDimensions} name={product.name} />
-            </div>
-          )}
-
-          {/* TAB 3: OPTICS & WARRANTY */}
-          {activeSpecTab === 'care' && (
-            <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
-              <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
-                  365-DAY ATELIER WARRANTY
-                </span>
-                <p className="text-neutral-600 leading-relaxed">
-                  Complimentary repair or direct replacement for structural hinge fractures, solder failures, and manufacturing anomalies.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
-                  ZEISS COATING CALIBRATION
-                </span>
-                <p className="text-neutral-600 leading-relaxed">
-                  Clean lenses exclusively with microfiber cloth. Rinse with lukewarm water before wiping to preserve anti-reflective coatings.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-neutral-50 border border-neutral-100 space-y-2">
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-neutral-500 block">
-                  COMPLIMENTARY TUNE-UPS
-                </span>
-                <p className="text-neutral-600 leading-relaxed">
-                  Lifetime free ultrasonic sanitization, screw tightening, and nose-pad replacements at any GetChasma flagship atelier.
-                </p>
-              </div>
-            </div>
-          )}
-
-        </div>
-
-        {/* RELATED / SIMILAR FRAMES SECTION */}
-        {relatedProducts.length > 0 && (
-          <div id="similar-frames-section" className="mt-16 pt-10 border-t border-gray-200">
-            <div className="flex items-end justify-between mb-6">
-              <div>
-                <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">
-                  Curated Collection
-                </span>
-                <h2 className="font-serif text-2xl font-bold text-black">
-                  Similar Styles in {product.category}
-                </h2>
-              </div>
-              <Link to={`/shop?category=${encodeURIComponent(product.category)}`} className="text-xs font-bold uppercase tracking-wider text-black hover:underline">
-                View All &rarr;
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {relatedProducts.map((rel) => (
-                <Link
-                  key={rel.id}
-                  to={`/product/${rel.id}`}
-                  className="group bg-white rounded-3xl p-5 border border-gray-200 shadow-sm hover:shadow-md transition-all flex flex-col"
-                >
-                  <div className="aspect-[4/3] bg-[#fbfbfb] rounded-2xl mb-3 p-4 flex items-center justify-center overflow-hidden border border-gray-100">
-                    <img
-                      src={rel.image}
-                      alt={rel.name}
-                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-300"
-                    />
-                  </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
-                    {rel.category}
-                  </span>
-                  <h4 className="font-bold text-sm text-gray-950 mb-1 group-hover:text-neutral-700 truncate">
-                    {rel.name}
-                  </h4>
-                  <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-50">
-                    <span className="font-black text-black font-mono text-sm">
-                      ₹{Number(rel.price).toLocaleString('en-IN')}
-                    </span>
-                    <span className="text-xs font-bold text-neutral-900 group-hover:underline">
-                      Inspect &rarr;
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-      </div>
-
-      {/* ========================================================
-          STICKY PURCHASE & PRESCRIPTION BAR ON SCROLL
-         ======================================================== */}
-      <AnimatePresence>
-        {showStickyBar && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-            className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-brand-black/10 py-3 px-4 sm:px-8 shadow-2xl"
-          >
-            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-              {/* Left: Frame Name & Subtitle */}
-              <div className="min-w-0 flex-1 hidden sm:block">
-                <h4 className="font-bold text-xs uppercase tracking-wider text-brand-black truncate font-mono">
-                  {brand} // {product.name}
-                </h4>
-                <p className="text-[11px] text-zinc-500 truncate font-mono">
-                  {product.category} &bull; {selectedSize} &bull; {activeColorway.name}
-                </p>
-              </div>
-
-              {/* Price */}
-              <div className="text-left sm:text-right flex-shrink-0">
-                <span className="text-lg sm:text-xl font-bold text-brand-black font-mono block">
-                  ₹{productPrice.toLocaleString('en-IN')}
-                </span>
-                <span className="text-[10px] text-[#0f766e] font-mono font-medium uppercase tracking-wider block sm:hidden">
-                  Free Express Courier
-                </span>
-              </div>
-
-              {/* Right: Triggers */}
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  onClick={toggleWishlist}
-                  className="w-10 h-10 border border-brand-black/20 hover:border-brand-black flex items-center justify-center transition-colors cursor-pointer"
-                  title="Wishlist"
-                >
-                  <Heart
-                    size={16}
-                    className={isWishlisted ? 'fill-rose-500 text-rose-500' : 'text-zinc-500'}
-                  />
-                </button>
-
-                <button
-                  onClick={() => setIsPrescriptionDrawerOpen(true)}
-                  className="hidden md:flex px-4 py-2.5 bg-brand-black hover:bg-zinc-800 text-white font-mono text-xs uppercase tracking-wider items-center gap-1.5 transition-all cursor-pointer"
-                >
-                  <Sparkles size={13} className="text-[#0f766e]" />
-                  <span>Select Lens</span>
-                </button>
-
-                <button
-                  onClick={handleDirectAddToCart}
-                  className="px-5 sm:px-6 py-2.5 bg-brand-black md:bg-white md:border md:border-brand-black text-white md:text-brand-black hover:bg-zinc-800 md:hover:bg-zinc-100 font-mono text-xs uppercase tracking-wider flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
-                >
-                  {isAdded ? (
-                    <>
-                      <Check size={14} className="text-[#0f766e]" />
-                      <span>Acquired</span>
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingBag size={14} />
-                      <span>Acquire Frame</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* MODALS */}
-      <VirtualTryOnModal
-        product={product}
-        isOpen={tryOnOpen}
-        onClose={() => setTryOnOpen(false)}
-      />
-
-      {/* LUXURY MULTI-STEP OPTICAL SURFACING DRAWER */}
-      <PrescriptionConfigDrawer
-        isOpen={isPrescriptionDrawerOpen}
-        onClose={() => setIsPrescriptionDrawerOpen(false)}
-        basePrice={productPrice}
-        onApplyConfig={(config) => {
-          handleCustomLensAdd({
-            id: `${product.id}-calibrated-${Date.now()}`,
-            sku: product.sku || sku,
-            name: `${product.name} [${config.lensTier.title}]`,
-            price: config.finalPrice,
-            finalPrice: config.finalPrice,
-            image: selectedAngleUrl || product.image,
-            lensConfig: config,
-            lensDetails: {
-              visionType: config.prescriptionType,
-              lensPackage: config.lensTier.title,
-              specs: config.lensTier.spec,
-              hydrophobicCoating: config.hydrophobicCoating
-            }
-          });
-          setIsPrescriptionDrawerOpen(false);
+      )}
+      <div
+        className="group relative aspect-square flex-1 overflow-hidden bg-paper md:aspect-[4/4.4]"
+        onMouseMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect()
+          setZoom({ on: true, x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100 })
         }}
-      />
-
-      <SizeGuideModal
-        isOpen={sizeGuideOpen}
-        onClose={() => setSizeGuideOpen(false)}
-      />
-
+        onMouseLeave={() => setZoom((z) => ({ ...z, on: false }))}
+      >
+        <AnimatePresence mode="wait">
+          {img && (
+            <motion.img
+              key={img.url}
+              src={img.url}
+              alt={img.alt || name}
+              initial={{ opacity: 0, scale: 1.02 }}
+              animate={{ opacity: 1, scale: zoom.on ? 1.8 : 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ opacity: { duration: 0.35 }, scale: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
+              style={{ transformOrigin: `${zoom.x}% ${zoom.y}%` }}
+              className="size-full cursor-zoom-in object-cover"
+            />
+          )}
+        </AnimatePresence>
+        {images.length > 1 && (
+          <>
+            <button onClick={() => go(-1)} className="absolute left-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 opacity-0 shadow-card backdrop-blur transition group-hover:opacity-100 md:flex" aria-label="Previous image">
+              <ChevronLeft className="size-4" />
+            </button>
+            <button onClick={() => go(1)} className="absolute right-4 top-1/2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 opacity-0 shadow-card backdrop-blur transition group-hover:opacity-100 md:flex" aria-label="Next image">
+              <ChevronRight className="size-4" />
+            </button>
+            <span className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1 text-xs font-medium tabular-nums backdrop-blur">
+              {active + 1} / {images.length}
+            </span>
+          </>
+        )}
+      </div>
     </div>
-  );
+  )
+}
+
+function Accordion({ title, children, defaultOpen }) {
+  return (
+    <details open={defaultOpen} className="group border-b border-line [&_summary::-webkit-details-marker]:hidden">
+      <summary className="flex cursor-pointer list-none items-center justify-between py-5 text-sm font-semibold">
+        {title}
+        <span className="text-xl leading-none text-muted transition group-open:rotate-45">+</span>
+      </summary>
+      <div className="pb-6 text-sm leading-relaxed text-muted">{children}</div>
+    </details>
+  )
+}
+
+function DetailsSkeleton() {
+  return (
+    <div className="mx-auto grid max-w-7xl gap-10 px-5 pt-28 sm:px-6 md:grid-cols-2 md:pt-36">
+      <Skeleton className="aspect-square" />
+      <div className="space-y-4 pt-6">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-10 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <Skeleton className="mt-6 h-8 w-40" />
+        <Skeleton className="mt-8 h-12 w-full rounded-full" />
+      </div>
+    </div>
+  )
+}
+
+export default function ProductDetails() {
+  const { slug } = useParams()
+  const { data, isLoading, isError, error, refetch } = useProduct(slug)
+  const { data: settings } = useSettings()
+  const { addToCart } = useCart()
+  const wishlist = useWishlist()
+  const [qty, setQty] = useState(1)
+  const [color, setColor] = useState(null)
+
+  const product = data?.product
+  useEffect(() => {
+    setQty(1)
+    setColor(product?.colors?.[0]?.name || null)
+    if (product) document.title = `${product.name} | GetChasma`
+    return () => {
+      document.title = 'GetChasma | Perfect Glasses For Your Unique Style'
+    }
+  }, [product])
+
+  if (isLoading) return <DetailsSkeleton />
+  if (isError) {
+    return (
+      <div className="px-6 pt-32">
+        {error?.status === 404 ? (
+          <EmptyState icon={PackageX} title="This frame isn’t available" description="It may have been moved or is no longer in our collection." action={<Button to="/shop">Browse all eyewear</Button>} />
+        ) : (
+          <ErrorState error={error} onRetry={refetch} />
+        )}
+      </div>
+    )
+  }
+
+  const soldOut = product.stockStatus === 'out_of_stock'
+  const saved = wishlist.has(product.id)
+  const maxQty = product.stockStatus === 'low_stock' ? product.stockLeft : 10
+  const ship = settings?.shipping
+
+  const add = () => addToCart(product, { quantity: qty, color })
+  const share = async () => {
+    const url = window.location.href
+    try {
+      if (navigator.share) await navigator.share({ title: product.name, url })
+      else {
+        await navigator.clipboard.writeText(url)
+        toast.success('Link copied')
+      }
+    } catch {
+      /* user cancelled */
+    }
+  }
+
+  const specs = [
+    ['Frame material', product.material],
+    ['Frame shape', product.frameShape],
+    ['Suitable for', product.gender === 'unisex' ? 'Everyone' : product.gender === 'men' ? 'Men' : 'Women'],
+    ['Colours', product.colors.map((c) => c.name).join(', ')],
+    ['SKU', product.sku],
+  ].filter(([, v]) => v)
+
+  return (
+    <div className="bg-white pb-32 pt-24 md:pb-12 md:pt-32">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
+        <nav className="mb-6 text-xs text-muted" aria-label="Breadcrumb">
+          <Link to="/" className="hover:text-ink">Home</Link>
+          <span className="mx-1.5">/</span>
+          <Link to="/shop" className="hover:text-ink">Shop</Link>
+          {product.category && (
+            <>
+              <span className="mx-1.5">/</span>
+              <Link to={`/shop/${product.category.slug}`} className="hover:text-ink">{product.category.name}</Link>
+            </>
+          )}
+          <span className="mx-1.5">/</span>
+          <span className="text-ink">{product.name}</span>
+        </nav>
+
+        <div className="grid gap-10 md:grid-cols-[1.15fr_1fr] lg:gap-16">
+          <div className="md:sticky md:top-24 md:self-start">
+            <Gallery images={product.images} name={product.name} />
+          </div>
+
+          <div className="flex flex-col">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-subtle">{product.category?.name}</p>
+                <h1 className="mt-2 font-display text-4xl font-normal leading-[1.02] tracking-[-0.045em] md:text-5xl">{product.name}</h1>
+                {product.tagline && <p className="mt-3 text-[15px] text-muted">{product.tagline}</p>}
+              </div>
+              <button onClick={share} className="flex size-10 shrink-0 items-center justify-center rounded-full border border-line-strong transition hover:border-ink" aria-label="Share">
+                <Share2 className="size-4" />
+              </button>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <Price price={product.price} salePrice={product.salePrice} size="lg" showPercent />
+            </div>
+            <p className="mt-1.5 text-xs text-muted">Inclusive of all taxes{ship?.freeThreshold ? ` · Free shipping above ${formatPrice(ship.freeThreshold)}` : ''}</p>
+
+            <div className="mt-6">
+              <StockIndicator status={product.stockStatus} left={product.stockLeft} />
+            </div>
+
+            {product.colors.length > 0 && (
+              <div className="mt-8">
+                <p className="mb-3 text-sm">
+                  <span className="font-semibold">Colour:</span> <span className="text-muted">{color}</span>
+                </p>
+                <ColorDots colors={product.colors} max={12} size="lg" selected={color} onSelect={setColor} />
+              </div>
+            )}
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              {!soldOut && <QuantityStepper value={qty} onChange={(v) => setQty(Math.max(1, Math.min(maxQty, v)))} max={maxQty} />}
+              <Button variant="primary" size="lg" className="hidden flex-1 md:inline-flex" onClick={add} disabled={soldOut}>
+                <ShoppingBag className="size-4" /> {soldOut ? 'Sold out' : `Add to bag, ${formatPrice(product.effectivePrice * qty)}`}
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="size-13"
+                onClick={() => wishlist.toggle(product)}
+                aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
+                aria-pressed={saved}
+              >
+                <Heart className={cn('size-5', saved && 'fill-danger text-danger')} />
+              </Button>
+            </div>
+
+            <ul className="mt-8 grid grid-cols-3 gap-2 bg-paper p-2">
+              {[
+                { icon: Truck, label: ship?.estimatedDelivery ? `Delivery in ${ship.estimatedDelivery}` : 'Fast delivery' },
+                { icon: RotateCcw, label: '7-day easy returns' },
+                { icon: ShieldCheck, label: '1-year warranty' },
+              ].map(({ icon: Icon, label }) => (
+                <li key={label} className="flex flex-col items-center gap-2 rounded-2xl bg-white px-2 py-4 text-center text-[11px] font-medium leading-tight sm:text-xs">
+                  <Icon className="size-4" strokeWidth={1.6} />
+                  {label}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8">
+              <Accordion title="Description" defaultOpen>
+                {product.description
+                  ? product.description.split('\n').filter(Boolean).map((p, i) => <p key={i} className="mb-3 last:mb-0">{p}</p>)
+                  : 'Details coming soon.'}
+              </Accordion>
+              <Accordion title="Specifications">
+                <dl className="grid grid-cols-2 gap-x-6 gap-y-3">
+                  {specs.map(([k, v]) => (
+                    <div key={k}>
+                      <dt className="text-xs text-subtle">{k}</dt>
+                      <dd className="mt-0.5 font-medium text-ink">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </Accordion>
+              <Accordion title="Shipping & returns">
+                <p>
+                  Orders ship within 24-48 hours and usually arrive in {ship?.estimatedDelivery || '3-6 business days'}.
+                  {ship?.freeThreshold ? ` Shipping is free on orders above ${formatPrice(ship.freeThreshold)}; otherwise a flat ${formatPrice(ship.flatRate)} applies.` : ''}
+                </p>
+                <p className="mt-3">
+                  Not the right fit? Return unworn frames within 7 days of delivery for a full refund. <Link to="/help/shipping-returns" className="text-ink underline underline-offset-4">Read the policy</Link>.
+                </p>
+              </Accordion>
+            </div>
+          </div>
+        </div>
+
+        {data.related?.length > 0 && (
+          <section className="mt-24 md:mt-32" aria-labelledby="related">
+            <h2 id="related" className="mb-10 font-display text-3xl font-normal tracking-[-0.04em] md:text-4xl">
+              You may also <span className="italic">like</span>
+            </h2>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 md:grid-cols-4">
+              {data.related.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Mobile sticky add-to-bag */}
+      <div className="fixed inset-x-0 bottom-16 z-30 border-t border-line bg-white/95 p-3 backdrop-blur-xl md:hidden">
+        <Button variant="primary" full size="lg" onClick={add} disabled={soldOut}>
+          <ShoppingBag className="size-4" /> {soldOut ? 'Sold out' : `Add to bag, ${formatPrice(product.effectivePrice * qty)}`}
+        </Button>
+      </div>
+    </div>
+  )
 }

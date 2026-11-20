@@ -1,11 +1,25 @@
 {
   "name": "getchasma",
-  "version": "1.0.0",
   "private": true,
-  "description": "GetChasma Luxury Eyewear E-commerce Platform",
+  "description": "GetChasma \u00e2\u20ac\u201d eyewear storefront + admin dashboard (React/Vite frontend, Express/SQLite API)",
   "scripts": {
-    "install:all": "npm --prefix backend install && npm --prefix frontend install",
-    "build": "npm --prefix backend install && npm --prefix frontend install && npm --prefix frontend run build",
-    "start": "node backend/server.js"
-  }
+    "setup": "npm install && npm install --prefix backend && npm install --prefix frontend && npm run seed --prefix backend",
+    "dev": "concurrently -n api,web -c yellow,cyan \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "seed": "npm run seed --prefix backend",
+    "test": "npm test --prefix backend",
+    "lint": "npm run lint --prefix frontend",
+    "build": "npm ci --prefix backend --omit=dev && npm ci --prefix frontend --include=dev && npm run build --prefix frontend",
+    "start": "node --disable-warning=ExperimentalWarning backend/server.js"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cbharshainfinity07/Getchasma.git"
+  },
+  "homepage": "https://getchasma.onrender.com"
 }

@@ -1,141 +1,128 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Trash2, ArrowRight, ShieldCheck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
-import CartLineItem from './CartLineItem';
+import { Link, useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'motion/react'
+import { ShoppingBag, Trash2, Truck } from 'lucide-react'
+import { useCart } from '../../context/CartContext'
+import { useSettings } from '../../lib/queries'
+import { Drawer } from '../ui/Overlay'
+import { EmptyState } from '../ui/Feedback'
+import { QuantityStepper } from '../ui/Commerce'
+import Button from '../ui/Button'
+import { formatPrice } from '../../lib/format'
 
-export { CartLineItem };
+export function FreeShippingMeter({ subtotal, threshold }) {
+  if (!threshold) return null
+  const remaining = Math.max(0, threshold - subtotal)
+  const pct = Math.min(100, (subtotal / threshold) * 100)
+  return (
+    <div className="rounded-2xl bg-paper px-4 py-3">
+      <p className="flex items-center gap-2 text-xs font-medium">
+        <Truck className="size-3.5" />
+        {remaining > 0 ? (
+          <>You’re {formatPrice(remaining)} away from free shipping</>
+        ) : (
+          <>You’ve unlocked free shipping</>
+        )}
+      </p>
+      <div className="mt-2 h-1 overflow-hidden rounded-full bg-line">
+        <motion.div className="h-full rounded-full bg-ink" initial={false} animate={{ width: `${pct}%` }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} />
+      </div>
+    </div>
+  )
+}
 
 export default function SideCart() {
-  const { isCartOpen, closeCart, cartItems, removeFromCart, updateQuantity, cartTotal } = useCart();
-  const navigate = useNavigate();
+  const { isCartOpen, closeCart, items, removeFromCart, setQuantity, cartTotal, cartCount } = useCart()
+  const { data: settings } = useSettings()
+  const navigate = useNavigate()
 
-  const FREE_SHIPPING_THRESHOLD = 1999;
-  const progressToFreeShipping = Math.min(100, (cartTotal / FREE_SHIPPING_THRESHOLD) * 100);
-  const remainingForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - cartTotal);
-
-  const handleProceedToCheckout = () => {
-    closeCart();
-    navigate('/checkout');
-  };
+  const go = (path) => {
+    closeCart()
+    navigate(path)
+  }
 
   return (
-    <AnimatePresence>
-      {isCartOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
-            exit={{ opacity: 0 }}
-            onClick={closeCart}
-            className="fixed inset-0 bg-black z-[60]"
-          />
-
-          {/* Drawer */}
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[440px] bg-white border-l border-brand-black/10 z-[70] shadow-2xl flex flex-col"
-          >
-            {/* Header */}
-            <div className="p-6 flex items-center justify-between border-b border-brand-black/10">
-              <div>
-                <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-400 block mb-0.5">
-                  ATELIER ACQUISITIONS
-                </span>
-                <h2 className="text-lg font-bold tracking-tight text-brand-black">Shopping Bag</h2>
-                <span className="text-xs text-zinc-400 font-mono">{cartItems.length} unique frames</span>
-              </div>
-              <button 
-                onClick={closeCart} 
-                className="p-2 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400 hover:text-brand-black cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+    <Drawer
+      open={isCartOpen}
+      onClose={closeCart}
+      title={
+        <span>
+          Your bag <span className="font-normal text-muted">({cartCount})</span>
+        </span>
+      }
+      label="Shopping bag"
+      footer={
+        items.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-muted">Subtotal</span>
+              <span className="text-xl font-semibold tracking-tight">{formatPrice(cartTotal)}</span>
             </div>
-
-            {/* Free Shipping Meter */}
-            <div className="px-6 py-3 bg-[#f8f8f7] border-b border-brand-black/10">
-              <div className="flex justify-between text-xs font-mono mb-1.5">
-                <span className="text-zinc-600">
-                  {remainingForFreeShipping > 0 
-                    ? `Add ₹${Math.round(remainingForFreeShipping).toLocaleString('en-IN')} for Free Courier` 
-                    : 'Unlocked FREE Express Courier'}
-                </span>
-                <span className="text-brand-black font-bold">{Math.round(progressToFreeShipping)}%</span>
-              </div>
-              <div className="w-full h-1 bg-zinc-200 rounded-none overflow-hidden">
-                <div 
-                  className="h-full bg-brand-black transition-all duration-500"
-                  style={{ width: `${progressToFreeShipping}%` }}
-                />
-              </div>
+            <p className="text-xs text-muted">Taxes included. Shipping and discounts calculated at checkout.</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="secondary" onClick={() => go('/cart')}>
+                View bag
+              </Button>
+              <Button variant="primary" onClick={() => go('/checkout')}>Checkout</Button>
             </div>
-
-            {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto px-6 divide-y divide-brand-black/5">
-              {cartItems.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-zinc-400 space-y-4 text-center py-12">
-                  <div className="w-14 h-14 bg-[#f5f5f3] text-zinc-400 rounded-full flex items-center justify-center border border-brand-black/10">
-                    <Trash2 size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-mono font-semibold text-sm text-brand-black mb-1">Your bag is empty</h3>
-                    <p className="text-xs text-zinc-500 font-mono max-w-[220px]">
-                      Discover our collection of handcrafted sunglasses and optical frames.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      closeCart();
-                      navigate('/shop');
-                    }}
-                    className="mt-4 px-6 py-3 bg-brand-black hover:bg-zinc-800 text-white font-mono text-xs uppercase tracking-wider transition-all cursor-pointer"
-                  >
-                    Browse Eyewear
-                  </button>
-                </div>
-              ) : (
-                cartItems.map((item) => (
-                  <CartLineItem
-                    key={item.id}
-                    item={item}
-                    onRemove={removeFromCart}
-                    onUpdateQuantity={updateQuantity}
-                  />
-                ))
-              )}
-            </div>
-
-            {/* Footer */}
-            {cartItems.length > 0 && (
-              <div className="p-6 border-t border-neutral-200 bg-white">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-neutral-500 text-sm font-medium">Subtotal</span>
-                  <span className="text-xl font-bold text-neutral-950 font-mono">₹{Number(cartTotal || 0).toLocaleString('en-IN')}</span>
-                </div>
-                <p className="text-[11px] text-neutral-400 mb-4">Taxes and shipping calculated at checkout</p>
-                
-                <button
-                  onClick={handleProceedToCheckout}
-                  className="w-full py-3.5 bg-black hover:bg-neutral-800 text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer"
+          </div>
+        )
+      }
+    >
+      {items.length === 0 ? (
+        <EmptyState
+          icon={ShoppingBag}
+          title="Your bag is empty"
+          description="Frames you add will appear here. Start with our best sellers."
+          action={
+            <Button onClick={() => go('/shop')} size="sm">
+              Shop eyewear
+            </Button>
+          }
+        />
+      ) : (
+        <div className="space-y-5 p-6">
+          <FreeShippingMeter subtotal={cartTotal} threshold={settings?.shipping?.freeThreshold} />
+          <ul className="divide-y divide-line">
+            <AnimatePresence initial={false}>
+              {items.map((item) => (
+                <motion.li
+                  key={`${item.productId}-${item.color}`}
+                  layout
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20, height: 0 }}
+                  className="flex gap-4 py-4"
                 >
-                  Proceed to Checkout <ArrowRight size={15} />
-                </button>
-
-                <div className="mt-3 flex items-center justify-center gap-2 text-[11px] text-neutral-500">
-                  <ShieldCheck size={14} className="text-emerald-600" />
-                  <span>Secure 256-bit SSL Encrypted Checkout</span>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        </>
+                  <Link to={`/product/${item.slug}`} onClick={closeCart} className="size-24 shrink-0 overflow-hidden rounded-2xl bg-paper">
+                    <img src={item.image} alt={item.name} className="size-full object-cover" />
+                  </Link>
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <div className="flex justify-between gap-2">
+                      <div className="min-w-0">
+                        <Link to={`/product/${item.slug}`} onClick={closeCart} className="line-clamp-1 text-sm font-medium hover:underline">
+                          {item.name}
+                        </Link>
+                        {item.color && <p className="mt-0.5 text-xs text-muted">{item.color}</p>}
+                      </div>
+                      <p className="text-sm font-semibold">{formatPrice(item.price * item.quantity)}</p>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between pt-3">
+                      <QuantityStepper size="sm" value={item.quantity} onChange={(q) => setQuantity(item.productId, item.color, q)} />
+                      <button
+                        onClick={() => removeFromCart(item.productId, item.color)}
+                        className="flex size-8 items-center justify-center rounded-full text-subtle transition hover:bg-danger-soft hover:text-danger"
+                        aria-label={`Remove ${item.name}`}
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
+                  </div>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
+        </div>
       )}
-    </AnimatePresence>
-  );
+    </Drawer>
+  )
 }

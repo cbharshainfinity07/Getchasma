@@ -1,135 +1,182 @@
-import React, { useRef } from 'react';
-import { Button } from "@heroui/react";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { useSettings } from '../../lib/queries'
+import { cn } from '../../lib/format'
 
+const SLIDE_MS = 6500
+const EASE = [0.16, 1, 0.3, 1]
+
+/**
+ * Editorial hero in the luxury-eyewear tradition: white page, serif headline on the left, campaign
+ * photography on the right with a slow cross-fade and gentle zoom. Keeps the approved copy, the
+ * "Up To 15% Off" offer and the numbered slider.
+ */
 export default function Hero() {
-  const ref = useRef(null);
+  const { data: settings } = useSettings()
+  const reduce = useReducedMotion()
+  const [index, setIndex] = useState(0)
+  const [paused, setPaused] = useState(false)
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  const slides = [
+    {
+      eyebrow: settings?.branding?.heroEyebrow || 'Up To 15% Off',
+      title: settings?.branding?.heroTitle || 'Perfect Glasses For Your Unique Style',
+      sub: 'Hand-finished frames with UV400 and blue-cut lenses, delivered free across India.',
+      image: '/hot-5.jpg',
+      alt: 'Model wearing slim black rectangle sunglasses',
+      primary: { label: 'Shop the collection', to: '/shop' },
+      secondary: { label: 'View offers', to: '/shop?onSale=true' },
+    },
+    {
+      eyebrow: 'The gold edit',
+      title: 'Quiet Gold, Effortless Presence',
+      sub: 'Compact pilots and fine metal rims, made to be worn every day.',
+      image: '/hot-3.jpg',
+      alt: 'Model wearing compact gold aviator sunglasses',
+      primary: { label: 'Shop aviators', to: '/shop?shapes=Aviator' },
+      secondary: { label: 'All sunglasses', to: '/shop/sunglasses' },
+    },
+    {
+      eyebrow: 'New season',
+      title: 'Warm Tints For Long Summer Days',
+      sub: 'Translucent acetate in amber and honey, with lenses to match.',
+      image: '/hot-1.jpg',
+      alt: 'Model wearing amber tinted square sunglasses',
+      primary: { label: 'Shop new arrivals', to: '/shop?sort=newest' },
+      secondary: { label: 'Square frames', to: '/shop?shapes=Square' },
+    },
+  ]
+  const slide = slides[index]
+  const words = slide.title.split(' ')
+  const accentFrom = Math.max(0, words.length - 2) // last two words set in italic
 
-  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+  const go = useCallback((d) => setIndex((i) => (i + d + slides.length) % slides.length), [slides.length])
+  useEffect(() => {
+    if (paused || reduce) return
+    const t = setTimeout(() => go(1), SLIDE_MS)
+    return () => clearTimeout(t)
+  }, [index, paused, reduce, go])
 
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
-  const translateX = useTransform(mouseXSpring, [-0.5, 0.5], ["-20px", "20px"]);
-  const translateY = useTransform(mouseYSpring, [-0.5, 0.5], ["-20px", "20px"]);
-
-  const handleMouseMove = (e) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
-    const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-    x.set(mouseX);
-    y.set(mouseY);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  const handleTouchMove = (e) => {
-    if (!ref.current || !e.touches[0]) return;
-    const rect = ref.current.getBoundingClientRect();
-    const touch = e.touches[0];
-    const touchX = (touch.clientX - rect.left) / rect.width - 0.5;
-    const touchY = (touch.clientY - rect.top) / rect.height - 0.5;
-    x.set(touchX);
-    y.set(touchY);
-  };
-
-  const handleTouchEnd = () => {
-    x.set(0);
-    y.set(0);
-  };
+  const touch = useRef(null)
 
   return (
-    <div
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      className="relative w-full min-h-[90dvh] md:min-h-[92dvh] bg-black overflow-hidden flex flex-col justify-center items-center py-12 md:py-0 select-none"
-      style={{ perspective: "1000px" }}
+    <section
+      aria-roledescription="carousel"
+      aria-label="Featured collections"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
+      onTouchEnd={(e) => {
+        if (touch.current == null) return
+        const dx = e.changedTouches[0].clientX - touch.current
+        if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1)
+        touch.current = null
+      }}
+      className="bg-white pt-[104px] md:pt-[120px]"
     >
-      {/* Clean neutral ambient lighting */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 z-0">
-        <div className="w-[75vw] h-[75vw] max-w-[700px] max-h-[700px] bg-neutral-700 rounded-full blur-[140px]" />
+      <div className="mx-auto grid max-w-[1400px] gap-8 px-5 pb-16 sm:px-8 md:min-h-[calc(100dvh-120px)] md:grid-cols-12 md:items-center md:gap-10 md:pb-12 lg:gap-14">
+        {/* Copy */}
+        <div className="order-2 md:order-1 md:col-span-6 lg:col-span-5">
+          <AnimatePresence mode="wait">
+            <motion.div key={index} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.4 }}>
+              <motion.p
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: EASE }}
+                className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted"
+              >
+                {slide.eyebrow}
+              </motion.p>
+              <h1 className="mt-6 text-[clamp(2.5rem,5vw,5.4rem)] font-normal leading-[1.02] tracking-[-0.02em] text-ink">
+                {words.map((w, i) => (
+                  <span key={`${w}-${i}`} className={cn('inline-block overflow-hidden pb-[0.12em] align-bottom', i < words.length - 1 && 'mr-[0.22em]')}>
+                    <motion.span
+                      className={i >= accentFrom ? 'inline-block italic' : 'inline-block'}
+                      initial={reduce ? false : { y: '110%' }}
+                      animate={{ y: '0%' }}
+                      transition={{ duration: 1, delay: 0.1 + i * 0.05, ease: EASE }}
+                    >
+                      {w}
+                    </motion.span>
+                  </span>
+                ))}
+              </h1>
+              <motion.p
+                initial={reduce ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="mt-6 max-w-[38ch] text-base leading-relaxed text-muted"
+              >
+                {slide.sub}
+              </motion.p>
+              <motion.div
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6, ease: EASE }}
+                className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4"
+              >
+                <Link
+                  to={slide.primary.to}
+                  className="inline-flex h-12 items-center whitespace-nowrap bg-ink px-8 text-[12px] font-medium uppercase tracking-[0.2em] text-white transition hover:bg-ink-soft active:scale-[0.99]"
+                >
+                  {slide.primary.label}
+                </Link>
+                <Link
+                  to={slide.secondary.to}
+                  className="whitespace-nowrap border-b border-ink pb-1 text-[12px] font-medium uppercase tracking-[0.2em] text-ink transition hover:border-muted hover:text-muted"
+                >
+                  {slide.secondary.label}
+                </Link>
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Numbered slider */}
+          <div className="mt-14 flex items-center gap-5 text-[12px] font-medium tracking-[0.2em] text-ink">
+            <span className="tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+            <div className="flex w-40 gap-1.5 sm:w-48">
+              {slides.map((_, i) => (
+                <button key={i} onClick={() => setIndex(i)} className="relative flex-1 py-2" aria-label={`Go to slide ${i + 1}`} aria-current={i === index}>
+                  <span className="block h-px w-full bg-line-strong" />
+                  {i === index && (
+                    <motion.span
+                      key={`${index}-${paused}`}
+                      className="absolute left-0 top-1/2 h-px -translate-y-1/2 bg-ink"
+                      initial={{ width: paused || reduce ? '100%' : '0%' }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: paused || reduce ? 0 : SLIDE_MS / 1000, ease: 'linear' }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+            <span className="tabular-nums text-subtle">{String(slides.length).padStart(2, '0')}</span>
+            <div className="ml-2 flex gap-4 uppercase text-muted">
+              <button onClick={() => go(-1)} className="transition hover:text-ink" aria-label="Previous slide">Prev</button>
+              <button onClick={() => go(1)} className="transition hover:text-ink" aria-label="Next slide">Next</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Campaign image */}
+        <div className="order-1 md:order-2 md:col-span-6 lg:col-span-7">
+          <div className="relative h-[58svh] w-full overflow-hidden bg-paper md:h-auto md:aspect-[4/5] md:max-h-[calc(100dvh-170px)] lg:aspect-[5/6]">
+            <AnimatePresence initial={false}>
+              <motion.img
+                key={slide.image}
+                src={slide.image}
+                alt={slide.alt}
+                initial={{ opacity: 0, scale: reduce ? 1 : 1.06 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ opacity: { duration: 1.1, ease: 'easeOut' }, scale: { duration: SLIDE_MS / 1000 + 1, ease: 'easeOut' } }}
+                className="absolute inset-0 size-full object-cover object-[center_30%]"
+              />
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
-
-      {/* 3D Floating Glasses Image with Levitation + Interactive Tilt */}
-      <motion.div
-        className="absolute z-10 w-full max-w-5xl pointer-events-none flex justify-center items-center px-4 -translate-y-4 sm:translate-y-0"
-        style={{
-          rotateX,
-          rotateY,
-          x: translateX,
-          y: translateY,
-          transformStyle: "preserve-3d"
-        }}
-      >
-        <motion.img
-          animate={{ y: [0, -8, 0] }}
-          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-          src="/3d-glasses.png"
-          alt="Floating 3D Glasses"
-          className="w-full max-w-[240px] sm:max-w-[340px] md:max-w-2xl lg:max-w-4xl h-auto object-contain drop-shadow-2xl"
-          style={{ transform: "translateZ(80px)" }}
-        />
-      </motion.div>
-
-      {/* Main Content */}
-      <div className="relative z-20 text-center px-4 mt-6 sm:mt-10 md:mt-12 flex flex-col items-center pointer-events-none">
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-gray-400 text-[10px] sm:text-xs font-mono font-bold tracking-[0.25em] sm:tracking-[0.3em] uppercase mb-3 sm:mb-5"
-        >
-          Up To 15% Off
-        </motion.p>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-white font-sans text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15] max-w-3xl mx-auto mb-5 sm:mb-8 px-2"
-          style={{ textShadow: "0 10px 30px rgba(0,0,0,0.85)" }}
-        >
-          Perfect Glasses For Your<br className="hidden sm:inline" /> Unique Style
-        </motion.h1>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="pointer-events-auto"
-        >
-          <Link to="/shop">
-            <button
-              className="bg-white text-black font-semibold text-xs tracking-widest uppercase px-8 py-3.5 rounded-full hover:bg-neutral-200 active:scale-95 transition-all cursor-pointer shadow-xl"
-            >
-              See More
-            </button>
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Slider Controls */}
-      <div className="absolute bottom-6 md:bottom-12 z-30 flex items-center gap-6 text-white text-xs md:text-sm font-semibold tracking-widest">
-        <button className="hover:text-gray-400 transition-colors pointer-events-auto cursor-pointer p-2" aria-label="Previous slide">
-          <ChevronLeft size={20} strokeWidth={1.5} />
-        </button>
-        <span>01/02</span>
-        <button className="hover:text-gray-400 transition-colors pointer-events-auto cursor-pointer p-2" aria-label="Next slide">
-          <ChevronRight size={20} strokeWidth={1.5} />
-        </button>
-      </div>
-    </div>
-  );
+    </section>
+  )
 }

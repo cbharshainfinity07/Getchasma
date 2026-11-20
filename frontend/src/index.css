@@ -1,50 +1,128 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
-
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/bodoni-moda/standard.css";
+@import "@fontsource-variable/bodoni-moda/standard-italic.css";
 @import "tailwindcss";
-@import "@heroui/styles";
 
+/* ---------------------------------------------------------------------------
+   GetChasma design system: classic luxury eyewear
+   White pages, near-black ink, soft grey photo tiles, no bright accent.
+   Headlines use Bodoni Moda (high-contrast fashion serif), UI text uses Geist.
+   The same tokens serve the storefront and the admin.
+--------------------------------------------------------------------------- */
 @theme {
-  /* Atelier Off-Neutrals & High Contrast */
-  --color-brand-black: #09090b;      /* Zinc-950 deep editorial backdrop */
-  --color-brand-offwhite: #f8fafc;   /* Slate-50 luxurious paper white */
-  --color-brand-cream: #f5f5f4;      /* Stone-100 soft luxury framing */
-  --color-brand-accent: #0f766e;     /* Deep Teal - laboratory precision */
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bodoni Moda Variable', 'Didot', Georgia, serif;
 
-  /* Structural Radii - Sharp & Technical */
-  --radius-none: 0px;
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px; /* Maximum limit for minor accents */
+  --color-white: #ffffff;
+  --color-ink: #111111;
+  --color-ink-soft: #2b2b2b;
+  --color-paper: #f4f4f4;
+  --color-paper-deep: #ebebeb;
+  --color-line: #e6e6e6;
+  --color-line-strong: #d2d2d2;
+  --color-muted: #6b6b6b;
+  --color-subtle: #9e9e9e;
 
-  /* Typographic Hierarchy Mapping */
-  --font-sans: "Plus Jakarta Sans", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --color-accent: #111111;
+  --color-accent-soft: #f4f4f4;
+  --color-accent-ink: #111111;
 
-  /* Custom Physics Animations for Framer Motion / CSS Transitions */
-  --ease-atelier: cubic-bezier(0.16, 1, 0.3, 1); /* Ultra premium ultra-slow snap out */
+  /* fixed colours (do not remap): used for text over photography */
+  --color-snow: #ffffff;
+  --color-coal: #111111;
+  --color-lime: #111111;
+
+  --color-success: #15803d;
+  --color-success-soft: #e7f6ec;
+  --color-warning: #b45309;
+  --color-warning-soft: #fdf2e2;
+  --color-danger: #c2410c;
+  --color-danger-soft: #fdece4;
+  --color-info: #2563eb;
+  --color-info-soft: #e8efff;
+
+  --shadow-card: 0 1px 2px rgb(11 11 13 / 0.04), 0 8px 24px -12px rgb(11 11 13 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(11 11 13 / 0.04), 0 24px 48px -20px rgb(11 11 13 / 0.18);
+  --shadow-pop: 0 12px 40px -8px rgb(11 11 13 / 0.28);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
 }
 
-/* Base Editorial Strictness */
 @layer base {
-  body {
-    background-color: var(--color-brand-offwhite);
-    color: var(--color-brand-black);
-    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  html {
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
+  body {
+    overflow-x: clip;
+    font-family: var(--font-sans);
+    background: var(--color-white);
+    color: var(--color-ink);
+    letter-spacing: -0.005em;
+  }
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+    font-optical-sizing: auto;
+  }
+  ::selection {
+    background: var(--color-ink);
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  button:not(:disabled), [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+  input[type='number']::-webkit-inner-spin-button { opacity: 0.4; }
 
-  /* Force the crisp letter-spacing for Plus Jakarta Sans */
-  h1, h2, h3, h4 {
-    letter-spacing: -0.03em;
-  }
-  p {
-    letter-spacing: -0.015em;
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
-/* Custom Editorial Utilities */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, var(--color-paper) 0px, var(--color-paper-deep) 120px, var(--color-paper) 240px);
+  background-size: 800px 100%;
+  animation: var(--animate-shimmer);
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Admin uses the UI sans for headings: denser and more utilitarian than the storefront display face */
+.admin-scope h1, .admin-scope h2, .admin-scope h3, .admin-scope h4 {
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+  font-stretch: normal;
 }

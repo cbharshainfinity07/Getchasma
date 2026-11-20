@@ -1,0 +1,37 @@
+# Render Blueprint for GetChasma: one Node web service serving the API, uploads and the built React app.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# NOTE ON DATA: Render's free instances have an ephemeral filesystem. The SQLite database and uploaded
+# images are recreated on every deploy or restart (the starter catalogue is re-seeded automatically).
+# For real orders, use a paid instance with the persistent disk below (uncomment it).
+services:
+  - type: web
+    name: getchasma
+    runtime: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/status
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      # With a persistent disk, point storage at it:
+      # - key: DATABASE_FILE
+      #   value: /var/data/getchasma.db
+      # - key: UPLOAD_DIR
+      #   value: /var/data/uploads
+    # disk:
+    #   name: getchasma-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
